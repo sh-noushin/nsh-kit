@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'nsh-nsh-kit-ui',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
   template: `
     <p>
@@ -13,3 +15,4 @@ import { Component } from '@angular/core';
 export class NshKitUi {
 
 }
+
