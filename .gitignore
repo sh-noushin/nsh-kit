@@ -462,4 +462,9 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
+.angular/
+*.tsbuildinfo
 
+dist/
+.angular/
+*.tsbuildinfo

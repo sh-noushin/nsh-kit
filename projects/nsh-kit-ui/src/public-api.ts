@@ -16,5 +16,6 @@ export * from './lib/styles/styles';
 // Components
 export * from './lib/components/button';
 export * from './lib/components/card';
+export * from './lib/components/divider';
 
 
