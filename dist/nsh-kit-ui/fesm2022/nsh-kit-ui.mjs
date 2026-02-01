@@ -504,6 +504,69 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.1.2", ngImpor
   `, styles: [":host{display:inline-flex;vertical-align:middle;--nsh-button-bg: var(--nsh-button-bg, unset);--nsh-button-fg: var(--nsh-button-fg, unset);--nsh-button-border-color: var(--nsh-button-border-color, unset);--nsh-button-focus-ring-color: var(--nsh-button-focus-ring-color, unset);--nsh-button-radius: var(--nsh-button-radius, var(--nsh-radius-md))}.nsh-button{--_btn-accent: var(--nsh-color-primary);--_btn-bg: var(--nsh-button-bg, var(--_btn-accent));--_btn-fg: var(--nsh-button-fg, var(--nsh-color-text));--_btn-border: var(--nsh-button-border-color, transparent);--_btn-height: var(--nsh-density-control-height);--_btn-pad-inline: var(--nsh-density-padding-inline);--_btn-pad-block: var(--nsh-density-padding-block);--_btn-gap: var(--nsh-space-sm);--_btn-font-size: var(--nsh-font-size-md);--_btn-font-weight: var(--nsh-font-weight-medium);--_btn-line-height: var(--nsh-line-height-tight);--_btn-icon-size: 1.125em;--_btn-focus-ring: var( --nsh-button-focus-ring-color, color-mix(in srgb, var(--nsh-color-outline) 60%, transparent) );appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:var(--_btn-gap);min-height:var(--_btn-height);padding:var(--_btn-pad-block) var(--_btn-pad-inline);border-radius:var(--nsh-button-radius);border:.0625rem solid var(--_btn-border);background:var(--_btn-bg);color:var(--_btn-fg);font-family:var(--nsh-font-family);font-size:var(--_btn-font-size);font-weight:var(--_btn-font-weight);line-height:var(--_btn-line-height);text-decoration:none;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;transition:background var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard),color var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard),border-color var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard),box-shadow var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard),opacity var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard)}.nsh-button__content{display:inline-flex;align-items:center;justify-content:center;gap:var(--_btn-gap)}.nsh-button__label{display:inline-flex;align-items:center}.nsh-button__icon{display:inline-flex;color:currentColor}.nsh-button__spinner{width:var(--_btn-icon-size);height:var(--_btn-icon-size);border-radius:9999px;border:.125rem solid color-mix(in srgb,currentColor 25%,transparent);border-top-color:currentColor;animation:nsh-button-spin var(--nsh-motion-duration-slow) linear infinite}@keyframes nsh-button-spin{to{transform:rotate(360deg)}}.nsh-button--sm{--_btn-height: calc(var(--nsh-density-control-height) - var(--nsh-space-sm));--_btn-font-size: var(--nsh-font-size-sm);--_btn-pad-inline: calc(var(--nsh-density-padding-inline) - var(--nsh-space-xs));--_btn-pad-block: calc(var(--nsh-density-padding-block) - var(--nsh-space-xs))}.nsh-button--md{--_btn-height: var(--nsh-density-control-height);--_btn-font-size: var(--nsh-font-size-md)}.nsh-button--lg{--_btn-height: calc(var(--nsh-density-control-height) + var(--nsh-space-sm));--_btn-font-size: var(--nsh-font-size-lg);--_btn-pad-inline: calc(var(--nsh-density-padding-inline) + var(--nsh-space-xs));--_btn-pad-block: calc(var(--nsh-density-padding-block) + var(--nsh-space-xs))}.nsh-button--primary{--_btn-accent: var(--nsh-color-primary)}.nsh-button--secondary{--_btn-accent: var(--nsh-color-secondary)}.nsh-button--tertiary{--_btn-accent: var(--nsh-color-tertiary)}.nsh-button--success{--_btn-accent: var(--nsh-color-success)}.nsh-button--warn{--_btn-accent: var(--nsh-color-warn)}.nsh-button--danger{--_btn-accent: var(--nsh-color-danger)}.nsh-button--neutral{--_btn-accent: var(--nsh-color-text)}.nsh-button--filled{--_btn-bg: var(--nsh-button-bg, var(--_btn-accent));--_btn-fg: var(--nsh-button-fg, var(--nsh-color-surface));--_btn-border: var(--nsh-button-border-color, transparent)}.nsh-button--tonal{--_btn-bg: var( --nsh-button-bg, color-mix(in srgb, var(--_btn-accent) 12%, var(--nsh-color-surface-1)) );--_btn-fg: var(--nsh-button-fg, var(--nsh-color-text));--_btn-border: var(--nsh-button-border-color, transparent)}.nsh-button--outlined{--_btn-bg: var(--nsh-button-bg, transparent);--_btn-fg: var(--nsh-button-fg, var(--_btn-accent));--_btn-border: var(--nsh-button-border-color, color-mix(in srgb, var(--_btn-accent) 55%, transparent))}.nsh-button--text{--_btn-bg: var(--nsh-button-bg, transparent);--_btn-fg: var(--nsh-button-fg, var(--_btn-accent));--_btn-border: var(--nsh-button-border-color, transparent)}.nsh-button:hover:not(:disabled):not(.nsh-button--loading){background:color-mix(in srgb,var(--_btn-bg) 92%,var(--nsh-color-surface))}.nsh-button:active:not(:disabled):not(.nsh-button--loading){background:color-mix(in srgb,var(--_btn-bg) 86%,var(--nsh-color-surface))}.nsh-button:disabled,.nsh-button.nsh-button--loading{cursor:not-allowed;opacity:.72}.nsh-button.nsh-focus-visible{box-shadow:0 0 0 .1875rem var(--_btn-focus-ring)}\n"] }]
         }], propDecorators: { disabled: [{ type: i0.Input, args: [{ isSignal: true, alias: "disabled", required: false }] }], loading: [{ type: i0.Input, args: [{ isSignal: true, alias: "loading", required: false }] }], size: [{ type: i0.Input, args: [{ isSignal: true, alias: "size", required: false }] }], variant: [{ type: i0.Input, args: [{ isSignal: true, alias: "variant", required: false }] }], color: [{ type: i0.Input, args: [{ isSignal: true, alias: "color", required: false }] }], ariaLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "ariaLabel", required: false }] }], leadingIcon: [{ type: i0.Input, args: [{ isSignal: true, alias: "leadingIcon", required: false }] }], trailingIcon: [{ type: i0.Input, args: [{ isSignal: true, alias: "trailingIcon", required: false }] }] } });
 
+class NshCardComponent {
+    variant = input('elevated', ...(ngDevMode ? [{ debugName: "variant" }] : []));
+    padding = input('md', ...(ngDevMode ? [{ debugName: "padding" }] : []));
+    ariaLabel = input(undefined, ...(ngDevMode ? [{ debugName: "ariaLabel" }] : []));
+    role = computed(() => (this.ariaLabel() ? 'region' : null), ...(ngDevMode ? [{ debugName: "role" }] : []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.1.2", ngImport: i0, type: NshCardComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "21.1.2", type: NshCardComponent, isStandalone: true, selector: "nsh-card", inputs: { variant: { classPropertyName: "variant", publicName: "variant", isSignal: true, isRequired: false, transformFunction: null }, padding: { classPropertyName: "padding", publicName: "padding", isSignal: true, isRequired: false, transformFunction: null }, ariaLabel: { classPropertyName: "ariaLabel", publicName: "ariaLabel", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: `
+    <div
+      class="nsh-card"
+      [attr.role]="role()"
+      [attr.aria-label]="ariaLabel() ?? null"
+      [class.nsh-card--elevated]="variant() === 'elevated'"
+      [class.nsh-card--outlined]="variant() === 'outlined'"
+      [class.nsh-card--filled]="variant() === 'filled'"
+      [class.nsh-card--p-none]="padding() === 'none'"
+      [class.nsh-card--p-sm]="padding() === 'sm'"
+      [class.nsh-card--p-md]="padding() === 'md'"
+      [class.nsh-card--p-lg]="padding() === 'lg'"
+    >
+      <div class="nsh-card__header">
+        <ng-content select="[nshCardHeader]"></ng-content>
+      </div>
+
+      <div class="nsh-card__body">
+        <ng-content />
+      </div>
+
+      <div class="nsh-card__footer">
+        <ng-content select="[nshCardFooter]"></ng-content>
+      </div>
+    </div>
+  `, isInline: true, styles: [":host{display:block;--nsh-card-bg: var(--nsh-card-bg, unset);--nsh-card-fg: var(--nsh-card-fg, unset);--nsh-card-border-color: var(--nsh-card-border-color, unset);--nsh-card-shadow: var(--nsh-card-shadow, unset);--nsh-card-radius: var(--nsh-card-radius, var(--nsh-radius-lg));--nsh-card-padding: var(--nsh-card-padding, unset);--nsh-card-border-width: var(--nsh-card-border-width, 1px)}.nsh-card{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface));--_card-fg: var(--nsh-card-fg, var(--nsh-color-text));--_card-border: var(--nsh-card-border-color, transparent);--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-1));--_card-pad: var(--nsh-card-padding, var(--nsh-space-lg));display:block;background:var(--_card-bg);color:var(--_card-fg);border-radius:var(--nsh-card-radius);border:var(--nsh-card-border-width) solid var(--_card-border);box-shadow:var(--_card-shadow)}.nsh-card--elevated{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface));--_card-border: var(--nsh-card-border-color, transparent);--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-2))}.nsh-card--outlined{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface));--_card-border: var(--nsh-card-border-color, var(--nsh-color-border));--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-0))}.nsh-card--filled{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface-1));--_card-border: var(--nsh-card-border-color, transparent);--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-0))}.nsh-card--p-none{--_card-pad: var(--nsh-card-padding, 0)}.nsh-card--p-sm{--_card-pad: var(--nsh-card-padding, var(--nsh-space-sm))}.nsh-card--p-md{--_card-pad: var(--nsh-card-padding, var(--nsh-space-lg))}.nsh-card--p-lg{--_card-pad: var(--nsh-card-padding, var(--nsh-space-xl))}.nsh-card__header,.nsh-card__body,.nsh-card__footer{padding:var(--_card-pad)}.nsh-card__header:empty,.nsh-card__footer:empty{display:none}.nsh-card__header{border-bottom:var(--nsh-card-border-width) solid color-mix(in srgb,var(--nsh-color-border) 60%,transparent)}.nsh-card__footer{border-top:var(--nsh-card-border-width) solid color-mix(in srgb,var(--nsh-color-border) 60%,transparent)}.nsh-card--p-none .nsh-card__header,.nsh-card--p-none .nsh-card__footer{border-width:0}\n"], changeDetection: i0.ChangeDetectionStrategy.OnPush });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.1.2", ngImport: i0, type: NshCardComponent, decorators: [{
+            type: Component,
+            args: [{ selector: 'nsh-card', standalone: true, changeDetection: ChangeDetectionStrategy.OnPush, template: `
+    <div
+      class="nsh-card"
+      [attr.role]="role()"
+      [attr.aria-label]="ariaLabel() ?? null"
+      [class.nsh-card--elevated]="variant() === 'elevated'"
+      [class.nsh-card--outlined]="variant() === 'outlined'"
+      [class.nsh-card--filled]="variant() === 'filled'"
+      [class.nsh-card--p-none]="padding() === 'none'"
+      [class.nsh-card--p-sm]="padding() === 'sm'"
+      [class.nsh-card--p-md]="padding() === 'md'"
+      [class.nsh-card--p-lg]="padding() === 'lg'"
+    >
+      <div class="nsh-card__header">
+        <ng-content select="[nshCardHeader]"></ng-content>
+      </div>
+
+      <div class="nsh-card__body">
+        <ng-content />
+      </div>
+
+      <div class="nsh-card__footer">
+        <ng-content select="[nshCardFooter]"></ng-content>
+      </div>
+    </div>
+  `, styles: [":host{display:block;--nsh-card-bg: var(--nsh-card-bg, unset);--nsh-card-fg: var(--nsh-card-fg, unset);--nsh-card-border-color: var(--nsh-card-border-color, unset);--nsh-card-shadow: var(--nsh-card-shadow, unset);--nsh-card-radius: var(--nsh-card-radius, var(--nsh-radius-lg));--nsh-card-padding: var(--nsh-card-padding, unset);--nsh-card-border-width: var(--nsh-card-border-width, 1px)}.nsh-card{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface));--_card-fg: var(--nsh-card-fg, var(--nsh-color-text));--_card-border: var(--nsh-card-border-color, transparent);--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-1));--_card-pad: var(--nsh-card-padding, var(--nsh-space-lg));display:block;background:var(--_card-bg);color:var(--_card-fg);border-radius:var(--nsh-card-radius);border:var(--nsh-card-border-width) solid var(--_card-border);box-shadow:var(--_card-shadow)}.nsh-card--elevated{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface));--_card-border: var(--nsh-card-border-color, transparent);--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-2))}.nsh-card--outlined{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface));--_card-border: var(--nsh-card-border-color, var(--nsh-color-border));--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-0))}.nsh-card--filled{--_card-bg: var(--nsh-card-bg, var(--nsh-color-surface-1));--_card-border: var(--nsh-card-border-color, transparent);--_card-shadow: var(--nsh-card-shadow, var(--nsh-elevation-0))}.nsh-card--p-none{--_card-pad: var(--nsh-card-padding, 0)}.nsh-card--p-sm{--_card-pad: var(--nsh-card-padding, var(--nsh-space-sm))}.nsh-card--p-md{--_card-pad: var(--nsh-card-padding, var(--nsh-space-lg))}.nsh-card--p-lg{--_card-pad: var(--nsh-card-padding, var(--nsh-space-xl))}.nsh-card__header,.nsh-card__body,.nsh-card__footer{padding:var(--_card-pad)}.nsh-card__header:empty,.nsh-card__footer:empty{display:none}.nsh-card__header{border-bottom:var(--nsh-card-border-width) solid color-mix(in srgb,var(--nsh-color-border) 60%,transparent)}.nsh-card__footer{border-top:var(--nsh-card-border-width) solid color-mix(in srgb,var(--nsh-color-border) 60%,transparent)}.nsh-card--p-none .nsh-card__header,.nsh-card--p-none .nsh-card__footer{border-width:0}\n"] }]
+        }], propDecorators: { variant: [{ type: i0.Input, args: [{ isSignal: true, alias: "variant", required: false }] }], padding: [{ type: i0.Input, args: [{ isSignal: true, alias: "padding", required: false }] }], ariaLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "ariaLabel", required: false }] }] } });
+
 /*
  * Public API Surface of nsh-kit-ui
  */
@@ -513,5 +576,5 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.1.2", ngImpor
  * Generated bundle index. Do not edit.
  */
 
-export { NSH_DEFAULT_COLORS_DARK, NSH_DEFAULT_COLORS_LIGHT, NSH_DEFAULT_DENSITY_COMFORTABLE, NSH_DEFAULT_DENSITY_COMPACT, NSH_DEFAULT_ELEVATION, NSH_DEFAULT_MOTION, NSH_DEFAULT_RADIUS, NSH_DEFAULT_SPACING, NSH_DEFAULT_TYPOGRAPHY, NSH_DEFAULT_Z_INDEX, NSH_THEME_DEFAULTS, NshButtonComponent, NshFocusVisibleDirective, NshIconComponent, NshIconRegistry, NshThemeDirective, NshThemeService, createNshDefaultTokens, mergeDeep, provideNshIcons, provideNshTheme, tokensToCssVars };
+export { NSH_DEFAULT_COLORS_DARK, NSH_DEFAULT_COLORS_LIGHT, NSH_DEFAULT_DENSITY_COMFORTABLE, NSH_DEFAULT_DENSITY_COMPACT, NSH_DEFAULT_ELEVATION, NSH_DEFAULT_MOTION, NSH_DEFAULT_RADIUS, NSH_DEFAULT_SPACING, NSH_DEFAULT_TYPOGRAPHY, NSH_DEFAULT_Z_INDEX, NSH_THEME_DEFAULTS, NshButtonComponent, NshCardComponent, NshFocusVisibleDirective, NshIconComponent, NshIconRegistry, NshThemeDirective, NshThemeService, createNshDefaultTokens, mergeDeep, provideNshIcons, provideNshTheme, tokensToCssVars };
 //# sourceMappingURL=nsh-kit-ui.mjs.map

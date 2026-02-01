@@ -197,5 +197,16 @@ declare class NshButtonComponent {
     static ɵcmp: _angular_core.ɵɵComponentDeclaration<NshButtonComponent, "nsh-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "loading": { "alias": "loading"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "leadingIcon": { "alias": "leadingIcon"; "required": false; "isSignal": true; }; "trailingIcon": { "alias": "trailingIcon"; "required": false; "isSignal": true; }; }, {}, never, ["*"], true, never>;
 }
 
-export { NSH_DEFAULT_COLORS_DARK, NSH_DEFAULT_COLORS_LIGHT, NSH_DEFAULT_DENSITY_COMFORTABLE, NSH_DEFAULT_DENSITY_COMPACT, NSH_DEFAULT_ELEVATION, NSH_DEFAULT_MOTION, NSH_DEFAULT_RADIUS, NSH_DEFAULT_SPACING, NSH_DEFAULT_TYPOGRAPHY, NSH_DEFAULT_Z_INDEX, NSH_THEME_DEFAULTS, NshButtonComponent, NshFocusVisibleDirective, NshIconComponent, NshIconRegistry, NshThemeDirective, NshThemeService, createNshDefaultTokens, mergeDeep, provideNshIcons, provideNshTheme, tokensToCssVars };
-export type { DeepPartial, NshButtonColor, NshButtonSize, NshButtonVariant, NshColorTokens, NshDensityMode, NshDensityTokens, NshElevationTokens, NshMotionTokens, NshRadiusTokens, NshSpacingTokens, NshTheme, NshThemeConfig, NshThemeMode, NshTokens, NshTypographyTokens, NshZIndexTokens };
+type NshCardVariant = 'elevated' | 'outlined' | 'filled';
+type NshCardPadding = 'none' | 'sm' | 'md' | 'lg';
+declare class NshCardComponent {
+    readonly variant: _angular_core.InputSignal<NshCardVariant>;
+    readonly padding: _angular_core.InputSignal<NshCardPadding>;
+    readonly ariaLabel: _angular_core.InputSignal<string | undefined>;
+    readonly role: _angular_core.Signal<"region" | null>;
+    static ɵfac: _angular_core.ɵɵFactoryDeclaration<NshCardComponent, never>;
+    static ɵcmp: _angular_core.ɵɵComponentDeclaration<NshCardComponent, "nsh-card", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "padding": { "alias": "padding"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; }, {}, never, ["[nshCardHeader]", "*", "[nshCardFooter]"], true, never>;
+}
+
+export { NSH_DEFAULT_COLORS_DARK, NSH_DEFAULT_COLORS_LIGHT, NSH_DEFAULT_DENSITY_COMFORTABLE, NSH_DEFAULT_DENSITY_COMPACT, NSH_DEFAULT_ELEVATION, NSH_DEFAULT_MOTION, NSH_DEFAULT_RADIUS, NSH_DEFAULT_SPACING, NSH_DEFAULT_TYPOGRAPHY, NSH_DEFAULT_Z_INDEX, NSH_THEME_DEFAULTS, NshButtonComponent, NshCardComponent, NshFocusVisibleDirective, NshIconComponent, NshIconRegistry, NshThemeDirective, NshThemeService, createNshDefaultTokens, mergeDeep, provideNshIcons, provideNshTheme, tokensToCssVars };
+export type { DeepPartial, NshButtonColor, NshButtonSize, NshButtonVariant, NshCardPadding, NshCardVariant, NshColorTokens, NshDensityMode, NshDensityTokens, NshElevationTokens, NshMotionTokens, NshRadiusTokens, NshSpacingTokens, NshTheme, NshThemeConfig, NshThemeMode, NshTokens, NshTypographyTokens, NshZIndexTokens };
