@@ -21,5 +21,6 @@ export * from './lib/components/badge';
 export * from './lib/components/spinner';
 export * from './lib/components/progress';
 export * from './lib/components/skeleton';
+export * from './lib/components/avatar';
 
 
