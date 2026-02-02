@@ -19,5 +19,6 @@ export * from './lib/components/card';
 export * from './lib/components/divider';
 export * from './lib/components/badge';
 export * from './lib/components/spinner';
+export * from './lib/components/progress';
 
 
