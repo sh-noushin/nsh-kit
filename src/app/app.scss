@@ -1,0 +1,45 @@
+
+.app {
+	min-height: 100dvh;
+	display: grid;
+	grid-template-rows: auto 1fr;
+	background: var(--nsh-color-surface-0);
+	color: var(--nsh-color-text);
+	font-family: var(--nsh-font-family);
+}
+
+.app__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--nsh-space-md);
+	padding: var(--nsh-space-md) var(--nsh-space-lg);
+	border-bottom: 1px solid var(--nsh-color-outline);
+	background: var(--nsh-color-surface-0);
+}
+
+.app__brand {
+	color: inherit;
+	text-decoration: none;
+	font-weight: var(--nsh-font-weight-semibold);
+	font-size: var(--nsh-font-size-md);
+}
+
+.app__nav {
+	display: flex;
+	gap: var(--nsh-space-md);
+}
+
+.app__link {
+	color: var(--nsh-color-text-muted);
+	text-decoration: none;
+	font-size: var(--nsh-font-size-sm);
+}
+
+.app__link:hover {
+	color: var(--nsh-color-text);
+}
+
+.app__main {
+	min-width: 0;
+}

@@ -1,0 +1,47 @@
+:where(.nsh-sort-header) {
+  --_nsh-sort-indicator-color: var(--nsh-sort-indicator-color, var(--nsh-color-text-muted));
+  --_nsh-sort-indicator-size: var(--nsh-sort-indicator-size, var(--nsh-font-size-xs));
+  --_nsh-sort-gap: var(--nsh-sort-gap, var(--nsh-space-xs));
+  --_nsh-sort-focus-ring: var(--nsh-sort-focus-ring, var(--nsh-color-outline));
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_nsh-sort-gap);
+
+  cursor: pointer;
+  user-select: none;
+}
+
+:where(.nsh-sort-header)::after {
+  content: '';
+
+  width: 0;
+  height: 0;
+
+  opacity: 0;
+
+  border-left: calc(var(--_nsh-sort-indicator-size) / 2) solid transparent;
+  border-right: calc(var(--_nsh-sort-indicator-size) / 2) solid transparent;
+}
+
+:where(.nsh-sort-header.nsh-sort-active)::after {
+  opacity: 1;
+}
+
+:where(.nsh-sort-header.nsh-sort-active.nsh-sort-asc)::after {
+  border-bottom: var(--_nsh-sort-indicator-size) solid var(--_nsh-sort-indicator-color);
+}
+
+:where(.nsh-sort-header.nsh-sort-active.nsh-sort-desc)::after {
+  border-top: var(--_nsh-sort-indicator-size) solid var(--_nsh-sort-indicator-color);
+}
+
+:where(.nsh-sort-header:focus-visible) {
+  outline: none;
+  box-shadow: 0 0 0 var(--nsh-space-xxs) var(--_nsh-sort-focus-ring);
+}
+
+:where(.nsh-sort-header.nsh-sort-header--disabled) {
+  cursor: default;
+  opacity: 0.6;
+}

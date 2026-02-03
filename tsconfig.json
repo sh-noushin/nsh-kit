@@ -13,7 +13,7 @@
     "experimentalDecorators": true,
     "paths": {
       "nsh-kit-ui": [
-        "./dist/nsh-kit-ui"
+        "./projects/nsh-kit-ui/src/public-api.ts"
       ]
     },
     "importHelpers": true,
