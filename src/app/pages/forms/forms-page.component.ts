@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
-import { NshFormFieldComponent, NshInputComponent } from 'nsh-kit-ui';
+import { NshFormFieldComponent, NshInputComponent, NshSwitchComponent } from 'nsh-kit-ui';
 
 type DemoKey =
   | 'default'
@@ -10,7 +10,13 @@ type DemoKey =
   | 'disabled'
   | 'error'
   | 'prefixSuffix'
-  | 'hint';
+  | 'hint'
+  | 'switchDefault'
+  | 'switchChecked'
+  | 'switchDisabled'
+  | 'switchRequired'
+  | 'switchAriaLabel'
+  | 'switchInFormField';
 
 interface DemoState {
   key: DemoKey;
@@ -21,7 +27,7 @@ interface DemoState {
   selector: 'app-forms-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, NshFormFieldComponent, NshInputComponent],
+  imports: [ReactiveFormsModule, NshFormFieldComponent, NshInputComponent, NshSwitchComponent],
   template: `
     <div class="forms-page">
       <h1 class="forms-page__title">Forms</h1>
@@ -69,6 +75,27 @@ interface DemoState {
             @case ('hint') {
               <nsh-form-field label="Phone" hint="We only use this for account recovery">
                 <nsh-input type="tel" autocomplete="tel" [formControl]="phoneControl" />
+              </nsh-form-field>
+            }
+
+            @case ('switchDefault') {
+              <nsh-switch label="Email notifications" [formControl]="switchDefaultControl" />
+            }
+            @case ('switchChecked') {
+              <nsh-switch label="Dark mode" [formControl]="switchCheckedControl" />
+            }
+            @case ('switchDisabled') {
+              <nsh-switch label="Disabled switch" [formControl]="switchDisabledControl" />
+            }
+            @case ('switchRequired') {
+              <nsh-switch label="Required switch" [required]="true" [formControl]="switchRequiredControl" />
+            }
+            @case ('switchAriaLabel') {
+              <nsh-switch [ariaLabel]="'Switch without visible label'" [formControl]="switchAriaLabelControl" />
+            }
+            @case ('switchInFormField') {
+              <nsh-form-field label="Feature flag" hint="Wires aria-describedby from form-field">
+                <nsh-switch label="Enabled" [formControl]="switchInFormFieldControl" />
               </nsh-form-field>
             }
           }
@@ -171,6 +198,13 @@ export class FormsPageComponent {
   readonly disabledControl = new FormControl<string | null>({ value: 'Disabled', disabled: true });
   readonly userControl = new FormControl<string | null>('');
 
+  readonly switchDefaultControl = new FormControl<boolean>(false, { nonNullable: true });
+  readonly switchCheckedControl = new FormControl<boolean>(true, { nonNullable: true });
+  readonly switchDisabledControl = new FormControl<boolean>({ value: true, disabled: true }, { nonNullable: true });
+  readonly switchRequiredControl = new FormControl<boolean>(false, { nonNullable: true });
+  readonly switchAriaLabelControl = new FormControl<boolean>(false, { nonNullable: true });
+  readonly switchInFormFieldControl = new FormControl<boolean>(false, { nonNullable: true });
+
   private readonly _states = signal<DemoState[]>([
     { key: 'default', title: '1) Default input with label' },
     { key: 'placeholder', title: '2) Placeholder' },
@@ -179,6 +213,13 @@ export class FormsPageComponent {
     { key: 'error', title: '5) Error message' },
     { key: 'prefixSuffix', title: '6) Prefix / suffix slots' },
     { key: 'hint', title: '7) Hint text' },
+
+    { key: 'switchDefault', title: 'Switch 1) Default switch with label' },
+    { key: 'switchChecked', title: 'Switch 2) Checked state' },
+    { key: 'switchDisabled', title: 'Switch 3) Disabled state' },
+    { key: 'switchRequired', title: 'Switch 4) Required state' },
+    { key: 'switchAriaLabel', title: 'Switch 5) No label + ariaLabel' },
+    { key: 'switchInFormField', title: 'Switch 6) Inside form-field (describedBy wiring)' },
   ]);
 
   readonly states = computed(() => this._states());
