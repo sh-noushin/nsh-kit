@@ -26,6 +26,20 @@ class HostComponent {
 
 @Component({
   standalone: true,
+  imports: [ReactiveFormsModule, NshRadioGroupComponent, NshRadioComponent],
+  template: `
+    <nsh-radio-group [formControl]="control">
+      <nsh-radio [value]="'a'" label="A" />
+      <nsh-radio [value]="'b'" [ariaLabel]="'Option B'" />
+    </nsh-radio-group>
+  `,
+})
+class AriaLabelHostComponent {
+  control = new FormControl<string | null>('a');
+}
+
+@Component({
+  standalone: true,
   imports: [ReactiveFormsModule, NshFormFieldComponent, NshRadioGroupComponent, NshRadioComponent],
   template: `
     <nsh-form-field label="Pick one" hint="Helpful hint">
@@ -112,6 +126,24 @@ describe('NshRadioGroupComponent keyboard + roving tabindex', () => {
     expect(fixture.componentInstance.control.value).toBe('c');
   });
 
+  it('space selects the currently focused radio', async () => {
+    await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    const group = fixture.nativeElement.querySelector('[role="radiogroup"]') as HTMLElement;
+    const inputs = fixture.nativeElement.querySelectorAll('input[type="radio"]') as NodeListOf<HTMLInputElement>;
+
+    inputs[1].dispatchEvent(new Event('focus'));
+    fixture.detectChanges();
+
+    group.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.control.value).toBe('b');
+  });
+
   it('roving tabindex keeps exactly one enabled radio tabbable', async () => {
     await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
 
@@ -124,6 +156,17 @@ describe('NshRadioGroupComponent keyboard + roving tabindex', () => {
 
     const zeroTab = inputs.filter((i) => i.getAttribute('tabindex') === '0');
     expect(zeroTab.length).toBe(1);
+  });
+
+  it('disabled radios are not tabbable', async () => {
+    await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.disableB = true;
+    fixture.detectChanges();
+
+    const inputs = fixture.nativeElement.querySelectorAll('input[type="radio"]') as NodeListOf<HTMLInputElement>;
+    expect(inputs[1].getAttribute('tabindex')).toBe('-1');
   });
 });
 
@@ -159,8 +202,20 @@ describe('NshRadioGroupComponent a11y + orientation + form-field', () => {
     const host = fixture.nativeElement.querySelector('nsh-radio-group') as HTMLElement;
     expect(host.classList.contains('nsh-radio-group-host--horizontal')).toBe(true);
 
+    expect(host.style.getPropertyValue('--nsh-radio-group-orientation')).toBe('row');
+
     const group = fixture.nativeElement.querySelector('[role="radiogroup"]') as HTMLElement;
     expect(group).toBeTruthy();
+  });
+
+  it('radio applies aria-label when label is missing', async () => {
+    await TestBed.configureTestingModule({ imports: [AriaLabelHostComponent] }).compileComponents();
+
+    const fixture = TestBed.createComponent(AriaLabelHostComponent);
+    fixture.detectChanges();
+
+    const inputs = fixture.nativeElement.querySelectorAll('input[type="radio"]') as NodeListOf<HTMLInputElement>;
+    expect(inputs[1].getAttribute('aria-label')).toBe('Option B');
   });
 
   it('wires aria-describedby from form-field', async () => {

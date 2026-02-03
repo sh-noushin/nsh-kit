@@ -39,5 +39,6 @@ export * from './lib/forms/textarea';
 export * from './lib/forms/checkbox';
 export * from './lib/forms/switch';
 export * from './lib/forms/radio';
+export * from './lib/forms/select';
 
 

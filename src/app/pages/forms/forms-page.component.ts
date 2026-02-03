@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
-import { NshFormFieldComponent, NshInputComponent, NshSwitchComponent } from 'nsh-kit-ui';
+import {
+  NshFormFieldComponent,
+  NshInputComponent,
+  NshRadioComponent,
+  NshRadioGroupComponent,
+  NshSwitchComponent,
+} from 'nsh-kit-ui';
 
 type DemoKey =
   | 'default'
@@ -11,6 +17,12 @@ type DemoKey =
   | 'error'
   | 'prefixSuffix'
   | 'hint'
+  | 'radioDefault'
+  | 'radioHorizontal'
+  | 'radioDisabledGroup'
+  | 'radioDisabledOption'
+  | 'radioRequiredInFormField'
+  | 'radioAriaLabel'
   | 'switchDefault'
   | 'switchChecked'
   | 'switchDisabled'
@@ -27,7 +39,14 @@ interface DemoState {
   selector: 'app-forms-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, NshFormFieldComponent, NshInputComponent, NshSwitchComponent],
+  imports: [
+    ReactiveFormsModule,
+    NshFormFieldComponent,
+    NshInputComponent,
+    NshRadioGroupComponent,
+    NshRadioComponent,
+    NshSwitchComponent,
+  ],
   template: `
     <div class="forms-page">
       <h1 class="forms-page__title">Forms</h1>
@@ -76,6 +95,54 @@ interface DemoState {
               <nsh-form-field label="Phone" hint="We only use this for account recovery">
                 <nsh-input type="tel" autocomplete="tel" [formControl]="phoneControl" />
               </nsh-form-field>
+            }
+
+            @case ('radioDefault') {
+              <nsh-radio-group [formControl]="radioDefaultControl">
+                <nsh-radio [value]="'daily'" label="Daily" />
+                <nsh-radio [value]="'weekly'" label="Weekly" />
+                <nsh-radio [value]="'never'" label="Never" />
+              </nsh-radio-group>
+            }
+            @case ('radioHorizontal') {
+              <nsh-radio-group orientation="horizontal" [formControl]="radioHorizontalControl">
+                <nsh-radio [value]="'small'" label="Small" />
+                <nsh-radio [value]="'medium'" label="Medium" />
+                <nsh-radio [value]="'large'" label="Large" />
+              </nsh-radio-group>
+            }
+            @case ('radioDisabledGroup') {
+              <nsh-radio-group [disabled]="true" [formControl]="radioDisabledGroupControl">
+                <nsh-radio [value]="'on'" label="On" />
+                <nsh-radio [value]="'off'" label="Off" />
+              </nsh-radio-group>
+            }
+            @case ('radioDisabledOption') {
+              <nsh-radio-group [formControl]="radioDisabledOptionControl">
+                <nsh-radio [value]="1" label="One" />
+                <nsh-radio [value]="2" label="Two (disabled)" [disabled]="true" />
+                <nsh-radio [value]="3" label="Three" />
+              </nsh-radio-group>
+            }
+            @case ('radioRequiredInFormField') {
+              <nsh-form-field
+                label="Plan"
+                hint="Required group inside form-field (aria-describedby wiring)"
+                error="Please pick a plan"
+                [required]="true"
+              >
+                <nsh-radio-group [formControl]="radioRequiredInFormFieldControl">
+                  <nsh-radio [value]="'free'" label="Free" />
+                  <nsh-radio [value]="'pro'" label="Pro" />
+                </nsh-radio-group>
+              </nsh-form-field>
+            }
+            @case ('radioAriaLabel') {
+              <nsh-radio-group ariaLabel="Choose a color" [formControl]="radioAriaLabelControl">
+                <nsh-radio [value]="'red'" label="Red" />
+                <nsh-radio [value]="'green'" label="Green" />
+                <nsh-radio [value]="'blue'" label="Blue" />
+              </nsh-radio-group>
             }
 
             @case ('switchDefault') {
@@ -198,6 +265,13 @@ export class FormsPageComponent {
   readonly disabledControl = new FormControl<string | null>({ value: 'Disabled', disabled: true });
   readonly userControl = new FormControl<string | null>('');
 
+  readonly radioDefaultControl = new FormControl<string | null>('weekly');
+  readonly radioHorizontalControl = new FormControl<string | null>('medium');
+  readonly radioDisabledGroupControl = new FormControl<string | null>('on');
+  readonly radioDisabledOptionControl = new FormControl<number | null>(1);
+  readonly radioRequiredInFormFieldControl = new FormControl<string | null>(null);
+  readonly radioAriaLabelControl = new FormControl<string | null>('green');
+
   readonly switchDefaultControl = new FormControl<boolean>(false, { nonNullable: true });
   readonly switchCheckedControl = new FormControl<boolean>(true, { nonNullable: true });
   readonly switchDisabledControl = new FormControl<boolean>({ value: true, disabled: true }, { nonNullable: true });
@@ -213,6 +287,13 @@ export class FormsPageComponent {
     { key: 'error', title: '5) Error message' },
     { key: 'prefixSuffix', title: '6) Prefix / suffix slots' },
     { key: 'hint', title: '7) Hint text' },
+
+    { key: 'radioDefault', title: 'Radio 1) Default vertical group' },
+    { key: 'radioHorizontal', title: 'Radio 2) Horizontal group' },
+    { key: 'radioDisabledGroup', title: 'Radio 3) Disabled group' },
+    { key: 'radioDisabledOption', title: 'Radio 4) One disabled option' },
+    { key: 'radioRequiredInFormField', title: 'Radio 5) Required in form-field (describedBy wiring)' },
+    { key: 'radioAriaLabel', title: 'Radio 6) Group ariaLabel (no visible group label)' },
 
     { key: 'switchDefault', title: 'Switch 1) Default switch with label' },
     { key: 'switchChecked', title: 'Switch 2) Checked state' },
