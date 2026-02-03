@@ -1,4 +1,5 @@
 import {
+  ElementRef,
   ChangeDetectionStrategy,
   Component,
   booleanAttribute,
@@ -8,6 +9,7 @@ import {
   forwardRef,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -47,6 +49,7 @@ function serializeValue(value: string | number): string {
   },
   template: `
     <select
+      #native
       nshFocusVisible
       class="nsh-select"
       [id]="effectiveId()"
@@ -157,6 +160,8 @@ export class NshSelectComponent {
     optional: true,
   });
 
+  private readonly nativeSelect = viewChild<ElementRef<HTMLSelectElement>>('native');
+
   private readonly cva = new NshCvaControl<string | number>();
 
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -242,6 +247,22 @@ export class NshSelectComponent {
     effect(() => {
       if (this.multiple()) {
         throw new Error('nsh-select v1 does not support multiple=true yet.');
+      }
+    });
+
+    effect(() => {
+      // Ensure the DOM selection remains correct even if the browser resets
+      // selection when <option> elements are (re)rendered.
+      void this.renderedOptions();
+
+      const el = this.nativeSelect()?.nativeElement;
+      if (!el) {
+        return;
+      }
+
+      const desired = this.selectedDomValue();
+      if (el.value !== desired) {
+        el.value = desired;
       }
     });
   }

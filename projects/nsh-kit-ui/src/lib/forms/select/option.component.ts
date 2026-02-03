@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  afterNextRender,
   booleanAttribute,
   computed,
   inject,
@@ -51,11 +52,13 @@ export class NshOptionComponent {
       this.labelText.set(readTrimmedText(el));
     };
 
-    recompute();
+    afterNextRender(() => {
+      recompute();
 
-    const observer = new MutationObserver(() => recompute());
-    observer.observe(el, { childList: true, subtree: true, characterData: true });
+      const observer = new MutationObserver(() => recompute());
+      observer.observe(el, { childList: true, subtree: true, characterData: true });
 
-    this.destroyRef.onDestroy(() => observer.disconnect());
+      this.destroyRef.onDestroy(() => observer.disconnect());
+    });
   }
 }

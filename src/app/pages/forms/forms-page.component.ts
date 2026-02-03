@@ -6,6 +6,7 @@ import {
   NshInputComponent,
   NshRadioComponent,
   NshRadioGroupComponent,
+  NshSliderComponent,
   NshSwitchComponent,
 } from 'nsh-kit-ui';
 
@@ -17,6 +18,12 @@ type DemoKey =
   | 'error'
   | 'prefixSuffix'
   | 'hint'
+  | 'sliderDefault'
+  | 'sliderMinMaxStep'
+  | 'sliderDisabled'
+  | 'sliderRequiredInFormField'
+  | 'sliderShowValue'
+  | 'sliderStep5'
   | 'radioDefault'
   | 'radioHorizontal'
   | 'radioDisabledGroup'
@@ -43,6 +50,7 @@ interface DemoState {
     ReactiveFormsModule,
     NshFormFieldComponent,
     NshInputComponent,
+    NshSliderComponent,
     NshRadioGroupComponent,
     NshRadioComponent,
     NshSwitchComponent,
@@ -95,6 +103,32 @@ interface DemoState {
               <nsh-form-field label="Phone" hint="We only use this for account recovery">
                 <nsh-input type="tel" autocomplete="tel" [formControl]="phoneControl" />
               </nsh-form-field>
+            }
+
+            @case ('sliderDefault') {
+              <nsh-slider [formControl]="sliderDefaultControl" />
+            }
+            @case ('sliderMinMaxStep') {
+              <nsh-slider [min]="0" [max]="10" [step]="1" [formControl]="sliderMinMaxStepControl" />
+            }
+            @case ('sliderDisabled') {
+              <nsh-slider [formControl]="sliderDisabledControl" />
+            }
+            @case ('sliderRequiredInFormField') {
+              <nsh-form-field
+                label="Volume"
+                hint="Required slider inside form-field (aria-describedby wiring)"
+                error="Please pick a volume"
+                [required]="true"
+              >
+                <nsh-slider [formControl]="sliderRequiredInFormFieldControl" />
+              </nsh-form-field>
+            }
+            @case ('sliderShowValue') {
+              <nsh-slider [showValue]="true" [formControl]="sliderShowValueControl" />
+            }
+            @case ('sliderStep5') {
+              <nsh-slider [step]="5" [formControl]="sliderStep5Control" />
             }
 
             @case ('radioDefault') {
@@ -265,6 +299,13 @@ export class FormsPageComponent {
   readonly disabledControl = new FormControl<string | null>({ value: 'Disabled', disabled: true });
   readonly userControl = new FormControl<string | null>('');
 
+  readonly sliderDefaultControl = new FormControl<number>(50, { nonNullable: true });
+  readonly sliderMinMaxStepControl = new FormControl<number>(5, { nonNullable: true });
+  readonly sliderDisabledControl = new FormControl<number>({ value: 30, disabled: true }, { nonNullable: true });
+  readonly sliderRequiredInFormFieldControl = new FormControl<number>(25, { nonNullable: true });
+  readonly sliderShowValueControl = new FormControl<number>(70, { nonNullable: true });
+  readonly sliderStep5Control = new FormControl<number>(50, { nonNullable: true });
+
   readonly radioDefaultControl = new FormControl<string | null>('weekly');
   readonly radioHorizontalControl = new FormControl<string | null>('medium');
   readonly radioDisabledGroupControl = new FormControl<string | null>('on');
@@ -287,6 +328,13 @@ export class FormsPageComponent {
     { key: 'error', title: '5) Error message' },
     { key: 'prefixSuffix', title: '6) Prefix / suffix slots' },
     { key: 'hint', title: '7) Hint text' },
+
+    { key: 'sliderDefault', title: 'Slider 1) Default slider' },
+    { key: 'sliderMinMaxStep', title: 'Slider 2) min/max/step (0..10 step 1)' },
+    { key: 'sliderDisabled', title: 'Slider 3) Disabled state' },
+    { key: 'sliderRequiredInFormField', title: 'Slider 4) Required in form-field (describedBy wiring)' },
+    { key: 'sliderShowValue', title: 'Slider 5) showValue=true' },
+    { key: 'sliderStep5', title: 'Slider 6) step=5' },
 
     { key: 'radioDefault', title: 'Radio 1) Default vertical group' },
     { key: 'radioHorizontal', title: 'Radio 2) Horizontal group' },
