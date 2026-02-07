@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/c
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import {
+  NshAutocompleteComponent,
   NshChipComponent,
   NshChipsComponent,
   NshFormFieldComponent,
@@ -12,6 +13,8 @@ import {
   NshSwitchComponent,
 } from 'nsh-kit-ui';
 
+import type { NshAutocompleteItem } from 'nsh-kit-ui';
+
 type DemoKey =
   | 'default'
   | 'placeholder'
@@ -20,6 +23,12 @@ type DemoKey =
   | 'error'
   | 'prefixSuffix'
   | 'hint'
+  | 'acBasic'
+  | 'acMinChars'
+  | 'acDisabled'
+  | 'acRequiredInFormField'
+  | 'acNoResults'
+  | 'acLoading'
   | 'chipBasic'
   | 'chipVariantsColors'
   | 'chipSelected'
@@ -59,6 +68,7 @@ interface DemoState {
     ReactiveFormsModule,
     NshFormFieldComponent,
     NshInputComponent,
+    NshAutocompleteComponent,
     NshChipsComponent,
     NshChipComponent,
     NshSliderComponent,
@@ -113,6 +123,73 @@ interface DemoState {
             @case ('hint') {
               <nsh-form-field label="Phone" hint="We only use this for account recovery">
                 <nsh-input type="tel" autocomplete="tel" [formControl]="phoneControl" />
+              </nsh-form-field>
+            }
+
+            @case ('acBasic') {
+              <nsh-form-field label="Fruit" hint="Basic autocomplete">
+                <nsh-autocomplete
+                  placeholder="Type to search"
+                  [items]="acItems"
+                  [formControl]="acBasicControl"
+                />
+              </nsh-form-field>
+
+              <div class="forms-page__affix">
+                Value: {{ acBasicControl.value ?? 'null' }}
+              </div>
+            }
+            @case ('acMinChars') {
+              <nsh-form-field label="City" hint="minChars=2">
+                <nsh-autocomplete
+                  placeholder="Type at least 2 characters"
+                  [minChars]="2"
+                  [items]="acCityItems"
+                  [formControl]="acMinCharsControl"
+                />
+              </nsh-form-field>
+            }
+            @case ('acDisabled') {
+              <nsh-form-field label="Disabled" hint="Disabled via reactive form control">
+                <nsh-autocomplete
+                  placeholder="Disabled"
+                  [items]="acItems"
+                  [formControl]="acDisabledControl"
+                />
+              </nsh-form-field>
+            }
+            @case ('acRequiredInFormField') {
+              <nsh-form-field
+                label="Required"
+                hint="Required autocomplete inside form-field (aria-describedby wiring)"
+                error="Please select an option"
+                [required]="true"
+              >
+                <nsh-autocomplete
+                  placeholder="Pick one"
+                  [items]="acItems"
+                  [formControl]="acRequiredControl"
+                />
+              </nsh-form-field>
+            }
+            @case ('acNoResults') {
+              <nsh-form-field label="No results" hint="Type something like 'zzz'">
+                <nsh-autocomplete
+                  placeholder="Try 'zzz'"
+                  [items]="acItems"
+                  noResultsText="No matches"
+                  [formControl]="acNoResultsControl"
+                />
+              </nsh-form-field>
+            }
+            @case ('acLoading') {
+              <nsh-form-field label="Loading" hint="Shows a loading row when open">
+                <nsh-autocomplete
+                  placeholder="Focus to open"
+                  [items]="acItems"
+                  [loading]="true"
+                  [formControl]="acLoadingControl"
+                />
               </nsh-form-field>
             }
 
@@ -394,6 +471,27 @@ export class FormsPageComponent {
   readonly switchAriaLabelControl = new FormControl<boolean>(false, { nonNullable: true });
   readonly switchInFormFieldControl = new FormControl<boolean>(false, { nonNullable: true });
 
+  readonly acItems: ReadonlyArray<NshAutocompleteItem<string>> = [
+    { value: 'apple', label: 'Apple' },
+    { value: 'apricot', label: 'Apricot' },
+    { value: 'banana', label: 'Banana', disabled: true },
+    { value: 'cherry', label: 'Cherry' },
+  ];
+
+  readonly acCityItems: ReadonlyArray<NshAutocompleteItem<string>> = [
+    { value: 'london', label: 'London' },
+    { value: 'los-angeles', label: 'Los Angeles' },
+    { value: 'lisbon', label: 'Lisbon' },
+    { value: 'paris', label: 'Paris' },
+  ];
+
+  readonly acBasicControl = new FormControl<string | null>(null);
+  readonly acMinCharsControl = new FormControl<string | null>(null);
+  readonly acDisabledControl = new FormControl<string | null>({ value: null, disabled: true });
+  readonly acRequiredControl = new FormControl<string | null>(null);
+  readonly acNoResultsControl = new FormControl<string | null>(null);
+  readonly acLoadingControl = new FormControl<string | null>(null);
+
   readonly chipClickCount = signal(0);
   readonly chipRemoved = signal(false);
 
@@ -405,6 +503,13 @@ export class FormsPageComponent {
     { key: 'error', title: '5) Error message' },
     { key: 'prefixSuffix', title: '6) Prefix / suffix slots' },
     { key: 'hint', title: '7) Hint text' },
+
+    { key: 'acBasic', title: 'Autocomplete 1) Basic + placeholder' },
+    { key: 'acMinChars', title: 'Autocomplete 2) minChars=2' },
+    { key: 'acDisabled', title: 'Autocomplete 3) Disabled' },
+    { key: 'acRequiredInFormField', title: 'Autocomplete 4) Required in form-field (describedBy wiring)' },
+    { key: 'acNoResults', title: 'Autocomplete 5) No results' },
+    { key: 'acLoading', title: 'Autocomplete 6) Loading=true' },
 
     { key: 'chipBasic', title: 'Chips 1) Basic chips + (clicked) output' },
     { key: 'chipVariantsColors', title: 'Chips 2) Variants + colors' },
