@@ -138,6 +138,10 @@ interface DemoState {
               <div class="forms-page__affix">
                 Value: {{ acBasicControl.value ?? 'null' }}
               </div>
+
+              <div class="forms-page__overlay-underlay">
+                This content sits under the panel to demonstrate overlay stacking.
+              </div>
             }
             @case ('acMinChars') {
               <nsh-form-field label="City" hint="minChars=2">
@@ -419,6 +423,15 @@ interface DemoState {
     .forms-page__values {
       display: grid;
       gap: var(--nsh-space-sm);
+    }
+
+    .forms-page__overlay-underlay {
+      padding: var(--nsh-space-md);
+      border-radius: var(--nsh-radius-md);
+      border: 1px dashed var(--nsh-color-outline);
+      background: var(--nsh-color-surface-1);
+      position: relative;
+      z-index: 0;
     }
 
     .forms-page__kv {

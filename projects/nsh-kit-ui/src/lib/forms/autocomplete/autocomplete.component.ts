@@ -16,6 +16,9 @@ import {
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { NshFocusVisibleDirective } from '../../a11y/focus-visible';
+import { NshAutocompletePanelComponent } from '../../overlays/autocomplete-panel/autocomplete-panel.component';
+import { NshOverlayService } from '../../overlays/overlay-core/overlay.service';
+import type { NshOverlayRef } from '../../overlays/overlay-core/overlay-ref';
 import { NshCvaControl } from '../cva/nsh-cva-control';
 import {
   NSH_FORM_FIELD_CONTEXT,
@@ -78,42 +81,6 @@ function coerceMinChars(value: number): number {
         (input)="onInput($event)"
         (keydown)="onInputKeydown($event)"
       />
-
-      @if (isOpen()) {
-        <div
-          class="nsh-ac__panel"
-          [id]="panelId()"
-          role="listbox"
-          (mousedown)="onPanelMouseDown($event)"
-        >
-          @if (loading()) {
-            <div class="nsh-ac__row nsh-ac__row--meta" role="option" aria-disabled="true">
-              Loading…
-            </div>
-          } @else {
-            @if (filteredItems().length === 0) {
-              <div class="nsh-ac__row nsh-ac__row--meta" role="option" aria-disabled="true">
-                {{ noResultsText() }}
-              </div>
-            } @else {
-              @for (item of filteredItems(); track $index) {
-                <div
-                  class="nsh-ac__row"
-                  role="option"
-                  [id]="optionId($index)"
-                  [attr.aria-disabled]="item.disabled ? 'true' : null"
-                  [attr.aria-selected]="isActiveIndex($index) ? 'true' : 'false'"
-                  [class.nsh-ac__row--active]="isActiveIndex($index)"
-                  [class.nsh-ac__row--disabled]="!!item.disabled"
-                  (click)="onOptionClick(item)"
-                >
-                  {{ item.label }}
-                </div>
-              }
-            }
-          }
-        </div>
-      }
     </div>
   `,
   styles: `
@@ -198,67 +165,6 @@ function coerceMinChars(value: number): number {
       box-shadow: 0 0 0 var(--_ac-focus-width) var(--_ac-focus-ring);
     }
 
-    .nsh-ac__panel {
-      position: absolute;
-      z-index: var(--nsh-z-index-dropdown);
-      left: 0;
-      right: 0;
-      top: calc(var(--_ac-height) + var(--nsh-space-xs));
-
-      max-height: var(--_ac-panel-max-height);
-      overflow: auto;
-
-      border-radius: var(--_ac-radius);
-      border: 1px solid var(--_ac-panel-border);
-      background: var(--_ac-panel-bg);
-      box-shadow: var(--_ac-panel-shadow);
-
-      padding-block: var(--nsh-space-xs);
-    }
-
-    .nsh-ac__row {
-      display: flex;
-      align-items: center;
-      padding-block: var(--_ac-opt-pad-y);
-      padding-inline: var(--_ac-opt-pad-x);
-      border-radius: var(--nsh-radius-sm);
-
-      cursor: pointer;
-      user-select: none;
-
-      font-size: var(--nsh-font-size-md);
-      line-height: var(--nsh-line-height-normal);
-      color: var(--nsh-color-text);
-
-      transition: background var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard);
-    }
-
-    .nsh-ac__row:hover {
-      background: var(--_ac-opt-hover);
-    }
-
-    .nsh-ac__row--active {
-      background: var(--_ac-opt-active);
-    }
-
-    .nsh-ac__row--disabled {
-      color: var(--_ac-opt-disabled-fg);
-      cursor: not-allowed;
-    }
-
-    .nsh-ac__row--disabled:hover {
-      background: transparent;
-    }
-
-    .nsh-ac__row--meta {
-      cursor: default;
-      color: var(--nsh-color-text-muted);
-    }
-
-    .nsh-ac__row--meta:hover {
-      background: transparent;
-    }
-
     :host(.nsh-ac-host--disabled) {
       opacity: 0.6;
       pointer-events: none;
@@ -267,7 +173,7 @@ function coerceMinChars(value: number): number {
 })
 export class NshAutocompleteComponent {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly hostEl = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly overlay = inject(NshOverlayService);
 
   private readonly field = inject<NshFormFieldControlContext | null>(NSH_FORM_FIELD_CONTEXT, {
     optional: true,
@@ -292,6 +198,8 @@ export class NshAutocompleteComponent {
   private readonly autoId = `nsh-ac-${nextAutocompleteId++}`;
 
   private readonly nativeInput = viewChild<ElementRef<HTMLInputElement>>('native');
+
+  private readonly overlayRef = signal<NshOverlayRef<NshAutocompletePanelComponent> | null>(null);
 
   private readonly hasUserAriaLabel = computed(() => {
     const label = this.ariaLabel();
@@ -420,21 +328,84 @@ export class NshAutocompleteComponent {
         return;
       }
 
-      const root = this.hostEl.nativeElement;
+      onCleanup(() => undefined);
+    });
 
-      const onDocMouseDown = (ev: MouseEvent) => {
-        const target = ev.target as Node | null;
-        if (!target) {
+    effect(() => {
+      const shouldBeOpen = this.isOpen();
+      const ref = this.overlayRef();
+
+      if (shouldBeOpen) {
+        if (ref) {
           return;
         }
-        if (root.contains(target)) {
+
+        const anchor = this.nativeInput()?.nativeElement;
+        if (!anchor) {
           return;
         }
+
+        const nextRef = this.overlay.attachComponent(NshAutocompletePanelComponent, {
+          anchor,
+          closeOnOutsidePointerDown: true,
+          closeOnEscape: true,
+          matchWidth: true,
+          panelClass: 'nsh-ac-overlay',
+        });
+
+        this.overlayRef.set(nextRef);
+        return;
+      }
+
+      if (ref) {
+        ref.close();
+        this.overlayRef.set(null);
+      }
+    });
+
+    effect((onCleanup) => {
+      const ref = this.overlayRef();
+      if (!ref) {
+        return;
+      }
+
+      const subHovered = ref.componentRef.instance.itemHovered.subscribe((index) => {
+        const item = this.filteredItems()[index];
+        if (!item || item.disabled) {
+          return;
+        }
+        this.activeIndex.set(index);
+      });
+
+      const subSelected = ref.componentRef.instance.itemSelected.subscribe((item) => {
+        this.selectItem(item);
+      });
+
+      onCleanup(() => {
+        subHovered.unsubscribe();
+        subSelected.unsubscribe();
+      });
+    });
+
+    effect(() => {
+      const ref = this.overlayRef();
+      if (!ref) {
+        return;
+      }
+
+      if (ref.closed()) {
+        this.overlayRef.set(null);
         this.closePanel();
-      };
+        return;
+      }
 
-      document.addEventListener('mousedown', onDocMouseDown, { capture: true });
-      onCleanup(() => document.removeEventListener('mousedown', onDocMouseDown, { capture: true }));
+      ref.componentRef.setInput('items', this.filteredItems());
+      ref.componentRef.setInput('activeIndex', this.activeIndex() ?? -1);
+      ref.componentRef.setInput('noResultsText', this.noResultsText());
+      ref.componentRef.setInput('loading', this.loading());
+      ref.componentRef.setInput('panelId', this.panelId());
+
+      ref.componentRef.changeDetectorRef.detectChanges();
     });
 
     const wasOpen = signal(false);
@@ -452,7 +423,11 @@ export class NshAutocompleteComponent {
       }
     });
 
-    this.destroyRef.onDestroy(() => this.closePanel());
+    this.destroyRef.onDestroy(() => {
+      this.overlayRef()?.close();
+      this.overlayRef.set(null);
+      this.closePanel();
+    });
   }
 
   optionId(index: number): string {
@@ -585,18 +560,6 @@ export class NshAutocompleteComponent {
       this.selectItem(item);
       return;
     }
-  }
-
-  onPanelMouseDown(event: MouseEvent): void {
-    // Prevent the input from blurring when clicking options.
-    event.preventDefault();
-  }
-
-  onOptionClick(item: NshAutocompleteItem<any>): void {
-    if (this.effectiveDisabled() || item.disabled) {
-      return;
-    }
-    this.selectItem(item);
   }
 
   private selectItem(item: NshAutocompleteItem<any>): void {
