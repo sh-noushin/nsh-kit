@@ -20,6 +20,17 @@ class HostComponent {
 }
 
 describe('NshChipsComponent', () => {
+  it('projects children', async () => {
+    await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('nsh-chips') as HTMLElement;
+    expect(host.textContent).toContain('One');
+    expect(host.textContent).toContain('Two');
+  });
+
   it('applies wrap and gap CSS variables', async () => {
     await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
 
@@ -32,5 +43,8 @@ describe('NshChipsComponent', () => {
 
     expect(host.style.getPropertyValue('--nsh-chips-wrap')).toBe('nowrap');
     expect(host.style.getPropertyValue('--nsh-chips-gap')).toBe('var(--nsh-space-md)');
+
+    expect(host.classList.contains('nsh-chips-host--nowrap')).toBe(true);
+    expect(host.classList.contains('nsh-chips-host--gap-lg')).toBe(true);
   });
 });
