@@ -30,9 +30,9 @@ describe('NshSelectComponent + NshFormFieldComponent integration', () => {
     fixture.detectChanges();
 
     const hint = fixture.nativeElement.querySelector('.nsh-ff__hint') as HTMLElement;
-    const select = fixture.nativeElement.querySelector('select.nsh-select') as HTMLSelectElement;
+    const trigger = fixture.nativeElement.querySelector('button.nsh-select') as HTMLButtonElement;
 
-    expect(select.id).toContain('nsh-ff-');
-    expect(select.getAttribute('aria-describedby')).toBe(hint.id);
+    expect(trigger.id).toContain('nsh-ff-');
+    expect(trigger.getAttribute('aria-describedby')).toBe(hint.id);
   });
 });

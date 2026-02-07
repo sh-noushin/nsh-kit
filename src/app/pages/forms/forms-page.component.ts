@@ -9,6 +9,8 @@ import {
   NshInputComponent,
   NshRadioComponent,
   NshRadioGroupComponent,
+  NshSelectComponent,
+  NshOptionComponent,
   NshSliderComponent,
   NshSwitchComponent,
 } from 'nsh-kit-ui';
@@ -23,6 +25,12 @@ type DemoKey =
   | 'error'
   | 'prefixSuffix'
   | 'hint'
+  | 'selBasic'
+  | 'selPlaceholder'
+  | 'selDisabled'
+  | 'selRequiredInFormField'
+  | 'selDisabledOption'
+  | 'selOverlayLayering'
   | 'acBasic'
   | 'acMinChars'
   | 'acDisabled'
@@ -68,6 +76,8 @@ interface DemoState {
     ReactiveFormsModule,
     NshFormFieldComponent,
     NshInputComponent,
+    NshSelectComponent,
+    NshOptionComponent,
     NshAutocompleteComponent,
     NshChipsComponent,
     NshChipComponent,
@@ -124,6 +134,71 @@ interface DemoState {
               <nsh-form-field label="Phone" hint="We only use this for account recovery">
                 <nsh-input type="tel" autocomplete="tel" [formControl]="phoneControl" />
               </nsh-form-field>
+            }
+
+            @case ('selBasic') {
+              <nsh-form-field label="Flavor" hint="Overlay select">
+                <nsh-select [formControl]="selBasicControl">
+                  <nsh-option [value]="'vanilla'">Vanilla</nsh-option>
+                  <nsh-option [value]="'chocolate'">Chocolate</nsh-option>
+                  <nsh-option [value]="'strawberry'">Strawberry</nsh-option>
+                </nsh-select>
+              </nsh-form-field>
+
+              <div class="forms-page__affix">Value: {{ selBasicControl.value ?? 'null' }}</div>
+            }
+            @case ('selPlaceholder') {
+              <nsh-form-field label="Country" hint="Placeholder shown when value=null">
+                <nsh-select placeholder="Pick one" [formControl]="selPlaceholderControl">
+                  <nsh-option [value]="'ca'">Canada</nsh-option>
+                  <nsh-option [value]="'us'">United States</nsh-option>
+                  <nsh-option [value]="'fr'">France</nsh-option>
+                </nsh-select>
+              </nsh-form-field>
+            }
+            @case ('selDisabled') {
+              <nsh-form-field label="Disabled" hint="Disabled via reactive form control">
+                <nsh-select [formControl]="selDisabledControl">
+                  <nsh-option [value]="'a'">Alpha</nsh-option>
+                  <nsh-option [value]="'b'">Beta</nsh-option>
+                </nsh-select>
+              </nsh-form-field>
+            }
+            @case ('selRequiredInFormField') {
+              <nsh-form-field
+                label="Required"
+                hint="Required select inside form-field (describedBy wiring)"
+                error="Please pick one"
+                [required]="true"
+              >
+                <nsh-select placeholder="Pick one" [formControl]="selRequiredControl">
+                  <nsh-option [value]="'low'">Low</nsh-option>
+                  <nsh-option [value]="'medium'">Medium</nsh-option>
+                  <nsh-option [value]="'high'">High</nsh-option>
+                </nsh-select>
+              </nsh-form-field>
+            }
+            @case ('selDisabledOption') {
+              <nsh-form-field label="Disabled option" hint="Skips disabled option with keyboard">
+                <nsh-select [formControl]="selDisabledOptionControl">
+                  <nsh-option [value]="'a'">Alpha</nsh-option>
+                  <nsh-option [value]="'b'" [disabled]="true">Beta (disabled)</nsh-option>
+                  <nsh-option [value]="'c'">Gamma</nsh-option>
+                </nsh-select>
+              </nsh-form-field>
+            }
+            @case ('selOverlayLayering') {
+              <nsh-form-field label="Overlay layering" hint="Panel should float above content">
+                <nsh-select placeholder="Pick one" [formControl]="selOverlayLayeringControl">
+                  <nsh-option [value]="'one'">One</nsh-option>
+                  <nsh-option [value]="'two'">Two</nsh-option>
+                  <nsh-option [value]="'three'">Three</nsh-option>
+                </nsh-select>
+              </nsh-form-field>
+
+              <div class="forms-page__overlay-underlay">
+                This content sits under the panel to demonstrate overlay stacking.
+              </div>
             }
 
             @case ('acBasic') {
@@ -508,6 +583,13 @@ export class FormsPageComponent {
   readonly chipClickCount = signal(0);
   readonly chipRemoved = signal(false);
 
+  readonly selBasicControl = new FormControl<string | number | null>('chocolate');
+  readonly selPlaceholderControl = new FormControl<string | number | null>(null);
+  readonly selDisabledControl = new FormControl<string | number | null>({ value: 'a', disabled: true });
+  readonly selRequiredControl = new FormControl<string | number | null>(null);
+  readonly selDisabledOptionControl = new FormControl<string | number | null>('a');
+  readonly selOverlayLayeringControl = new FormControl<string | number | null>(null);
+
   private readonly _states = signal<DemoState[]>([
     { key: 'default', title: '1) Default input with label' },
     { key: 'placeholder', title: '2) Placeholder' },
@@ -516,6 +598,13 @@ export class FormsPageComponent {
     { key: 'error', title: '5) Error message' },
     { key: 'prefixSuffix', title: '6) Prefix / suffix slots' },
     { key: 'hint', title: '7) Hint text' },
+
+    { key: 'selBasic', title: 'Select 1) Basic overlay select' },
+    { key: 'selPlaceholder', title: 'Select 2) Placeholder' },
+    { key: 'selDisabled', title: 'Select 3) Disabled' },
+    { key: 'selRequiredInFormField', title: 'Select 4) Required in form-field (describedBy wiring)' },
+    { key: 'selDisabledOption', title: 'Select 5) Disabled option' },
+    { key: 'selOverlayLayering', title: 'Select 6) Overlay layering (underlay demo)' },
 
     { key: 'acBasic', title: 'Autocomplete 1) Basic + placeholder' },
     { key: 'acMinChars', title: 'Autocomplete 2) minChars=2' },

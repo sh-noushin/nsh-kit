@@ -2,6 +2,7 @@ import {
   ElementRef,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   booleanAttribute,
   computed,
   contentChildren,
@@ -9,11 +10,18 @@ import {
   forwardRef,
   inject,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { NshFocusVisibleDirective } from '../../a11y/focus-visible';
+import type { NshOverlayRef } from '../../overlays/overlay-core/overlay-ref';
+import { NshOverlayService } from '../../overlays/overlay-core/overlay.service';
+import {
+  NshSelectPanelComponent,
+  type NshSelectPanelItem,
+} from '../../overlays/select-panel/select-panel.component';
 import { NshCvaControl } from '../cva/nsh-cva-control';
 import {
   NSH_FORM_FIELD_CONTEXT,
@@ -48,28 +56,30 @@ function serializeValue(value: string | number): string {
     '[class.nsh-select-host--placeholder]': 'isShowingPlaceholder()',
   },
   template: `
-    <select
-      #native
+    <button
+      #trigger
       nshFocusVisible
       class="nsh-select"
+      type="button"
       [id]="effectiveId()"
-      [name]="name() ?? null"
+      [attr.name]="name() ?? null"
       [disabled]="effectiveDisabled()"
-      [required]="effectiveRequired()"
+      [attr.aria-disabled]="effectiveDisabled() ? 'true' : null"
+      [attr.aria-required]="effectiveRequired() ? 'true' : null"
       [attr.aria-describedby]="effectiveDescribedBy()"
       [attr.aria-label]="effectiveAriaLabel()"
-      [value]="selectedDomValue()"
-      (change)="onNativeChange($event)"
-      (blur)="onBlur()"
+      role="combobox"
+      aria-haspopup="listbox"
+      [attr.aria-expanded]="isOpen() ? 'true' : 'false'"
+      [attr.aria-controls]="isOpen() ? panelId() : null"
+      [attr.aria-activedescendant]="isOpen() ? activeDescendantId() : null"
+      (click)="onTriggerClick()"
+      (keydown)="onTriggerKeydown($event)"
+      (focus)="onTriggerFocus()"
+      (blur)="onTriggerBlur()"
     >
-      @if (placeholder(); as text) {
-        <option value="" disabled hidden>{{ text }}</option>
-      }
-
-      @for (opt of renderedOptions(); track opt.key) {
-        <option [value]="opt.key" [disabled]="opt.disabled">{{ opt.label }}</option>
-      }
-    </select>
+      <span class="nsh-select__value">{{ displayedLabel() }}</span>
+    </button>
 
     <span class="nsh-select__options" aria-hidden="true">
       <ng-content />
@@ -129,6 +139,12 @@ function serializeValue(value: string | number): string {
       transition:
         border-color var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard),
         box-shadow var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
+      cursor: pointer;
     }
 
     :host(.nsh-select-host--placeholder) .nsh-select {
@@ -156,11 +172,14 @@ function serializeValue(value: string | number): string {
   `,
 })
 export class NshSelectComponent {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly field = inject<NshFormFieldControlContext | null>(NSH_FORM_FIELD_CONTEXT, {
     optional: true,
   });
 
-  private readonly nativeSelect = viewChild<ElementRef<HTMLSelectElement>>('native');
+  private readonly overlay = inject(NshOverlayService);
+
+  private readonly triggerEl = viewChild<ElementRef<HTMLButtonElement>>('trigger');
 
   private readonly cva = new NshCvaControl<string | number>();
 
@@ -216,23 +235,29 @@ export class NshSelectComponent {
     });
   });
 
-  private readonly valueMap = computed(() => {
-    const map = new Map<string, string | number>();
-    for (const opt of this.renderedOptions()) {
-      map.set(opt.key, opt.value);
-    }
-    return map;
+  private readonly items = computed<ReadonlyArray<NshSelectPanelItem>>(() => {
+    return this.renderedOptions().map((opt) => ({
+      key: opt.key,
+      label: opt.label,
+      disabled: opt.disabled,
+      rawValue: opt.value,
+    }));
   });
 
-  readonly selectedDomValue = computed(() => {
-    const placeholder = this.placeholder();
+  readonly selectedKey = computed(() => {
     const value = this.cva.value();
+    return value === null ? null : serializeValue(value);
+  });
 
+  readonly displayedLabel = computed(() => {
+    const value = this.cva.value();
     if (value === null) {
-      return placeholder !== null ? '' : '';
+      return this.placeholder() ?? '';
     }
 
-    return serializeValue(value);
+    const key = serializeValue(value);
+    const match = this.renderedOptions().find((o) => o.key === key);
+    return match?.label ?? '';
   });
 
   readonly isShowingPlaceholder = computed(() => {
@@ -243,7 +268,31 @@ export class NshSelectComponent {
     return this.cva.value() === null;
   });
 
+  readonly panelId = computed(() => `${this.effectiveId()}-panel`);
+
+  private readonly open = signal(false);
+
+  private readonly overlayRef = signal<NshOverlayRef<NshSelectPanelComponent> | null>(null);
+
+  private readonly activeIndex = signal<number | null>(null);
+
+  readonly isOpen = computed(() => this.open() && !this.effectiveDisabled());
+
+  readonly activeDescendantId = computed(() => {
+    const index = this.activeIndex();
+    if (index === null) {
+      return null;
+    }
+    return `${this.panelId()}-opt-${index}`;
+  });
+
   constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.overlayRef()?.close();
+      this.overlayRef.set(null);
+      this.open.set(false);
+    });
+
     effect(() => {
       if (this.multiple()) {
         throw new Error('nsh-select v1 does not support multiple=true yet.');
@@ -251,20 +300,147 @@ export class NshSelectComponent {
     });
 
     effect(() => {
-      // Ensure the DOM selection remains correct even if the browser resets
-      // selection when <option> elements are (re)rendered.
-      void this.renderedOptions();
+      if (this.effectiveDisabled()) {
+        this.closePanel();
+      }
+    });
 
-      const el = this.nativeSelect()?.nativeElement;
-      if (!el) {
+    effect(() => {
+      if (!this.isOpen()) {
+        this.activeIndex.set(null);
         return;
       }
 
-      const desired = this.selectedDomValue();
-      if (el.value !== desired) {
-        el.value = desired;
+      if (this.activeIndex() !== null) {
+        return;
+      }
+
+      const items = this.items();
+      const selectedKey = this.selectedKey();
+      const selectedIndex = selectedKey ? items.findIndex((i) => i.key === selectedKey) : -1;
+      if (selectedIndex >= 0 && !items[selectedIndex]?.disabled) {
+        this.activeIndex.set(selectedIndex);
+        return;
+      }
+
+      this.activeIndex.set(this.firstEnabledIndex(items));
+    });
+
+    effect(() => {
+      const shouldBeOpen = this.isOpen();
+      const ref = this.overlayRef();
+
+      if (shouldBeOpen) {
+        if (ref) {
+          return;
+        }
+
+        const anchor = this.triggerEl()?.nativeElement;
+        if (!anchor) {
+          return;
+        }
+
+        const nextRef = this.overlay.attachComponent(NshSelectPanelComponent, {
+          anchor,
+          closeOnOutsidePointerDown: true,
+          closeOnEscape: true,
+          matchWidth: true,
+          panelClass: 'nsh-select-overlay',
+        });
+
+        this.overlayRef.set(nextRef);
+        return;
+      }
+
+      if (ref) {
+        ref.close();
+        this.overlayRef.set(null);
       }
     });
+
+    effect((onCleanup) => {
+      const ref = this.overlayRef();
+      if (!ref) {
+        return;
+      }
+
+      const subHovered = ref.componentRef.instance.itemHovered.subscribe((index) => {
+        const item = this.items()[index];
+        if (!item || item.disabled) {
+          return;
+        }
+        this.activeIndex.set(index);
+      });
+
+      const subSelected = ref.componentRef.instance.itemSelected.subscribe((item) => {
+        this.selectItem(item);
+      });
+
+      onCleanup(() => {
+        subHovered.unsubscribe();
+        subSelected.unsubscribe();
+      });
+    });
+
+    effect(() => {
+      const ref = this.overlayRef();
+      if (!ref) {
+        return;
+      }
+
+      if (ref.closed()) {
+        this.overlayRef.set(null);
+        this.closePanel();
+        return;
+      }
+
+      ref.componentRef.setInput('items', this.items());
+      ref.componentRef.setInput('activeIndex', this.activeIndex() ?? -1);
+      ref.componentRef.setInput('selectedKey', this.selectedKey());
+      ref.componentRef.setInput('ariaLabel', 'Options');
+      ref.componentRef.setInput('panelId', this.panelId());
+
+      ref.componentRef.changeDetectorRef.detectChanges();
+    });
+  }
+
+  private firstEnabledIndex(items: ReadonlyArray<NshSelectPanelItem>): number | null {
+    for (let i = 0; i < items.length; i++) {
+      if (!items[i]?.disabled) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  private lastEnabledIndex(items: ReadonlyArray<NshSelectPanelItem>): number | null {
+    for (let i = items.length - 1; i >= 0; i--) {
+      if (!items[i]?.disabled) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  private nextEnabledIndex(direction: 1 | -1): number | null {
+    const items = this.items();
+    if (items.length === 0) {
+      return null;
+    }
+
+    const current = this.activeIndex();
+    const startIndex = current === null ? (direction === 1 ? -1 : 0) : current;
+
+    let i = startIndex;
+    for (let step = 0; step < items.length; step++) {
+      i = (i + direction + items.length) % items.length;
+      const it = items[i];
+      if (it && !it.disabled) {
+        return i;
+      }
+    }
+
+    return null;
   }
 
   writeValue(value: NshSelectValue): void {
@@ -283,24 +459,112 @@ export class NshSelectComponent {
     this.cva.setDisabledState(isDisabled);
   }
 
-  onNativeChange(event: Event) {
+  onTriggerClick(): void {
     if (this.effectiveDisabled()) {
       return;
     }
 
-    const el = event.target as HTMLSelectElement | null;
-    const raw = el?.value ?? '';
+    if (this.isOpen()) {
+      this.closePanel();
+    } else {
+      this.openPanel();
+    }
+  }
 
-    if (raw === '') {
-      this.cva.setValueFromUI(null);
+  onTriggerKeydown(event: KeyboardEvent): void {
+    if (this.effectiveDisabled()) {
       return;
     }
 
-    const mapped = this.valueMap().get(raw);
-    this.cva.setValueFromUI(mapped ?? null);
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closePanel();
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (!this.isOpen()) {
+        this.openPanel();
+      }
+      const next = this.nextEnabledIndex(1) ?? this.firstEnabledIndex(this.items());
+      this.activeIndex.set(next);
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!this.isOpen()) {
+        this.openPanel();
+      }
+      const next = this.nextEnabledIndex(-1) ?? this.lastEnabledIndex(this.items());
+      this.activeIndex.set(next);
+      return;
+    }
+
+    if (event.key === 'Home') {
+      if (!this.isOpen()) {
+        return;
+      }
+      event.preventDefault();
+      this.activeIndex.set(this.firstEnabledIndex(this.items()));
+      return;
+    }
+
+    if (event.key === 'End') {
+      if (!this.isOpen()) {
+        return;
+      }
+      event.preventDefault();
+      this.activeIndex.set(this.lastEnabledIndex(this.items()));
+      return;
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      if (!this.isOpen()) {
+        this.openPanel();
+        return;
+      }
+
+      const index = this.activeIndex();
+      if (index === null) {
+        return;
+      }
+      const item = this.items()[index];
+      if (!item || item.disabled) {
+        return;
+      }
+      this.selectItem(item);
+      return;
+    }
   }
 
-  onBlur() {
+  onTriggerFocus(): void {
+  }
+
+  onTriggerBlur(): void {
+    this.closePanel();
     this.cva.markTouched();
+  }
+
+  private openPanel(): void {
+    if (this.effectiveDisabled()) {
+      return;
+    }
+    this.open.set(true);
+  }
+
+  private closePanel(): void {
+    this.open.set(false);
+  }
+
+  private selectItem(item: NshSelectPanelItem): void {
+    if (this.effectiveDisabled() || item.disabled) {
+      return;
+    }
+    this.cva.setValueFromUI(item.rawValue);
+    this.closePanel();
+    this.triggerEl()?.nativeElement.focus();
   }
 }
