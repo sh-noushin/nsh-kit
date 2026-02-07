@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/c
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import {
+  NshChipComponent,
+  NshChipsComponent,
   NshFormFieldComponent,
   NshInputComponent,
   NshRadioComponent,
@@ -18,6 +20,13 @@ type DemoKey =
   | 'error'
   | 'prefixSuffix'
   | 'hint'
+  | 'chipBasic'
+  | 'chipVariantsColors'
+  | 'chipSelected'
+  | 'chipDisabled'
+  | 'chipRemovable'
+  | 'chipIconOnly'
+  | 'chipInFormField'
   | 'sliderDefault'
   | 'sliderMinMaxStep'
   | 'sliderDisabled'
@@ -50,6 +59,8 @@ interface DemoState {
     ReactiveFormsModule,
     NshFormFieldComponent,
     NshInputComponent,
+    NshChipsComponent,
+    NshChipComponent,
     NshSliderComponent,
     NshRadioGroupComponent,
     NshRadioComponent,
@@ -102,6 +113,69 @@ interface DemoState {
             @case ('hint') {
               <nsh-form-field label="Phone" hint="We only use this for account recovery">
                 <nsh-input type="tel" autocomplete="tel" [formControl]="phoneControl" />
+              </nsh-form-field>
+            }
+
+            @case ('chipBasic') {
+              <nsh-chips ariaLabel="Basic chips">
+                <nsh-chip (clicked)="chipClickCount.set(chipClickCount() + 1)">Angular</nsh-chip>
+                <nsh-chip>Design</nsh-chip>
+                <nsh-chip>UI Kit</nsh-chip>
+              </nsh-chips>
+
+              <div class="forms-page__affix">Clicked: {{ chipClickCount() }}</div>
+            }
+            @case ('chipVariantsColors') {
+              <nsh-chips gap="sm" ariaLabel="Variants and colors">
+                <nsh-chip variant="filled" color="primary">Primary</nsh-chip>
+                <nsh-chip variant="outlined" color="secondary">Secondary</nsh-chip>
+                <nsh-chip variant="outlined" color="success">Success</nsh-chip>
+                <nsh-chip variant="outlined" color="warn">Warn</nsh-chip>
+                <nsh-chip variant="outlined" color="danger">Danger</nsh-chip>
+              </nsh-chips>
+            }
+            @case ('chipSelected') {
+              <nsh-chips ariaLabel="Selected chips">
+                <nsh-chip [selected]="true" color="primary">Selected</nsh-chip>
+                <nsh-chip [selected]="false" color="primary">Not selected</nsh-chip>
+              </nsh-chips>
+            }
+            @case ('chipDisabled') {
+              <nsh-chips ariaLabel="Disabled chips">
+                <nsh-chip [disabled]="true" color="primary">Disabled</nsh-chip>
+                <nsh-chip [disabled]="true" variant="outlined" color="secondary">Disabled outlined</nsh-chip>
+              </nsh-chips>
+            }
+            @case ('chipRemovable') {
+              <nsh-chips ariaLabel="Removable chips">
+                @if (!chipRemoved()) {
+                  <nsh-chip
+                    [removable]="true"
+                    trailingIcon="x"
+                    (removed)="chipRemoved.set(true)"
+                  >
+                    Removable
+                  </nsh-chip>
+                } @else {
+                  <span class="forms-page__affix">Removed</span>
+                }
+              </nsh-chips>
+            }
+            @case ('chipIconOnly') {
+              <nsh-chips ariaLabel="Chips with icons">
+                <nsh-chip leadingIcon="user">Profile</nsh-chip>
+                <nsh-chip leadingIcon="settings">Settings</nsh-chip>
+              </nsh-chips>
+
+              <div class="forms-page__affix">Icons require registration via provideNshIcons().</div>
+            }
+            @case ('chipInFormField') {
+              <nsh-form-field label="Tags" hint="Chips inside form-field">
+                <nsh-chips ariaLabel="Tags">
+                  <nsh-chip>Angular</nsh-chip>
+                  <nsh-chip>Signals</nsh-chip>
+                  <nsh-chip>OnPush</nsh-chip>
+                </nsh-chips>
               </nsh-form-field>
             }
 
@@ -320,6 +394,9 @@ export class FormsPageComponent {
   readonly switchAriaLabelControl = new FormControl<boolean>(false, { nonNullable: true });
   readonly switchInFormFieldControl = new FormControl<boolean>(false, { nonNullable: true });
 
+  readonly chipClickCount = signal(0);
+  readonly chipRemoved = signal(false);
+
   private readonly _states = signal<DemoState[]>([
     { key: 'default', title: '1) Default input with label' },
     { key: 'placeholder', title: '2) Placeholder' },
@@ -328,6 +405,14 @@ export class FormsPageComponent {
     { key: 'error', title: '5) Error message' },
     { key: 'prefixSuffix', title: '6) Prefix / suffix slots' },
     { key: 'hint', title: '7) Hint text' },
+
+    { key: 'chipBasic', title: 'Chips 1) Basic chips + (clicked) output' },
+    { key: 'chipVariantsColors', title: 'Chips 2) Variants + colors' },
+    { key: 'chipSelected', title: 'Chips 3) Selected state' },
+    { key: 'chipDisabled', title: 'Chips 4) Disabled state' },
+    { key: 'chipRemovable', title: 'Chips 5) Removable + (removed) output' },
+    { key: 'chipIconOnly', title: 'Chips 6) Leading icons' },
+    { key: 'chipInFormField', title: 'Chips 7) Inside form-field' },
 
     { key: 'sliderDefault', title: 'Slider 1) Default slider' },
     { key: 'sliderMinMaxStep', title: 'Slider 2) min/max/step (0..10 step 1)' },

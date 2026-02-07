@@ -41,5 +41,6 @@ export * from './lib/forms/switch';
 export * from './lib/forms/radio';
 export * from './lib/forms/select';
 export * from './lib/forms/slider';
+export * from './lib/forms/chips';
 
 
