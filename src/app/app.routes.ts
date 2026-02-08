@@ -14,4 +14,9 @@ export const routes: Routes = [
 		path: 'menu',
 		loadComponent: () => import('./pages/menu/menu-page.component').then((m) => m.MenuPageComponent),
 	},
+	{
+		path: 'tooltip',
+		loadComponent: () =>
+			import('./pages/tooltip/tooltip-page.component').then((m) => m.TooltipPageComponent),
+	},
 ];

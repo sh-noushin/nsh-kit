@@ -11,6 +11,16 @@ import {
 import type { NshOverlayConfig } from './overlay.types';
 import { NshOverlayRef } from './overlay-ref';
 
+function clamp(value: number, min: number, max: number): number {
+  if (value < min) {
+    return min;
+  }
+  if (value > max) {
+    return max;
+  }
+  return value;
+}
+
 function classListToString(panelClass: NshOverlayConfig['panelClass']): string {
   if (!panelClass) {
     return '';
@@ -34,7 +44,10 @@ export class NshOverlayService {
     container.style.position = 'fixed';
     container.style.left = '0px';
     container.style.top = '0px';
-    container.style.zIndex = 'var(--nsh-z-index-dropdown)';
+    container.style.zIndex =
+      config.zIndex ?? 'var(--nsh-z-dropdown, var(--nsh-z-index-dropdown))';
+
+    container.dataset['placement'] = config.placement ?? 'bottom-start';
 
     document.body.appendChild(container);
 
@@ -151,14 +164,76 @@ export class NshOverlayService {
 
     const rect = anchor.getBoundingClientRect();
 
-    container.style.left = `${rect.left}px`;
-    container.style.top = `${rect.bottom}px`;
-
     const matchWidth = config.matchWidth !== false;
     if (matchWidth) {
       container.style.width = `${rect.width}px`;
     } else {
       container.style.width = '';
     }
+
+    const placement = config.placement ?? 'bottom-start';
+    container.dataset['placement'] = placement;
+    const offsetPx = Math.max(0, config.offsetPx ?? 0);
+
+    const containerRect = container.getBoundingClientRect();
+    const panelWidth = containerRect.width;
+    const panelHeight = containerRect.height;
+
+    let left = rect.left;
+    let top = rect.bottom;
+
+    switch (placement) {
+      case 'bottom-start': {
+        left = rect.left;
+        top = rect.bottom + offsetPx;
+        break;
+      }
+      case 'bottom': {
+        left = rect.left + rect.width / 2 - panelWidth / 2;
+        top = rect.bottom + offsetPx;
+        break;
+      }
+      case 'bottom-end': {
+        left = rect.right - panelWidth;
+        top = rect.bottom + offsetPx;
+        break;
+      }
+      case 'top-start': {
+        left = rect.left;
+        top = rect.top - panelHeight - offsetPx;
+        break;
+      }
+      case 'top': {
+        left = rect.left + rect.width / 2 - panelWidth / 2;
+        top = rect.top - panelHeight - offsetPx;
+        break;
+      }
+      case 'top-end': {
+        left = rect.right - panelWidth;
+        top = rect.top - panelHeight - offsetPx;
+        break;
+      }
+      case 'left': {
+        left = rect.left - panelWidth - offsetPx;
+        top = rect.top + rect.height / 2 - panelHeight / 2;
+        break;
+      }
+      case 'right': {
+        left = rect.right + offsetPx;
+        top = rect.top + rect.height / 2 - panelHeight / 2;
+        break;
+      }
+    }
+
+    if (config.clampToViewport) {
+      const margin = Math.max(0, config.viewportMarginPx ?? 8);
+      const maxLeft = Math.max(margin, window.innerWidth - panelWidth - margin);
+      const maxTop = Math.max(margin, window.innerHeight - panelHeight - margin);
+      left = clamp(left, margin, maxLeft);
+      top = clamp(top, margin, maxTop);
+    }
+
+    container.style.left = `${left}px`;
+    container.style.top = `${top}px`;
   }
 }

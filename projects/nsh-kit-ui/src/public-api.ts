@@ -32,6 +32,9 @@ export * from './lib/components/sort';
 export * from './lib/components/table';
 export * from './lib/components/menu';
 
+// Overlays
+export * from './lib/overlays/tooltip';
+
 // Forms
 export * from './lib/forms/cva';
 export * from './lib/forms/form-field';
