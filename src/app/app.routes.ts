@@ -19,4 +19,9 @@ export const routes: Routes = [
 		loadComponent: () =>
 			import('./pages/tooltip/tooltip-page.component').then((m) => m.TooltipPageComponent),
 	},
+	{
+		path: 'snackbar',
+		loadComponent: () =>
+			import('./pages/snackbar/snackbar-page.component').then((m) => m.SnackbarPageComponent),
+	},
 ];
