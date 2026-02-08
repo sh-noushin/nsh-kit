@@ -31,6 +31,7 @@ export * from './lib/components/paginator';
 export * from './lib/components/sort';
 export * from './lib/components/table';
 export * from './lib/components/menu';
+export * from './lib/components/stepper';
 
 // Overlays
 export * from './lib/overlays/tooltip';
