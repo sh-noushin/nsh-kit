@@ -30,6 +30,7 @@ export * from './lib/components/empty-state';
 export * from './lib/components/paginator';
 export * from './lib/components/sort';
 export * from './lib/components/table';
+export * from './lib/components/menu';
 
 // Forms
 export * from './lib/forms/cva';
