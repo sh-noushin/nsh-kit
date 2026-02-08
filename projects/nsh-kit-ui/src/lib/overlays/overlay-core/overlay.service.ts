@@ -8,7 +8,7 @@ import {
   type Type,
 } from '@angular/core';
 
-import type { NshOverlayConfig } from './overlay.types';
+import type { NshBodyOverlayConfig, NshOverlayConfig } from './overlay.types';
 import { NshOverlayRef } from './overlay-ref';
 
 function clamp(value: number, min: number, max: number): number {
@@ -140,6 +140,38 @@ export class NshOverlayService {
     schedulePositionUpdate();
 
     return overlayRef;
+  }
+
+  attachComponentToBody<TComponent>(
+    component: Type<TComponent>,
+    config: NshBodyOverlayConfig = {},
+  ): NshOverlayRef<TComponent> {
+    const container = document.createElement('div');
+    const extraClass = classListToString(config.panelClass);
+    container.className = ['nsh-overlay', extraClass].filter(Boolean).join(' ');
+
+    container.style.position = 'fixed';
+    container.style.inset = '0px';
+    container.style.zIndex = config.zIndex ?? 'var(--nsh-z-overlay)';
+
+    document.body.appendChild(container);
+
+    const componentRef = this.createAndAttachComponent(component, container);
+
+    let destroyed = false;
+    const dispose = () => {
+      if (destroyed) {
+        return;
+      }
+      destroyed = true;
+
+      this.appRef.detachView(componentRef.hostView);
+      componentRef.destroy();
+
+      container.remove();
+    };
+
+    return new NshOverlayRef<TComponent>(container, componentRef, dispose);
   }
 
   private createAndAttachComponent<TComponent>(

@@ -29,3 +29,9 @@ export interface NshOverlayConfig {
 
   zIndex?: string;
 }
+
+export interface NshBodyOverlayConfig {
+  panelClass?: string | ReadonlyArray<string>;
+
+  zIndex?: string;
+}

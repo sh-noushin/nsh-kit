@@ -35,6 +35,7 @@ export * from './lib/components/menu';
 // Overlays
 export * from './lib/overlays/tooltip';
 export * from './lib/overlays/snackbar';
+export * from './lib/overlays/dialog';
 
 // Forms
 export * from './lib/forms/cva';

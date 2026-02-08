@@ -24,4 +24,9 @@ export const routes: Routes = [
 		loadComponent: () =>
 			import('./pages/snackbar/snackbar-page.component').then((m) => m.SnackbarPageComponent),
 	},
+	{
+		path: 'dialog',
+		loadComponent: () =>
+			import('./pages/dialog/dialog-page.component').then((m) => m.DialogPageComponent),
+	},
 ];
