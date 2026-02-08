@@ -15,7 +15,7 @@ import type {
 const DEFAULT_DURATION_MS = 5000;
 const DEFAULT_MAX_STACK = 3;
 
-interface NshResolvedSnackbarConfig {
+export interface NshResolvedSnackbarConfig {
   durationMs: number | null;
   variant: NshSnackbarVariant;
   actionText: string | null;
@@ -24,7 +24,7 @@ interface NshResolvedSnackbarConfig {
   maxStack: number;
 }
 
-interface NshSnackbarItem {
+export interface NshSnackbarItem {
   id: number;
   message: string;
   config: NshResolvedSnackbarConfig;
