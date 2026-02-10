@@ -6,7 +6,11 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test --watch=false",
+    "build:lib": "ng build nsh-kit-ui --configuration production",
+    "test:lib": "ng test nsh-kit-ui --watch=false",
+    "serve:demo": "ng serve demo",
+    "verify:package": "powershell -ExecutionPolicy Bypass -File tools/verify-package.ps1"
   },
   "prettier": {
     "printWidth": 100,
@@ -29,6 +33,7 @@
     "@angular/forms": "^21.1.0",
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
+    "nsh-kit-ui": "file:dist/nsh-kit-ui/nsh-kit-ui-0.0.1.tgz",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

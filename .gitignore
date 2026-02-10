@@ -198,6 +198,12 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
+
+# Temporary consumer app (package smoke test)
+.tmp/
+
+# Tooling cache
+tools/.cache/
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml

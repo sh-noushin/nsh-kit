@@ -1,59 +1,68 @@
-# P
+# NSH Kit
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+NSH Kit is an Angular component library and demo app built with standalone components, signals, and design tokens.
 
-## Development server
-
-To start a local development server, run:
+## Installation / Local build
 
 ```bash
-ng serve
+npm ci
+npm run build:lib
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The build output is generated under `dist/nsh-kit-ui/`.
 
-## Code scaffolding
+## Using the library in another Angular app
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Local linking (for development):
 
 ```bash
-ng generate component component-name
+npm run build:lib
+npm link ./dist/nsh-kit-ui
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Then in the consuming app:
 
 ```bash
-ng generate --help
+npm link nsh-kit-ui
 ```
 
-## Building
+In code, import from the package root only:
 
-To build the project run:
+```ts
+import { NshButtonComponent, NshThemeDirective } from 'nsh-kit-ui';
+```
+
+## Styles and theming
+
+The library uses CSS variables (`--nsh-*`) for all styling. You can include the optional SCSS helpers from the built package:
+
+```scss
+@use 'nsh-kit-ui/lib/styles/base.scss';
+@use 'nsh-kit-ui/lib/styles/theme.scss';
+@use 'nsh-kit-ui/lib/styles/typography.scss';
+```
+
+Apply the theme directive to a container to provide tokens:
+
+```html
+<div [nshTheme]="{ mode: 'light', density: 'comfortable' }">
+	<!-- app content -->
+</div>
+```
+
+## Zoneless readiness
+
+Components avoid `NgZone` and use signals, computed state, and effects. The library is designed to work in zoneless Angular apps.
+
+## Accessibility
+
+All interactive components use keyboard navigation and ARIA roles. Use `nshFocusVisible` for consistent focus treatment when needed.
+
+## Useful scripts
 
 ```bash
-ng build
+npm run build:lib
+npm run test:lib
+npm run test
+npm run serve:demo
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
