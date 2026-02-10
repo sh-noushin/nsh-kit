@@ -3,8 +3,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
 $distPath = Join-Path $repoRoot 'dist\nsh-kit-ui'
 $tmpRoot = Join-Path $repoRoot '.tmp'
-$consumerPath = Join-Path $tmpRoot 'consumer-app'
-$externalPath = Join-Path ([System.IO.Path]::GetTempPath()) 'nsh-kit-consumer-app'
+$consumerPath = Join-Path $tmpRoot 'consumer'
+$externalPath = Join-Path ([System.IO.Path]::GetTempPath()) 'nsh-kit-consumer'
 
 function Write-Section([string]$message) {
   Write-Host "`n== $message =="
@@ -46,7 +46,7 @@ try {
 
   $tempBase = [System.IO.Path]::GetTempPath()
   Push-Location $tempBase
-  npx --yes -p @angular/cli@latest ng new consumer-app --standalone --style=scss --skip-git --directory nsh-kit-consumer-app --no-interactive
+  npx --yes -p @angular/cli@latest ng new consumer --standalone --style=scss --skip-git --directory nsh-kit-consumer --no-interactive
   Pop-Location
 
   Move-Item -Path $externalPath -Destination $consumerPath
@@ -61,19 +61,20 @@ try {
   @'
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
-import { NshButtonComponent, NshIconComponent, NshInputComponent } from 'nsh-kit-ui';
+import { NshBadgeComponent, NshButtonComponent, NshInputComponent } from 'nsh-kit-ui';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NshButtonComponent, NshIconComponent, NshInputComponent],
+  imports: [NshBadgeComponent, NshButtonComponent, NshInputComponent],
   template: `
     <div class="demo">
       <h1 class="demo__title">NSH Kit Smoke Test</h1>
       <div class="demo__row">
-        <nsh-icon name="star" size="1.25rem"></nsh-icon>
-        <nsh-button variant="filled">Primary action</nsh-button>
+        <nsh-badge value="New">
+          <nsh-button variant="filled">Primary action</nsh-button>
+        </nsh-badge>
       </div>
 
       @if (showInput()) {
