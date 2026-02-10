@@ -5,6 +5,7 @@ import {
   NshToolbarStartDirective,
   NshToolbarCenterDirective,
   NshToolbarEndDirective,
+  NshToolbarTitleDirective,
 } from 'nsh-kit-ui';
 
 @Component({
@@ -16,6 +17,7 @@ import {
     NshToolbarStartDirective,
     NshToolbarCenterDirective,
     NshToolbarEndDirective,
+    NshToolbarTitleDirective,
   ],
   template: `
     <div class="toolbar-page">
