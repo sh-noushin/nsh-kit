@@ -11,7 +11,7 @@ export * from './lib/foundations/icon';
 export * from './lib/foundations/tokens';
 
 // Styles
-export * from './lib/styles/styles';
+export * from './lib/styles';
 
 // Components
 export * from './lib/components/button';
