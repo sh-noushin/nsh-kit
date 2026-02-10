@@ -26,6 +26,14 @@ ng build nsh-kit-ui
 
 This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
 
+## Styles
+
+Recommended SCSS entrypoint:
+
+```scss
+@use 'nsh-kit-ui/lib/styles/theme' as *;
+```
+
 ### Publishing the Library
 
 Once the project is built, you can publish your library by following these steps:
