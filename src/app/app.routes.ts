@@ -15,6 +15,11 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/menu/menu-page.component').then((m) => m.MenuPageComponent),
 	},
 	{
+		path: 'toolbar',
+		loadComponent: () =>
+			import('./pages/toolbar/toolbar-page.component').then((m) => m.ToolbarPageComponent),
+	},
+	{
 		path: 'tabs',
 		loadComponent: () => import('./pages/tabs/tabs-page.component').then((m) => m.TabsPageComponent),
 	},
