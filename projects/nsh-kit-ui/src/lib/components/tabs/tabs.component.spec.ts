@@ -9,33 +9,49 @@ import { NshTabsComponent } from './tabs.component';
   imports: [NshTabsComponent, NshTabComponent],
   template: `
     <nsh-tabs
-      [selectedIndex]="selectedIndex"
-      [lazy]="lazy"
+      [activeIndex]="activeIndex"
+      [variant]="variant"
+      [stretch]="stretch"
+      [disabled]="disabled"
       [ariaLabel]="ariaLabel"
-      (selectedIndexChange)="onSelectedIndexChange($event)"
+      (activeIndexChange)="onActiveIndexChange($event)"
+      (tabChange)="onTabChange($event)"
     >
-      <nsh-tab label="One">One content</nsh-tab>
-      <nsh-tab label="Two" [disabled]="disabledTwo">Two content</nsh-tab>
-      <nsh-tab label="Three">Three content</nsh-tab>
+      <nsh-tab label="Overview">
+        <p>Overview content</p>
+      </nsh-tab>
+      <nsh-tab label="Details" [disabled]="disabledTwo">
+        <p>Details content</p>
+      </nsh-tab>
+      <nsh-tab label="Settings">
+        <p>Settings content</p>
+      </nsh-tab>
     </nsh-tabs>
   `,
 })
 class HostComponent {
-  selectedIndex = 0;
+  activeIndex = 0;
+  variant: 'underline' | 'pill' | 'contained' = 'underline';
+  stretch = false;
+  disabled = false;
   disabledTwo = false;
-  lazy = true;
-  ariaLabel: string | undefined;
+  ariaLabel: string | null = 'Example tabs';
 
   changes: number[] = [];
+  tabChanges: Array<{ previousIndex: number; currentIndex: number }> = [];
 
-  onSelectedIndexChange(index: number) {
+  onActiveIndexChange(index: number) {
     this.changes.push(index);
-    this.selectedIndex = index;
+    this.activeIndex = index;
+  }
+
+  onTabChange(change: { previousIndex: number; currentIndex: number }) {
+    this.tabChanges.push(change);
   }
 }
 
 describe('NshTabsComponent', () => {
-  it('renders correct number of tabs from projected nsh-tab', async () => {
+  it('renders correct number of tab headers', async () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent],
     }).compileComponents();
@@ -47,7 +63,21 @@ describe('NshTabsComponent', () => {
     expect(tabs.length).toBe(3);
   });
 
-  it('clicking changes selected index and emits selectedIndexChange', async () => {
+  it('only renders the active tab content', async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.activeIndex = 1;
+    fixture.detectChanges();
+
+    const panels = fixture.nativeElement.querySelectorAll('[role="tabpanel"]') as NodeListOf<HTMLElement>;
+    expect(panels.length).toBe(1);
+    expect(panels[0].textContent).toContain('Details content');
+  });
+
+  it('clicking a header changes activeIndex and emits events', async () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent],
     }).compileComponents();
@@ -60,12 +90,13 @@ describe('NshTabsComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.changes).toEqual([2]);
+    expect(fixture.componentInstance.tabChanges).toEqual([{ previousIndex: 0, currentIndex: 2 }]);
 
     const active = fixture.nativeElement.querySelector('button[role="tab"][aria-selected="true"]') as HTMLElement;
-    expect(active.textContent).toContain('Three');
+    expect(active.textContent).toContain('Settings');
   });
 
-  it('disabled tab cannot be selected by click', async () => {
+  it('disabled tab cannot be activated and is skipped by keyboard navigation', async () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent],
     }).compileComponents();
@@ -74,23 +105,29 @@ describe('NshTabsComponent', () => {
     fixture.componentInstance.disabledTwo = true;
     fixture.detectChanges();
 
+    const tablist = fixture.nativeElement.querySelector('[role="tablist"]') as HTMLElement;
     const buttons = fixture.nativeElement.querySelectorAll('button[role="tab"]') as NodeListOf<HTMLButtonElement>;
+
     expect(buttons[1].disabled).toBe(true);
 
     buttons[1].click();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.changes).toEqual([]);
-    expect(fixture.componentInstance.selectedIndex).toBe(0);
+
+    buttons[0].focus();
+    tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+
+    expect(document.activeElement).toBe(buttons[2]);
   });
 
-  it('keyboard navigation: Arrow keys move focus, Enter selects, disabled is skipped', async () => {
+  it('keyboard navigation roving tabindex works and activates on Enter', async () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(HostComponent);
-    fixture.componentInstance.disabledTwo = true;
     fixture.detectChanges();
 
     const tablist = fixture.nativeElement.querySelector('[role="tablist"]') as HTMLElement;
@@ -102,21 +139,20 @@ describe('NshTabsComponent', () => {
     tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
     fixture.detectChanges();
 
-    expect(document.activeElement).toBe(buttons[2]);
+    expect(document.activeElement).toBe(buttons[1]);
 
     tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.changes).toEqual([2]);
+    expect(fixture.componentInstance.changes).toEqual([1]);
   });
 
-  it('a11y roles and aria attributes are present and correct', async () => {
+  it('sets a11y roles and aria attributes', async () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(HostComponent);
-    fixture.componentInstance.ariaLabel = 'Example tabs';
     fixture.detectChanges();
 
     const tablist = fixture.nativeElement.querySelector('[role="tablist"]') as HTMLElement;
@@ -127,20 +163,5 @@ describe('NshTabsComponent', () => {
 
     const panel = fixture.nativeElement.querySelector('[role="tabpanel"]') as HTMLElement;
     expect(panel.getAttribute('aria-labelledby')).toBe(firstTab.getAttribute('id'));
-  });
-
-  it('lazy behavior: only active panel rendered when lazy=true', async () => {
-    await TestBed.configureTestingModule({
-      imports: [HostComponent],
-    }).compileComponents();
-
-    const fixture = TestBed.createComponent(HostComponent);
-    fixture.componentInstance.lazy = true;
-    fixture.componentInstance.selectedIndex = 0;
-    fixture.detectChanges();
-
-    const panels = fixture.nativeElement.querySelectorAll('[role="tabpanel"]') as NodeListOf<HTMLElement>;
-    expect(panels.length).toBe(1);
-    expect(panels[0].textContent).toContain('One content');
   });
 });

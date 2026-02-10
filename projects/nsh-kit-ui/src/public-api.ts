@@ -32,6 +32,7 @@ export * from './lib/components/sort';
 export * from './lib/components/table';
 export * from './lib/components/menu';
 export * from './lib/components/stepper';
+export * from './lib/components/tabs';
 
 // Overlays
 export * from './lib/overlays/tooltip';

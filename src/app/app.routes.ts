@@ -15,6 +15,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/menu/menu-page.component').then((m) => m.MenuPageComponent),
 	},
 	{
+		path: 'tabs',
+		loadComponent: () => import('./pages/tabs/tabs-page.component').then((m) => m.TabsPageComponent),
+	},
+	{
 		path: 'stepper',
 		loadComponent: () =>
 			import('./pages/stepper/stepper-page.component').then((m) => m.StepperPageComponent),

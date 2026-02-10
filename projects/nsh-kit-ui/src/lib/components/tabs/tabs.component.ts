@@ -16,17 +16,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { NshIconComponent } from '../../foundations/icon';
 import { NshTabComponent } from './tab.component';
 
-export type NshTabsVariant = 'underline' | 'pill';
-export type NshTabsAlign = 'start' | 'center' | 'end' | 'stretch';
-export type NshTabsSize = 'sm' | 'md' | 'lg';
-export type NshTabsColor =
-  | 'primary'
-  | 'secondary'
-  | 'tertiary'
-  | 'success'
-  | 'warn'
-  | 'danger'
-  | 'neutral';
+export type NshTabsVariant = 'underline' | 'pill' | 'contained';
 
 function clampIndex(index: number, length: number): number {
   if (!Number.isFinite(index)) {
@@ -38,12 +28,32 @@ function clampIndex(index: number, length: number): number {
   return Math.min(Math.max(Math.floor(index), 0), length - 1);
 }
 
-function findFirstEnabled(tabs: readonly NshTabComponent[]): number {
-  return tabs.findIndex((t) => !t.disabled());
+function findFirstEnabled(tabs: readonly NshTabComponent[], disabled: boolean): number {
+  if (disabled) {
+    return -1;
+  }
+  return tabs.findIndex((tab) => !tab.disabled());
 }
 
-function findNextEnabled(tabs: readonly NshTabComponent[], from: number, delta: 1 | -1): number {
-  if (tabs.length === 0) {
+function findLastEnabled(tabs: readonly NshTabComponent[], disabled: boolean): number {
+  if (disabled) {
+    return -1;
+  }
+  for (let idx = tabs.length - 1; idx >= 0; idx--) {
+    if (!tabs[idx]?.disabled()) {
+      return idx;
+    }
+  }
+  return -1;
+}
+
+function findNextEnabled(
+  tabs: readonly NshTabComponent[],
+  from: number,
+  delta: 1 | -1,
+  disabled: boolean
+): number {
+  if (tabs.length === 0 || disabled) {
     return -1;
   }
 
@@ -57,15 +67,6 @@ function findNextEnabled(tabs: readonly NshTabComponent[], from: number, delta: 
   return -1;
 }
 
-function findLastEnabled(tabs: readonly NshTabComponent[]): number {
-  for (let idx = tabs.length - 1; idx >= 0; idx--) {
-    if (!tabs[idx]?.disabled()) {
-      return idx;
-    }
-  }
-  return -1;
-}
-
 @Component({
   selector: 'nsh-tabs',
   standalone: true,
@@ -75,23 +76,9 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
     '[class.nsh-tabs-host]': 'true',
     '[class.nsh-tabs-host--underline]': "variant() === 'underline'",
     '[class.nsh-tabs-host--pill]': "variant() === 'pill'",
-
-    '[class.nsh-tabs-host--align-start]': "align() === 'start'",
-    '[class.nsh-tabs-host--align-center]': "align() === 'center'",
-    '[class.nsh-tabs-host--align-end]': "align() === 'end'",
-    '[class.nsh-tabs-host--align-stretch]': "align() === 'stretch'",
-
-    '[class.nsh-tabs-host--sm]': "size() === 'sm'",
-    '[class.nsh-tabs-host--md]': "size() === 'md'",
-    '[class.nsh-tabs-host--lg]': "size() === 'lg'",
-
-    '[class.nsh-tabs-host--primary]': "color() === 'primary'",
-    '[class.nsh-tabs-host--secondary]': "color() === 'secondary'",
-    '[class.nsh-tabs-host--tertiary]': "color() === 'tertiary'",
-    '[class.nsh-tabs-host--success]': "color() === 'success'",
-    '[class.nsh-tabs-host--warn]': "color() === 'warn'",
-    '[class.nsh-tabs-host--danger]': "color() === 'danger'",
-    '[class.nsh-tabs-host--neutral]': "color() === 'neutral'",
+    '[class.nsh-tabs-host--contained]': "variant() === 'contained'",
+    '[class.nsh-tabs-host--stretch]': 'stretch()',
+    '[class.nsh-tabs-host--disabled]': 'disabled()',
   },
   template: `
     <div class="nsh-tabs">
@@ -108,48 +95,40 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
             class="nsh-tabs__tab"
             role="tab"
             [id]="tabId(tab)"
-            [disabled]="tab.disabled()"
-            [attr.aria-selected]="activeIndex() === i ? 'true' : 'false'"
+            [disabled]="isTabDisabled(tab)"
+            [attr.aria-selected]="activeIndexResolved() === i ? 'true' : 'false'"
             [attr.aria-controls]="panelId(tab)"
+            [attr.aria-disabled]="isTabDisabled(tab) ? 'true' : null"
             [attr.tabindex]="tabIndexFor(i)"
-            [class.nsh-tabs__tab--active]="activeIndex() === i"
-            [class.nsh-tabs__tab--disabled]="tab.disabled()"
+            [class.nsh-tabs__tab--active]="activeIndexResolved() === i"
+            [class.nsh-tabs__tab--disabled]="isTabDisabled(tab)"
             (focus)="onTabFocus(i)"
             (click)="onTabClick(i)"
           >
             @if (tab.icon(); as iconName) {
-              <nsh-icon class="nsh-tabs__icon" [name]="iconName" size="1em"></nsh-icon>
+              <nsh-icon class="nsh-tabs__icon" [name]="iconName" [size]="iconSize()" />
             }
-            <span class="nsh-tabs__label">{{ tab.label() }}</span>
+            <span class="nsh-tabs__label">
+              @if (tab.label(); as label) {
+                {{ label }}
+              } @else {
+                <ng-container [ngTemplateOutlet]="tab.labelTpl"></ng-container>
+              }
+            </span>
           </button>
         }
       </div>
 
       <div class="nsh-tabs__panels">
-        @if (lazy()) {
-          @if (activeTab(); as tab) {
-            <div
-              class="nsh-tabs__panel"
-              role="tabpanel"
-              [id]="panelId(tab)"
-              [attr.aria-labelledby]="tabId(tab)"
-            >
-              <ng-container [ngTemplateOutlet]="tab.contentTpl"></ng-container>
-            </div>
-          }
-        } @else {
-          @for (tab of tabs(); track tab; let i = $index) {
-            <div
-              class="nsh-tabs__panel"
-              role="tabpanel"
-              [id]="panelId(tab)"
-              [attr.aria-labelledby]="tabId(tab)"
-              [attr.hidden]="activeIndex() === i ? null : ''"
-              [class.nsh-tabs__panel--active]="activeIndex() === i"
-            >
-              <ng-container [ngTemplateOutlet]="tab.contentTpl"></ng-container>
-            </div>
-          }
+        @if (activeTab(); as tab) {
+          <div
+            class="nsh-tabs__panel"
+            role="tabpanel"
+            [id]="panelId(tab)"
+            [attr.aria-labelledby]="tabId(tab)"
+          >
+            <ng-container [ngTemplateOutlet]="tab.contentTpl"></ng-container>
+          </div>
         }
       </div>
     </div>
@@ -159,79 +138,43 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
       display: block;
 
       /* Component override surface */
-      --nsh-tabs-height: var(--nsh-tabs-height, unset);
       --nsh-tabs-gap: var(--nsh-tabs-gap, unset);
+      --nsh-tabs-header-height: var(--nsh-tabs-header-height, unset);
       --nsh-tabs-radius: var(--nsh-tabs-radius, unset);
-      --nsh-tabs-indicator-color: var(--nsh-tabs-indicator-color, unset);
-      --nsh-tabs-indicator-height: var(--nsh-tabs-indicator-height, unset);
-      --nsh-tabs-text-color: var(--nsh-tabs-text-color, unset);
-      --nsh-tabs-text-color-active: var(--nsh-tabs-text-color-active, unset);
       --nsh-tabs-bg: var(--nsh-tabs-bg, unset);
+      --nsh-tabs-fg: var(--nsh-tabs-fg, unset);
+      --nsh-tabs-fg-muted: var(--nsh-tabs-fg-muted, unset);
+      --nsh-tabs-hover-bg: var(--nsh-tabs-hover-bg, unset);
+      --nsh-tabs-active-indicator-color: var(--nsh-tabs-active-indicator-color, unset);
+      --nsh-tabs-active-indicator-height: var(--nsh-tabs-active-indicator-height, unset);
+      --nsh-tabs-pill-bg: var(--nsh-tabs-pill-bg, unset);
+      --nsh-tabs-pill-bg-active: var(--nsh-tabs-pill-bg-active, unset);
       --nsh-tabs-focus-ring: var(--nsh-tabs-focus-ring, unset);
+      --nsh-tabs-panel-padding: var(--nsh-tabs-panel-padding, unset);
 
-      --_tabs-height: var(--nsh-density-control-height);
       --_tabs-gap: var(--nsh-tabs-gap, var(--nsh-space-sm));
+      --_tabs-header-height: var(--nsh-tabs-header-height, var(--nsh-density-control-height));
       --_tabs-radius: var(--nsh-tabs-radius, var(--nsh-radius-pill));
-      --_tabs-indicator-height: var(--nsh-tabs-indicator-height, var(--nsh-space-xs));
-
-      --_tabs-accent: var(--nsh-color-primary);
-      --_tabs-indicator: var(--nsh-tabs-indicator-color, var(--_tabs-accent));
-
-      --_tabs-text: var(--nsh-tabs-text-color, var(--nsh-color-text-muted));
-      --_tabs-text-active: var(--nsh-tabs-text-color-active, var(--nsh-color-text));
-
-      --_tabs-bg: var(
-        --nsh-tabs-bg,
-        color-mix(in srgb, var(--nsh-color-surface-1) 85%, var(--nsh-color-surface))
+      --_tabs-bg: var(--nsh-tabs-bg, var(--nsh-color-surface-1));
+      --_tabs-fg: var(--nsh-tabs-fg, var(--nsh-color-text));
+      --_tabs-fg-muted: var(--nsh-tabs-fg-muted, var(--nsh-color-text-muted));
+      --_tabs-hover-bg: var(--nsh-tabs-hover-bg, var(--nsh-color-surface-2));
+      --_tabs-active-indicator-color: var(
+        --nsh-tabs-active-indicator-color,
+        var(--nsh-color-primary)
       );
-
-      --_tabs-focus-ring: var(
-        --nsh-tabs-focus-ring,
-        color-mix(in srgb, var(--nsh-color-outline) 65%, transparent)
+      --_tabs-active-indicator-height: var(
+        --nsh-tabs-active-indicator-height,
+        var(--nsh-space-xs)
       );
+      --_tabs-pill-bg: var(--nsh-tabs-pill-bg, var(--nsh-color-surface-1));
+      --_tabs-pill-bg-active: var(--nsh-tabs-pill-bg-active, var(--nsh-color-surface-2));
+      --_tabs-focus-ring: var(--nsh-tabs-focus-ring, var(--nsh-color-outline));
+      --_tabs-panel-padding: var(--nsh-tabs-panel-padding, var(--nsh-space-md));
 
-      --_tabs-pad-x: var(--nsh-density-padding-inline);
       --_tabs-font-size: var(--nsh-font-size-md);
       --_tabs-duration: var(--nsh-motion-duration-fast);
       --_tabs-easing: var(--nsh-motion-easing-standard);
-    }
-
-    :host(.nsh-tabs-host--sm) {
-      --_tabs-height: calc(var(--nsh-density-control-height) - var(--nsh-space-sm));
-      --_tabs-font-size: var(--nsh-font-size-sm);
-    }
-
-    :host(.nsh-tabs-host--md) {
-      --_tabs-height: var(--nsh-density-control-height);
-      --_tabs-font-size: var(--nsh-font-size-md);
-    }
-
-    :host(.nsh-tabs-host--lg) {
-      --_tabs-height: calc(var(--nsh-density-control-height) + var(--nsh-space-sm));
-      --_tabs-font-size: var(--nsh-font-size-lg);
-    }
-
-    /* Color mapping */
-    :host(.nsh-tabs-host--primary) {
-      --_tabs-accent: var(--nsh-color-primary);
-    }
-    :host(.nsh-tabs-host--secondary) {
-      --_tabs-accent: var(--nsh-color-secondary);
-    }
-    :host(.nsh-tabs-host--tertiary) {
-      --_tabs-accent: var(--nsh-color-tertiary);
-    }
-    :host(.nsh-tabs-host--success) {
-      --_tabs-accent: var(--nsh-color-success);
-    }
-    :host(.nsh-tabs-host--warn) {
-      --_tabs-accent: var(--nsh-color-warn);
-    }
-    :host(.nsh-tabs-host--danger) {
-      --_tabs-accent: var(--nsh-color-danger);
-    }
-    :host(.nsh-tabs-host--neutral) {
-      --_tabs-accent: var(--nsh-color-text);
     }
 
     .nsh-tabs {
@@ -248,23 +191,7 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
       min-width: 0;
     }
 
-    :host(.nsh-tabs-host--align-start) .nsh-tabs__tablist {
-      justify-content: flex-start;
-    }
-
-    :host(.nsh-tabs-host--align-center) .nsh-tabs__tablist {
-      justify-content: center;
-    }
-
-    :host(.nsh-tabs-host--align-end) .nsh-tabs__tablist {
-      justify-content: flex-end;
-    }
-
-    :host(.nsh-tabs-host--align-stretch) .nsh-tabs__tablist {
-      justify-content: stretch;
-    }
-
-    :host(.nsh-tabs-host--align-stretch) .nsh-tabs__tab {
+    :host(.nsh-tabs-host--stretch) .nsh-tabs__tab {
       flex: 1 1 0;
     }
 
@@ -273,7 +200,7 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
       appearance: none;
       border: 0;
       background: transparent;
-      color: var(--_tabs-text);
+      color: var(--_tabs-fg);
       cursor: pointer;
 
       display: inline-flex;
@@ -281,8 +208,8 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
       justify-content: center;
       gap: var(--nsh-space-xs);
 
-      min-height: var(--nsh-tabs-height, var(--_tabs-height));
-      padding-inline: var(--_tabs-pad-x);
+      min-height: var(--_tabs-header-height);
+      padding-inline: var(--nsh-density-padding-inline);
       font-size: var(--_tabs-font-size);
       font-weight: var(--nsh-font-weight-medium);
       line-height: var(--nsh-line-height-tight);
@@ -298,9 +225,14 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
         box-shadow var(--_tabs-duration) var(--_tabs-easing);
     }
 
+    .nsh-tabs__tab:hover {
+      background: var(--_tabs-hover-bg);
+    }
+
     .nsh-tabs__label {
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--_tabs-fg);
     }
 
     .nsh-tabs__icon {
@@ -319,7 +251,7 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
     }
 
     .nsh-tabs__tab--active {
-      color: var(--_tabs-text-active);
+      color: var(--_tabs-fg);
     }
 
     /* Variant: underline */
@@ -332,19 +264,19 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
       position: absolute;
       inset-inline: 0;
       bottom: 0;
-      height: var(--_tabs-indicator-height);
+      height: var(--_tabs-active-indicator-height);
       background: transparent;
-      border-radius: var(--_tabs-indicator-height);
+      border-radius: var(--_tabs-active-indicator-height);
       transition: background var(--_tabs-duration) var(--_tabs-easing);
     }
 
     :host(.nsh-tabs-host--underline) .nsh-tabs__tab--active::after {
-      background: var(--_tabs-indicator);
+      background: var(--_tabs-active-indicator-color);
     }
 
     /* Variant: pill */
     :host(.nsh-tabs-host--pill) .nsh-tabs__tablist {
-      background: var(--_tabs-bg);
+      background: var(--_tabs-pill-bg);
       border-radius: var(--_tabs-radius);
       padding: var(--nsh-space-xs);
     }
@@ -354,7 +286,22 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
     }
 
     :host(.nsh-tabs-host--pill) .nsh-tabs__tab--active {
-      background: color-mix(in srgb, var(--_tabs-indicator) 18%, transparent);
+      background: var(--_tabs-pill-bg-active);
+    }
+
+    /* Variant: contained */
+    :host(.nsh-tabs-host--contained) .nsh-tabs__tablist {
+      background: var(--_tabs-bg);
+      border-radius: var(--_tabs-radius);
+      padding: var(--nsh-space-xs);
+    }
+
+    :host(.nsh-tabs-host--contained) .nsh-tabs__tab {
+      border-radius: var(--_tabs-radius);
+    }
+
+    :host(.nsh-tabs-host--contained) .nsh-tabs__tab--active {
+      background: var(--_tabs-pill-bg-active);
     }
 
     .nsh-tabs__panels {
@@ -363,10 +310,9 @@ function findLastEnabled(tabs: readonly NshTabComponent[]): number {
 
     .nsh-tabs__panel {
       min-width: 0;
-    }
-
-    .nsh-tabs__panel[hidden] {
-      display: none;
+      padding: var(--_tabs-panel-padding);
+      background: var(--_tabs-bg);
+      border-radius: var(--_tabs-radius);
     }
   `,
 })
@@ -374,38 +320,36 @@ export class NshTabsComponent {
   @ViewChildren('tabButton', { read: ElementRef })
   private readonly tabButtons?: { toArray(): Array<ElementRef<HTMLButtonElement>> };
 
-  readonly selectedIndex = input(0);
+  readonly activeIndex = input(0);
   readonly variant = input<NshTabsVariant>('underline');
-  readonly align = input<NshTabsAlign>('start');
-  readonly size = input<NshTabsSize>('md');
-  readonly color = input<NshTabsColor>('primary');
-  readonly lazy = input(true, { transform: booleanAttribute });
-  readonly ariaLabel = input<string | undefined>(undefined);
+  readonly stretch = input(false, { transform: booleanAttribute });
+  readonly disabled = input(false, { transform: booleanAttribute });
+  readonly ariaLabel = input<string | null>('Tabs');
 
-  readonly selectedIndexChange = output<number>();
+  readonly activeIndexChange = output<number>();
+  readonly tabChange = output<{ previousIndex: number; currentIndex: number }>();
 
   private readonly tabsQuery = contentChildren(NshTabComponent);
 
   readonly tabs = computed(() => this.tabsQuery());
 
-  readonly activeIndex = computed(() => {
+  readonly activeIndexResolved = computed(() => {
     const tabs = this.tabs();
     if (tabs.length === 0) {
       return -1;
     }
 
-    const desired = clampIndex(this.selectedIndex(), tabs.length);
-    if (!tabs[desired]?.disabled()) {
+    const desired = clampIndex(this.activeIndex(), tabs.length);
+    if (!this.isTabDisabled(tabs[desired])) {
       return desired;
     }
 
-    const first = findFirstEnabled(tabs);
-    return first;
+    return findFirstEnabled(tabs, this.disabled());
   });
 
   readonly activeTab = computed(() => {
     const tabs = this.tabs();
-    const idx = this.activeIndex();
+    const idx = this.activeIndexResolved();
     return idx >= 0 ? (tabs[idx] ?? null) : null;
   });
 
@@ -414,7 +358,7 @@ export class NshTabsComponent {
   constructor() {
     effect(() => {
       const tabs = this.tabs();
-      const active = this.activeIndex();
+      const active = this.activeIndexResolved();
 
       if (tabs.length === 0) {
         this.focusedIndex.set(0);
@@ -423,12 +367,16 @@ export class NshTabsComponent {
 
       const current = this.focusedIndex();
       const clamped = clampIndex(current, tabs.length);
+      const next = !this.isTabDisabled(tabs[clamped]) ? clamped : active;
 
-      const next = !tabs[clamped]?.disabled() ? clamped : active;
       if (next >= 0) {
         this.focusedIndex.set(next);
       }
     });
+  }
+
+  iconSize(): string {
+    return 'var(--nsh-font-size-sm)';
   }
 
   tabId(tab: NshTabComponent): string {
@@ -441,31 +389,37 @@ export class NshTabsComponent {
 
   tabIndexFor(index: number): string {
     const tabs = this.tabs();
-    if (tabs[index]?.disabled()) {
+    if (this.isTabDisabled(tabs[index])) {
       return '-1';
     }
 
     return this.focusedIndex() === index ? '0' : '-1';
   }
 
+  isTabDisabled(tab: NshTabComponent | undefined): boolean {
+    if (!tab) {
+      return true;
+    }
+    return this.disabled() || tab.disabled();
+  }
+
   onTabFocus(index: number) {
-    if (this.tabs()[index]?.disabled()) {
+    const tabs = this.tabs();
+    if (this.isTabDisabled(tabs[index])) {
       return;
     }
     this.focusedIndex.set(index);
   }
 
   onTabClick(index: number) {
-    const tab = this.tabs()[index];
-    if (!tab || tab.disabled()) {
-      return;
-    }
-
-    this.focusedIndex.set(index);
-    this.selectedIndexChange.emit(index);
+    this.attemptActivate(index);
   }
 
   onKeydown(event: KeyboardEvent) {
+    if (this.disabled()) {
+      return;
+    }
+
     const tabs = this.tabs();
     if (tabs.length === 0) {
       return;
@@ -484,28 +438,42 @@ export class NshTabsComponent {
 
     switch (event.key) {
       case 'ArrowRight': {
-        const next = findNextEnabled(tabs, current, 1);
+        const next = findNextEnabled(tabs, current, 1, this.disabled());
         moveFocus(next);
         break;
       }
       case 'ArrowLeft': {
-        const prev = findNextEnabled(tabs, current, -1);
+        const prev = findNextEnabled(tabs, current, -1, this.disabled());
         moveFocus(prev);
         break;
       }
       case 'Home': {
-        moveFocus(findFirstEnabled(tabs));
+        moveFocus(findFirstEnabled(tabs, this.disabled()));
         break;
       }
       case 'End': {
-        moveFocus(findLastEnabled(tabs));
+        moveFocus(findLastEnabled(tabs, this.disabled()));
+        break;
+      }
+      case 'PageDown': {
+        if (event.ctrlKey) {
+          const next = findNextEnabled(tabs, current, 1, this.disabled());
+          moveFocus(next);
+        }
+        break;
+      }
+      case 'PageUp': {
+        if (event.ctrlKey) {
+          const prev = findNextEnabled(tabs, current, -1, this.disabled());
+          moveFocus(prev);
+        }
         break;
       }
       case 'Enter':
       case ' ': {
         const tab = tabs[current];
-        if (tab && !tab.disabled()) {
-          this.selectedIndexChange.emit(current);
+        if (tab && !this.isTabDisabled(tab)) {
+          this.attemptActivate(current);
           event.preventDefault();
         }
         break;
@@ -513,6 +481,28 @@ export class NshTabsComponent {
       default:
         break;
     }
+  }
+
+  private attemptActivate(index: number) {
+    const tabs = this.tabs();
+    if (index < 0 || index >= tabs.length) {
+      return;
+    }
+
+    const tab = tabs[index];
+    if (this.isTabDisabled(tab)) {
+      return;
+    }
+
+    const current = this.activeIndexResolved();
+    if (index === current) {
+      this.focusedIndex.set(index);
+      return;
+    }
+
+    this.focusedIndex.set(index);
+    this.activeIndexChange.emit(index);
+    this.tabChange.emit({ previousIndex: current, currentIndex: index });
   }
 
   private focusButton(index: number) {
