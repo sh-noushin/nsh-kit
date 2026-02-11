@@ -110,13 +110,40 @@ import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-u
         margin: 0;
         padding: 16px;
         overflow: auto;
-        background: #f0f3f9;
-        color: #1f2937;
+        background: var(--nsh-color-text, #000);
+        color: var(--nsh-color-surface, #fff);
         border-radius: 12px;
-        border: 1px solid #d7deeb;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid color-mix(in srgb, var(--nsh-color-surface, #fff) 22%, transparent);
         font-family: var(--nsh-font-family-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
         font-size: 0.88rem;
         line-height: var(--nsh-line-height-normal);
+      }
+
+      .code-tabs__code :where(.tok-comment) {
+        color: color-mix(in srgb, var(--nsh-color-surface) 62%, var(--nsh-color-text-muted));
+        font-style: italic;
+      }
+
+      .code-tabs__code :where(.tok-punct) {
+        color: color-mix(in srgb, var(--nsh-color-surface) 65%, transparent);
+      }
+
+      .code-tabs__code :where(.tok-tag, .tok-keyword) {
+        color: var(--nsh-color-secondary);
+        font-weight: 600;
+      }
+
+      .code-tabs__code :where(.tok-attr) {
+        color: var(--nsh-color-tertiary);
+      }
+
+      .code-tabs__code :where(.tok-string) {
+        color: var(--nsh-color-success);
+      }
+
+      .code-tabs__code :where(.tok-number) {
+        color: var(--nsh-color-warn);
       }
 
       .code-tabs__empty {
