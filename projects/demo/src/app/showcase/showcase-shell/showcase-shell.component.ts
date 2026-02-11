@@ -13,16 +13,11 @@ import { filter, startWith } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 import {
-  NshButtonComponent,
   NshDividerComponent,
   NshInputComponent,
   NshListComponent,
   NshListItemComponent,
   NshSidenavComponent,
-  NshToolbarComponent,
-  NshToolbarEndDirective,
-  NshToolbarStartDirective,
-  NshToolbarTitleDirective,
 } from 'nsh-kit-ui';
 
 import { DOC_SECTIONS, getDocEntry, type DocSection } from '../shared/doc-registry';
@@ -36,16 +31,11 @@ import type { DocEntry } from '../shared/doc-models';
     RouterOutlet,
     RouterLink,
     ReactiveFormsModule,
-    NshButtonComponent,
     NshDividerComponent,
     NshInputComponent,
     NshListComponent,
     NshListItemComponent,
     NshSidenavComponent,
-    NshToolbarComponent,
-    NshToolbarEndDirective,
-    NshToolbarStartDirective,
-    NshToolbarTitleDirective,
   ],
   template: `
     <nsh-sidenav class="showcase-shell" [open]="true" mode="side" position="start">
@@ -89,15 +79,6 @@ import type { DocEntry } from '../shared/doc-models';
       </div>
 
       <div nshSidenavContent class="showcase-shell__content">
-        <nsh-toolbar class="showcase-shell__toolbar" color="surface" variant="surface" density="compact">
-          <span nshToolbarTitle nshToolbarStart>{{ title() }}</span>
-          <span nshToolbarEnd class="showcase-shell__toolbar-actions">
-            <nsh-button variant="text" size="sm" leadingIcon="search" (click)="focusSearch()">
-              Search
-            </nsh-button>
-          </span>
-        </nsh-toolbar>
-
         <main class="showcase-shell__main">
           <router-outlet></router-outlet>
         </main>
@@ -110,20 +91,25 @@ import type { DocEntry } from '../shared/doc-models';
         display: block;
         min-height: 100vh;
         background: var(--nsh-color-surface);
+        overflow-x: hidden;
       }
 
       .showcase-shell {
         min-height: 100vh;
+        overflow-x: hidden;
       }
 
       .showcase-shell__panel {
         display: grid;
         gap: var(--nsh-space-lg);
         padding: var(--nsh-space-lg) var(--nsh-space-md);
-        width: 296px;
+        width: 360px;
+        max-width: 100%;
         background: linear-gradient(180deg, var(--nsh-color-surface-1) 0%, #f7f9fd 100%);
         border-right: 1px solid color-mix(in srgb, var(--nsh-color-outline) 75%, transparent);
         box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        overflow-x: hidden;
+        box-sizing: border-box;
       }
 
       .showcase-shell__brand {
@@ -209,26 +195,14 @@ import type { DocEntry } from '../shared/doc-models';
 
       .showcase-shell__nav-item {
         border-radius: var(--nsh-radius-md);
+        white-space: normal;
       }
 
       .showcase-shell__content {
         min-height: 100vh;
         display: grid;
-        grid-template-rows: auto 1fr;
         position: relative;
-      }
-
-      .showcase-shell__toolbar {
-        border-bottom: 1px solid var(--nsh-color-outline);
-        box-shadow: var(--nsh-elevation-1);
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(12px);
-      }
-
-      .showcase-shell__toolbar-actions {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--nsh-space-xs);
+        overflow-x: hidden;
       }
 
       .showcase-shell__main {
@@ -237,6 +211,7 @@ import type { DocEntry } from '../shared/doc-models';
         max-width: 1120px;
         margin: 0 auto;
         animation: showcase-enter 280ms var(--nsh-motion-easing-standard) both;
+        overflow-x: hidden;
       }
 
       @keyframes showcase-enter {
@@ -308,11 +283,6 @@ export class ShowcaseShellComponent {
 
   isActive(entry: DocEntry): boolean {
     return this.currentId() === entry.id;
-  }
-
-  focusSearch(): void {
-    const host = document.querySelector('input.nsh-input') as HTMLInputElement | null;
-    host?.focus();
   }
 
   private matchesQuery(entry: DocEntry, query: string): boolean {
