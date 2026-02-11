@@ -17,16 +17,21 @@ import { getDocEntry } from '../shared/doc-registry';
   template: `
     <div class="doc-page">
       @if (entry(); as doc) {
+        <nav class="doc-page__tabs" aria-label="Doc sections">
+          <button type="button" class="doc-page__tab doc-page__tab--active">Overview</button>
+          <button type="button" class="doc-page__tab" disabled aria-disabled="true">API</button>
+          <button type="button" class="doc-page__tab" disabled aria-disabled="true">Styling</button>
+          <a class="doc-page__tab" href="#doc-examples">Examples</a>
+        </nav>
+
         <header class="doc-page__header">
-          <div>
-            <h1 class="doc-page__title">{{ doc.title }}</h1>
-            <p class="doc-page__subtitle">{{ doc.description }}</p>
-          </div>
+          <h1 class="doc-page__title">{{ doc.title }}</h1>
+          <p class="doc-page__subtitle">{{ doc.description }}</p>
         </header>
 
         @if (doc.usage?.length) {
           <section class="doc-page__usage">
-            <div class="doc-page__usage-title">Usage guidelines</div>
+            <h2 class="doc-page__section-title">Usage guidelines</h2>
             <ul class="doc-page__usage-list">
               @for (item of doc.usage; track item) {
                 <li>{{ item }}</li>
@@ -35,12 +40,15 @@ import { getDocEntry } from '../shared/doc-registry';
           </section>
         }
 
-        <section class="doc-page__examples">
-          @for (example of examples(); track example.title) {
-            <demo-example-card [title]="example.title" [html]="example.html" [ts]="example.ts">
-              <ng-container [ngComponentOutlet]="example.component"></ng-container>
-            </demo-example-card>
-          }
+        <section class="doc-page__examples" id="doc-examples">
+          <h2 class="doc-page__section-title">Examples</h2>
+          <div class="doc-page__examples-grid">
+            @for (example of examples(); track example.title) {
+              <demo-example-card [title]="example.title" [html]="example.html" [ts]="example.ts">
+                <ng-container [ngComponentOutlet]="example.component"></ng-container>
+              </demo-example-card>
+            }
+          </div>
         </section>
       } @else {
         <nsh-empty-state
@@ -57,57 +65,110 @@ import { getDocEntry } from '../shared/doc-registry';
     `
       .doc-page {
         display: grid;
-        gap: var(--nsh-space-xl);
+        gap: 30px;
+      }
+
+      .doc-page__tabs {
+        display: flex;
+        align-items: flex-end;
+        gap: clamp(24px, 6vw, 72px);
+        border-bottom: 1px solid #d5dae7;
+        overflow-x: auto;
+      }
+
+      .doc-page__tab {
+        border: 0;
+        border-bottom: 3px solid transparent;
+        background: transparent;
+        margin: 0;
+        padding: 0 0 14px;
+        color: #2a3244;
+        font: inherit;
+        font-size: 0.93rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .doc-page__tab[disabled] {
+        color: #8791a3;
+        cursor: default;
+      }
+
+      .doc-page__tab--active {
+        color: #0f4ea9;
+        border-bottom-color: #1a73e8;
       }
 
       .doc-page__header {
         display: grid;
-        gap: var(--nsh-space-xs);
-        padding: var(--nsh-space-lg);
-        border-radius: var(--nsh-radius-xl);
-        background: #ffffff;
-        box-shadow: var(--nsh-elevation-1);
-        border: 1px solid color-mix(in srgb, var(--nsh-color-outline) 70%, transparent);
+        gap: 10px;
+        max-width: 72ch;
       }
 
       .doc-page__title {
         margin: 0;
-        font-size: clamp(28px, 4vw, 38px);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 500;
+        line-height: 1.15;
+        color: #1e2533;
       }
 
       .doc-page__subtitle {
         margin: 0;
-        color: var(--nsh-color-text-muted);
+        color: #404c63;
+        font-size: clamp(1rem, 1.4vw, 1.25rem);
+        line-height: 1.65;
       }
 
       .doc-page__usage {
-        padding: var(--nsh-space-lg);
-        border-radius: var(--nsh-radius-xl);
-        background: #ffffff;
-        box-shadow: var(--nsh-elevation-1);
-        border: 1px solid color-mix(in srgb, var(--nsh-color-outline) 70%, transparent);
+        display: grid;
+        gap: 14px;
+        max-width: 72ch;
       }
 
-      .doc-page__usage-title {
-        font-size: var(--nsh-font-size-sm);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--nsh-color-text-muted);
-        font-weight: var(--nsh-font-weight-semibold);
-        margin-bottom: var(--nsh-space-sm);
+      .doc-page__section-title {
+        margin: 0;
+        font-size: clamp(1.3rem, 2.5vw, 2rem);
+        font-weight: 500;
+        color: #1f2533;
       }
 
       .doc-page__usage-list {
         margin: 0;
-        padding-left: var(--nsh-space-lg);
+        padding-left: 24px;
         display: grid;
-        gap: var(--nsh-space-xs);
-        color: var(--nsh-color-text);
+        gap: 10px;
+        line-height: 1.6;
+        color: #2b3345;
       }
 
       .doc-page__examples {
         display: grid;
-        gap: var(--nsh-space-lg);
+        gap: 16px;
+      }
+
+      .doc-page__examples-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      @media (max-width: 720px) {
+        .doc-page {
+          gap: 22px;
+        }
+
+        .doc-page__tabs {
+          gap: 28px;
+        }
+
+        .doc-page__tab {
+          padding-bottom: 10px;
+          font-size: 0.84rem;
+        }
       }
     `,
   ],

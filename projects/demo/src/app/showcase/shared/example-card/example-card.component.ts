@@ -29,27 +29,29 @@ import { CodeTabsComponent } from '../code-tabs/code-tabs.component';
       }
 
       .example-card {
-        border-radius: var(--nsh-radius-xl);
-        box-shadow: var(--nsh-elevation-1);
-        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: none;
+        background: #f6f8fc;
+        border: 1px solid #d3dae8;
       }
 
       .example-card__header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: var(--nsh-space-md) var(--nsh-space-lg);
-        border-bottom: 1px solid color-mix(in srgb, var(--nsh-color-outline) 70%, transparent);
-        background: linear-gradient(180deg, #ffffff 0%, #f8f9fc 100%);
+        padding: 14px 20px;
+        border-bottom: 1px solid #d5dce8;
+        background: transparent;
       }
 
       .example-card__title {
-        font-size: var(--nsh-font-size-md);
-        font-weight: var(--nsh-font-weight-semibold);
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2533;
       }
 
       .example-card__body {
-        padding: var(--nsh-space-lg);
+        padding: 20px;
       }
     `,
   ],

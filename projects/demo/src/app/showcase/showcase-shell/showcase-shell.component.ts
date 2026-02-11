@@ -7,62 +7,46 @@ import {
   signal,
 } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { filter, startWith } from 'rxjs';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import {
-  NshDividerComponent,
-  NshInputComponent,
-  NshListComponent,
-  NshListItemComponent,
-  NshSidenavComponent,
-} from 'nsh-kit-ui';
+import { NshListComponent, NshListItemComponent } from 'nsh-kit-ui';
 
-import { DOC_SECTIONS, getDocEntry, type DocSection } from '../shared/doc-registry';
-import type { DocEntry } from '../shared/doc-models';
+import { DOC_CATEGORIES, DOC_SECTIONS, getDocEntry } from '../shared/doc-registry';
+import type { DocCategoryId, DocEntry } from '../shared/doc-models';
 
 @Component({
   selector: 'demo-showcase-shell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    ReactiveFormsModule,
-    NshDividerComponent,
-    NshInputComponent,
-    NshListComponent,
-    NshListItemComponent,
-    NshSidenavComponent,
-  ],
+  imports: [RouterOutlet, RouterLink, NshListComponent, NshListItemComponent],
   template: `
-    <nsh-sidenav class="showcase-shell" [open]="true" mode="side" position="start">
-      <div nshSidenavPanel class="showcase-shell__panel">
+    <div class="showcase-shell">
+      <header class="showcase-shell__topbar">
         <div class="showcase-shell__brand">
-          <div class="showcase-shell__brand-mark">NSH</div>
-          <div class="showcase-shell__brand-text">
-            <span class="showcase-shell__brand-title">NSH Kit Showcase</span>
-            <span class="showcase-shell__brand-subtitle">Component library docs</span>
-          </div>
+          <div class="showcase-shell__brand-mark">N</div>
+          <span class="showcase-shell__brand-title">NSH Kit</span>
         </div>
 
-        <div class="showcase-shell__search">
-          <label class="showcase-shell__search-label" for="showcase-search">Search</label>
-          <nsh-input
-            id="showcase-search"
-            placeholder="Find a component"
-            [formControl]="searchControl"
-          ></nsh-input>
-        </div>
+        <nav class="showcase-shell__topnav" aria-label="Doc categories">
+          @for (category of categories; track category.id) {
+            <a
+              class="showcase-shell__topnav-link"
+              [class.showcase-shell__topnav-link--active]="isCategoryActive(category.id)"
+              [routerLink]="categoryRoute(category.id)"
+            >
+              {{ category.title }}
+            </a>
+          }
+        </nav>
+      </header>
 
-        @for (section of sections(); track section.category.id) {
-          <div class="showcase-shell__section">
-            <div class="showcase-shell__section-title">{{ section.category.title }}</div>
-
-            <nsh-list role="navigation" [dense]="true" class="showcase-shell__nav-list">
-              @for (entry of section.entries; track entry.id) {
+      <div class="showcase-shell__layout">
+        <aside class="showcase-shell__panel">
+          <div class="showcase-shell__panel-inner">
+            <nsh-list role="navigation" class="showcase-shell__nav-list">
+              @for (entry of visibleEntries(); track entry.id) {
                 <nsh-list-item
                   [routerLink]="entry.route"
                   [selected]="isActive(entry)"
@@ -73,145 +57,153 @@ import type { DocEntry } from '../shared/doc-models';
               }
             </nsh-list>
           </div>
+        </aside>
 
-          <nsh-divider></nsh-divider>
-        }
+        <section class="showcase-shell__content">
+          <main class="showcase-shell__main">
+            <router-outlet></router-outlet>
+          </main>
+        </section>
       </div>
-
-      <div nshSidenavContent class="showcase-shell__content">
-        <main class="showcase-shell__main">
-          <router-outlet></router-outlet>
-        </main>
-      </div>
-    </nsh-sidenav>
+    </div>
   `,
   styles: [
     `
       :host {
         display: block;
         min-height: 100vh;
-        background: var(--nsh-color-surface);
+        background: #f3f5fa;
+        color: #1e2433;
         overflow-x: hidden;
       }
 
       .showcase-shell {
         min-height: 100vh;
-        overflow-x: hidden;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        background: #f3f5fa;
       }
 
-      .showcase-shell__panel {
-        display: grid;
-        gap: var(--nsh-space-lg);
-        padding: var(--nsh-space-lg) var(--nsh-space-md);
-        width: 360px;
-        max-width: 100%;
-        background: linear-gradient(180deg, var(--nsh-color-surface-1) 0%, #f7f9fd 100%);
-        border-right: 1px solid color-mix(in srgb, var(--nsh-color-outline) 75%, transparent);
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-        overflow-x: hidden;
-        box-sizing: border-box;
+      .showcase-shell__topbar {
+        display: flex;
+        align-items: center;
+        gap: clamp(16px, 3vw, 40px);
+        min-height: 76px;
+        padding: 0 clamp(16px, 3vw, 40px);
+        background: #dce6fc;
+        border-bottom: 1px solid #c4d1ea;
       }
 
       .showcase-shell__brand {
-        display: grid;
-        grid-template-columns: auto 1fr;
+        display: inline-flex;
         align-items: center;
-        gap: var(--nsh-space-sm);
-        padding: var(--nsh-space-sm);
-        border-radius: var(--nsh-radius-lg);
-        background: var(--nsh-color-surface-2);
-        box-shadow: var(--nsh-elevation-1);
+        gap: 10px;
+        color: #1f4da0;
       }
 
       .showcase-shell__brand-mark {
-        width: 44px;
-        height: 44px;
-        border-radius: 14px;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
         display: grid;
         place-items: center;
-        font-weight: var(--nsh-font-weight-semibold);
-        font-size: var(--nsh-font-size-md);
-        letter-spacing: 0.08em;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
         color: #ffffff;
-        background: linear-gradient(135deg, #1a73e8 0%, #0b5cad 100%);
-        box-shadow: 0 10px 24px rgba(26, 115, 232, 0.25);
-      }
-
-      .showcase-shell__brand-text {
-        display: grid;
-        gap: 2px;
+        background: linear-gradient(160deg, #2076e8, #0f57c2);
       }
 
       .showcase-shell__brand-title {
-        font-size: var(--nsh-font-size-lg);
-        font-weight: var(--nsh-font-weight-semibold);
-        letter-spacing: 0.02em;
+        font-size: 1.45rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
       }
 
-      .showcase-shell__brand-subtitle {
-        font-size: var(--nsh-font-size-sm);
-        color: var(--nsh-color-text-muted);
+      .showcase-shell__topnav {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
       }
 
-      .showcase-shell__search {
-        margin-top: var(--nsh-space-sm);
+      .showcase-shell__topnav-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 48px;
+        padding: 0 24px;
+        border-radius: 999px;
+        text-decoration: none;
+        color: #1a4f9d;
+        font-size: 1.12rem;
+        font-weight: 600;
+        transition:
+          background var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard),
+          color var(--nsh-motion-duration-fast) var(--nsh-motion-easing-standard);
+      }
+
+      .showcase-shell__topnav-link:hover {
+        background: #ceddf9;
+      }
+
+      .showcase-shell__topnav-link--active {
+        color: #0f4ca8;
+        background: #c2d5fb;
+      }
+
+      .showcase-shell__layout {
+        min-height: calc(100vh - 77px);
         display: grid;
-        gap: var(--nsh-space-xs);
-        padding: var(--nsh-space-sm);
-        border-radius: var(--nsh-radius-lg);
-        background: #ffffff;
-        box-shadow: var(--nsh-elevation-1);
+        grid-template-columns: 328px minmax(0, 1fr);
       }
 
-      .showcase-shell__search-label {
-        font-size: var(--nsh-font-size-xs);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--nsh-color-text-muted);
-        font-weight: var(--nsh-font-weight-semibold);
+      .showcase-shell__panel {
+        border-right: 1px solid #cfd5e2;
+        background: #f3f5fa;
+        min-width: 0;
       }
 
-      .showcase-shell__section {
-        display: grid;
-        gap: var(--nsh-space-sm);
-        padding: var(--nsh-space-sm);
-        border-radius: var(--nsh-radius-lg);
-        background: #ffffff;
-        box-shadow: var(--nsh-elevation-1);
-      }
-
-      .showcase-shell__section-title {
-        font-size: var(--nsh-font-size-sm);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--nsh-color-text-muted);
-        font-weight: var(--nsh-font-weight-semibold);
+      .showcase-shell__panel-inner {
+        height: calc(100vh - 77px);
+        overflow-y: auto;
+        padding: 18px 10px 28px;
       }
 
       .showcase-shell__nav-list {
+        --nsh-list-padding-y: 0px;
+        --nsh-list-item-height: 56px;
+        --nsh-list-item-radius: 999px;
+        --nsh-list-item-bg: transparent;
+        --nsh-list-item-bg-hover: #e6ebf9;
+        --nsh-list-item-bg-selected: #d4e0fa;
+        --nsh-list-item-fg: #1f2533;
+        --nsh-list-item-fg-muted: #1f2533;
+        --nsh-list-focus-ring: rgba(26, 96, 195, 0.32);
         display: grid;
         gap: 2px;
       }
 
       .showcase-shell__nav-item {
-        border-radius: var(--nsh-radius-md);
-        white-space: normal;
+        font-size: 1.18rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
       }
 
       .showcase-shell__content {
-        min-height: 100vh;
-        display: grid;
-        position: relative;
+        min-width: 0;
+        background: #f4f6fb;
         overflow-x: hidden;
       }
 
       .showcase-shell__main {
-        padding: clamp(24px, 4vw, 48px);
         width: 100%;
-        max-width: 1120px;
+        max-width: 1080px;
         margin: 0 auto;
-        animation: showcase-enter 280ms var(--nsh-motion-easing-standard) both;
+        padding: clamp(18px, 2.8vw, 36px) clamp(20px, 4vw, 56px) 64px;
         overflow-x: hidden;
+        animation: showcase-enter 220ms var(--nsh-motion-easing-standard) both;
       }
 
       @keyframes showcase-enter {
@@ -225,13 +217,53 @@ import type { DocEntry } from '../shared/doc-models';
         }
       }
 
-      @media (max-width: 960px) {
-        .showcase-shell__main {
-          padding: var(--nsh-space-lg);
+      @media (max-width: 1100px) {
+        .showcase-shell__layout {
+          grid-template-columns: 286px minmax(0, 1fr);
+        }
+
+        .showcase-shell__topnav-link {
+          height: 44px;
+          padding: 0 18px;
+          font-size: 1.02rem;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .showcase-shell__topbar {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 12px 16px;
+          gap: 12px;
+        }
+
+        .showcase-shell__topnav {
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 4px;
+        }
+
+        .showcase-shell__layout {
+          grid-template-columns: 1fr;
+          min-height: 0;
         }
 
         .showcase-shell__panel {
-          width: 100%;
+          border-right: 0;
+          border-bottom: 1px solid #cfd5e2;
+        }
+
+        .showcase-shell__panel-inner {
+          height: auto;
+          max-height: 40vh;
+        }
+
+        .showcase-shell__nav-item {
+          font-size: 1.04rem;
+        }
+
+        .showcase-shell__main {
+          padding: 20px 16px 40px;
         }
       }
     `,
@@ -242,28 +274,15 @@ export class ShowcaseShellComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly viewportScroller = inject(ViewportScroller);
 
-  readonly searchControl = new FormControl('', { nonNullable: true });
-
-  private readonly searchValue = toSignal(
-    this.searchControl.valueChanges.pipe(startWith(this.searchControl.value)),
-    { initialValue: this.searchControl.value }
-  );
-
   readonly currentId = signal<string | null>(null);
-
-  readonly title = computed(() => getDocEntry(this.currentId())?.title ?? 'NSH Kit Showcase');
-
-  readonly sections = computed<ReadonlyArray<DocSection>>(() => {
-    const query = this.searchValue().trim().toLowerCase();
-
-    if (!query) {
-      return DOC_SECTIONS;
-    }
-
-    return DOC_SECTIONS.map((section) => ({
-      category: section.category,
-      entries: section.entries.filter((entry) => this.matchesQuery(entry, query)),
-    })).filter((section) => section.entries.length > 0);
+  readonly categories = DOC_CATEGORIES;
+  readonly currentEntry = computed(() => getDocEntry(this.currentId()));
+  readonly activeCategory = computed<DocCategoryId>(
+    () => this.currentEntry()?.category ?? this.categories[0]?.id ?? 'components'
+  );
+  readonly visibleEntries = computed<ReadonlyArray<DocEntry>>(() => {
+    const section = DOC_SECTIONS.find((candidate) => candidate.category.id === this.activeCategory());
+    return section?.entries ?? [];
   });
 
   constructor() {
@@ -277,19 +296,17 @@ export class ShowcaseShellComponent {
       });
   }
 
-  navigate(entry: DocEntry): void {
-    this.router.navigateByUrl(entry.route);
-  }
-
   isActive(entry: DocEntry): boolean {
     return this.currentId() === entry.id;
   }
 
-  private matchesQuery(entry: DocEntry, query: string): boolean {
-    return (
-      entry.title.toLowerCase().includes(query) ||
-      entry.description.toLowerCase().includes(query)
-    );
+  isCategoryActive(categoryId: DocCategoryId): boolean {
+    return this.activeCategory() === categoryId;
+  }
+
+  categoryRoute(categoryId: DocCategoryId): string {
+    const section = DOC_SECTIONS.find((candidate) => candidate.category.id === categoryId);
+    return section?.entries[0]?.route ?? '/showcase/button';
   }
 
   private updateCurrentId(): void {

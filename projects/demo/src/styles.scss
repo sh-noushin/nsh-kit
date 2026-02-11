@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
 
 * {
 	box-sizing: border-box;
@@ -12,33 +12,18 @@ body {
 }
 
 body {
-	background: #edf1f7;
+	background: #f3f5fa;
+	font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+	color: #1f2533;
 }
 
 .demo-root {
 	min-height: 100vh;
-	--nsh-font-family: 'Sora', 'Segoe UI', sans-serif;
-	--nsh-font-family-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+	--nsh-font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+	--nsh-font-family-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
 		'Liberation Mono', 'Courier New', monospace;
-	background:
-		radial-gradient(1200px 500px at -10% -10%, rgba(26, 115, 232, 0.12), transparent 60%),
-		radial-gradient(900px 400px at 110% -20%, rgba(11, 92, 173, 0.08), transparent 55%),
-		linear-gradient(180deg, #f7f9fd 0%, #eef2f7 100%);
+	background: #f3f5fa;
 	color: #1d2433;
 	position: relative;
 	overflow: hidden;
-}
-
-.demo-root::before {
-	content: '';
-	position: absolute;
-	inset: 0;
-	background-image:
-		radial-gradient(600px 260px at 20% 10%, rgba(255, 255, 255, 0.45), transparent 60%),
-		radial-gradient(800px 320px at 80% 0%, rgba(255, 255, 255, 0.35), transparent 65%);
-	pointer-events: none;
-}
-
-.demo-root > * {
-	position: relative;
 }

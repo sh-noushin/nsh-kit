@@ -9,7 +9,7 @@ import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-u
   imports: [NshButtonComponent, NshTabComponent, NshTabsComponent],
   template: `
     <nsh-tabs
-      variant="contained"
+      variant="underline"
       class="code-tabs"
       [activeIndex]="activeIndex()"
       (activeIndexChange)="activeIndex.set($event)"
@@ -70,50 +70,54 @@ import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-u
       }
 
       .code-tabs {
-        border-radius: var(--nsh-radius-xl);
-        background: var(--nsh-color-surface-1);
-        box-shadow: var(--nsh-elevation-1);
+        --nsh-tabs-bg: transparent;
+        --nsh-tabs-radius: 0px;
+        --nsh-tabs-panel-padding: 0px;
+        --nsh-tabs-gap: 8px;
+        border-radius: 12px;
+        background: transparent;
+        box-shadow: none;
       }
 
       .code-tabs__preview {
-        padding: var(--nsh-space-lg);
-        border-radius: var(--nsh-radius-lg);
-        background: linear-gradient(180deg, #ffffff 0%, #f7f9fd 100%);
-        border: 1px solid color-mix(in srgb, var(--nsh-color-outline) 60%, transparent);
+        padding: 16px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid #d7ddea;
       }
 
       .code-tabs__toolbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: var(--nsh-space-sm) var(--nsh-space-lg) 0;
+        padding: 8px 16px 0;
       }
 
       .code-tabs__label {
-        font-size: var(--nsh-font-size-xs);
-        letter-spacing: 0.08em;
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: var(--nsh-color-text-muted);
-        font-weight: var(--nsh-font-weight-semibold);
+        color: #5d6980;
+        font-weight: 600;
       }
 
       .code-tabs__code {
         margin: 0;
-        padding: var(--nsh-space-lg);
+        padding: 16px;
         overflow: auto;
-        background: #0f172a;
-        color: #e2e8f0;
-        border-radius: var(--nsh-radius-lg);
-        border: 1px solid rgba(15, 23, 42, 0.2);
+        background: #f0f3f9;
+        color: #1f2937;
+        border-radius: 12px;
+        border: 1px solid #d7deeb;
         font-family: var(--nsh-font-family-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
-        font-size: var(--nsh-font-size-sm);
+        font-size: 0.88rem;
         line-height: var(--nsh-line-height-normal);
       }
 
       .code-tabs__empty {
-        padding: var(--nsh-space-lg);
-        color: var(--nsh-color-text-muted);
-        font-size: var(--nsh-font-size-sm);
+        padding: 16px;
+        color: #5d6980;
+        font-size: 0.88rem;
       }
     `,
   ],
