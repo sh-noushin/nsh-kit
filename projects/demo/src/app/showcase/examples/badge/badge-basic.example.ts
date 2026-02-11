@@ -10,10 +10,10 @@ import { NshBadgeComponent, NshButtonComponent } from 'nsh-kit-ui';
   template: `
     <div class="example-row">
       <nsh-badge value="3">
-        <nsh-button variant="text">Inbox</nsh-button>
+        <nsh-button variant="text" type="button" tabindex="-1">Inbox</nsh-button>
       </nsh-badge>
       <nsh-badge [dot]="true" color="success">
-        <nsh-button variant="outlined">Live</nsh-button>
+        <nsh-button variant="text" type="button" tabindex="-1">Live</nsh-button>
       </nsh-badge>
     </div>
   `,
@@ -31,10 +31,10 @@ export class BadgeBasicExampleComponent {}
 
 export const badgeBasicHtml = `<div class="example-row">
   <nsh-badge value="3">
-    <nsh-button variant="text">Inbox</nsh-button>
+    <nsh-button variant="text" type="button" tabindex="-1">Inbox</nsh-button>
   </nsh-badge>
   <nsh-badge [dot]="true" color="success">
-    <nsh-button variant="outlined">Live</nsh-button>
+    <nsh-button variant="text" type="button" tabindex="-1">Live</nsh-button>
   </nsh-badge>
 </div>`;
 

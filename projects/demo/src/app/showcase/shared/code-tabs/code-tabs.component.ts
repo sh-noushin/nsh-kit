@@ -86,6 +86,11 @@ import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-u
         border: 1px solid #d7ddea;
       }
 
+      .code-tabs__preview :focus {
+        outline: none;
+        box-shadow: none;
+      }
+
       .code-tabs__toolbar {
         display: flex;
         align-items: center;
