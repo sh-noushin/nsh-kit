@@ -1,55 +1,298 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 
 import { NshEmptyStateComponent } from 'nsh-kit-ui';
 
 import { ExampleCardComponent } from '../shared/example-card/example-card.component';
+import {
+  DOC_ENTRY_METADATA,
+  type DocApiKind,
+  type DocApiTargetMetadata,
+  type DocEntryMetadata,
+  type DocSignalMetadata,
+  type DocStylingTokenMetadata,
+} from '../shared/doc-source-metadata';
 import { getDocEntry } from '../shared/doc-registry';
+
+type DocTabId = 'overview' | 'api' | 'styling' | 'examples';
+
+interface DocTabLink {
+  id: DocTabId;
+  label: string;
+}
+
+interface ApiGroup {
+  id: string;
+  kind: DocApiKind;
+  title: string;
+  targets: ReadonlyArray<DocApiTargetMetadata>;
+}
+
+const DOC_TABS: ReadonlyArray<DocTabLink> = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'api', label: 'API' },
+  { id: 'styling', label: 'Styling' },
+  { id: 'examples', label: 'Examples' },
+];
+
+const API_GROUP_DEFS: ReadonlyArray<{ kind: DocApiKind; title: string }> = [
+  { kind: 'component', title: 'Components' },
+  { kind: 'directive', title: 'Directives' },
+  { kind: 'service', title: 'Services' },
+];
+
+const EMPTY_ENTRY_METADATA: DocEntryMetadata = {
+  api: [],
+  stylingTokens: [],
+};
+
+function normalizeTab(tab: string | null): DocTabId {
+  if (tab === 'api' || tab === 'styling' || tab === 'examples') {
+    return tab;
+  }
+  return 'overview';
+}
+
+function toSlug(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function toPascalCase(value: string): string {
+  return value
+    .trim()
+    .split(/[^a-zA-Z0-9]+/)
+    .filter((segment) => segment.length > 0)
+    .map((segment) => segment[0].toUpperCase() + segment.slice(1))
+    .join('');
+}
 
 @Component({
   selector: 'demo-doc-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgComponentOutlet, ExampleCardComponent, NshEmptyStateComponent],
+  imports: [NgComponentOutlet, RouterLink, ExampleCardComponent, NshEmptyStateComponent],
   template: `
     <div class="doc-page">
       @if (entry(); as doc) {
         <nav class="doc-page__tabs" aria-label="Doc sections">
-          <button type="button" class="doc-page__tab doc-page__tab--active">Overview</button>
-          <button type="button" class="doc-page__tab" disabled aria-disabled="true">API</button>
-          <button type="button" class="doc-page__tab" disabled aria-disabled="true">Styling</button>
-          <a class="doc-page__tab" href="#doc-examples">Examples</a>
+          @for (tab of tabs; track tab.id) {
+            <a
+              class="doc-page__tab"
+              [class.doc-page__tab--active]="activeTab() === tab.id"
+              [routerLink]="[]"
+              [queryParams]="{ tab: tab.id }"
+              queryParamsHandling="merge"
+            >
+              {{ tab.label }}
+            </a>
+          }
         </nav>
 
-        <header class="doc-page__header">
-          <h1 class="doc-page__title">{{ doc.title }}</h1>
-          <p class="doc-page__subtitle">{{ doc.description }}</p>
-        </header>
+        @if (activeTab() === 'overview') {
+          <header class="doc-page__header">
+            <h1 class="doc-page__title">{{ doc.title }}</h1>
+            <p class="doc-page__subtitle">{{ doc.description }}</p>
+          </header>
 
-        @if (doc.usage?.length) {
-          <section class="doc-page__usage">
-            <h2 class="doc-page__section-title">Usage guidelines</h2>
-            <ul class="doc-page__usage-list">
-              @for (item of doc.usage; track item) {
-                <li>{{ item }}</li>
+          @if (doc.usage?.length) {
+            <section class="doc-page__usage">
+              <h2 class="doc-page__section-title">Usage guidelines</h2>
+              <ul class="doc-page__usage-list">
+                @for (item of doc.usage; track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </section>
+          }
+        }
+
+        @if (activeTab() === 'api') {
+          @if (apiGroups().length) {
+            <section class="doc-page__api-layout">
+              <div class="doc-page__api-content">
+                @for (group of apiGroups(); track group.id) {
+                  <section class="doc-page__api-section" [attr.id]="group.id">
+                    <h2 class="doc-page__api-section-title">{{ group.title }}</h2>
+
+                    @for (target of group.targets; track target.name) {
+                      <article class="doc-page__api-target" [attr.id]="targetAnchor(group, target)">
+                        <h3 class="doc-page__api-target-title">{{ target.name }}</h3>
+
+                        <div class="doc-page__api-meta-grid">
+                          @if (target.selector) {
+                            <div class="doc-page__api-meta-row">
+                              <span>Selector:</span>
+                              <code class="doc-page__inline-code">{{ target.selector }}</code>
+                            </div>
+                          }
+
+                          @if (target.exportAs) {
+                            <div class="doc-page__api-meta-row">
+                              <span>Exported as:</span>
+                              <code class="doc-page__inline-code">{{ target.exportAs }}</code>
+                            </div>
+                          }
+                        </div>
+
+                        @if (target.signals.length) {
+                          <div class="doc-page__api-table-wrap">
+                            <table class="doc-page__api-table">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Signal</th>
+                                  <th scope="col">Kind</th>
+                                  <th scope="col">Type</th>
+                                  <th scope="col">How to use</th>
+                                  <th scope="col">Required</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @for (signalDoc of target.signals; track signalDoc.name + '-' + signalDoc.kind) {
+                                  <tr>
+                                    <td>
+                                      <code>{{ signalDoc.name }}</code>
+                                      @if (signalDoc.alias) {
+                                        <span class="doc-page__signal-alias">alias: {{ signalDoc.alias }}</span>
+                                      }
+                                    </td>
+                                    <td>
+                                      <span class="doc-page__signal-kind">{{ signalDoc.kind }}</span>
+                                    </td>
+                                    <td><code>{{ signalDoc.type }}</code></td>
+                                    <td><code>{{ signalBinding(signalDoc) }}</code></td>
+                                    <td>{{ signalDoc.required ? 'Yes' : 'No' }}</td>
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          </div>
+                        } @else {
+                          <p class="doc-page__api-empty-signals">No input/output signals declared in this class.</p>
+                        }
+                      </article>
+                    }
+                  </section>
+                }
+              </div>
+
+              <aside class="doc-page__api-toc" aria-label="API table of contents">
+                <div class="doc-page__api-toc-title">{{ doc.title }}</div>
+                @for (group of apiGroups(); track group.id) {
+                  <a class="doc-page__api-toc-link doc-page__api-toc-link--section" [href]="'#' + group.id">
+                    {{ group.title }}
+                  </a>
+                  @for (target of group.targets; track target.name) {
+                    <a class="doc-page__api-toc-link" [href]="'#' + targetAnchor(group, target)">
+                      {{ target.name }}
+                    </a>
+                  }
+                }
+              </aside>
+            </section>
+          } @else {
+            <section class="doc-page__empty-state-block">
+              <h2 class="doc-page__section-title">API</h2>
+              <p class="doc-page__muted-text">No API metadata was extracted for this entry.</p>
+            </section>
+          }
+        }
+
+        @if (activeTab() === 'styling') {
+          <section class="doc-page__styling">
+            @if (stylingTokens().length) {
+              <pre class="doc-page__styling-code"><code>{{ stylingSnippet() }}</code></pre>
+
+              <p class="doc-page__styling-intro">
+                Styling tokens below are extracted from the component override surface in
+                <code class="doc-page__inline-code">nsh-kit-ui</code> source.
+              </p>
+
+              <h2 class="doc-page__section-title">Style Tokens</h2>
+
+              <div class="doc-page__styling-filters">
+                <label class="doc-page__filter-field">
+                  <span class="doc-page__sr-only">Filter by token name</span>
+                  <input
+                    type="text"
+                    placeholder="Filter by token name"
+                    [value]="tokenNameFilter()"
+                    (input)="tokenNameFilter.set($any($event.target).value ?? '')"
+                  />
+                </label>
+
+                <label class="doc-page__filter-field">
+                  <span class="doc-page__sr-only">Filter by source file</span>
+                  <select
+                    [value]="tokenSourceFilter()"
+                    (change)="tokenSourceFilter.set($any($event.target).value ?? 'all')"
+                  >
+                    <option value="all">Filter by source file</option>
+                    @for (sourcePath of stylingSources(); track sourcePath) {
+                      <option [value]="sourcePath">{{ sourcePath }}</option>
+                    }
+                  </select>
+                </label>
+
+                <button
+                  type="button"
+                  class="doc-page__filter-reset"
+                  (click)="resetStylingFilters()"
+                  [disabled]="!hasActiveStylingFilters()"
+                >
+                  Reset filters
+                </button>
+              </div>
+
+              @if (filteredStylingTokens().length) {
+                <div class="doc-page__styling-table-wrap">
+                  <table class="doc-page__styling-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Token</th>
+                        <th scope="col">Source file</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (token of filteredStylingTokens(); track token.name) {
+                        <tr>
+                          <td><code>{{ token.name }}</code></td>
+                          <td><code>{{ token.source }}</code></td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              } @else {
+                <p class="doc-page__styling-empty">No styling tokens match your current filters.</p>
               }
-            </ul>
+            } @else {
+              <h2 class="doc-page__section-title">Style Tokens</h2>
+              <p class="doc-page__muted-text">
+                No per-component styling tokens were extracted for this entry.
+              </p>
+            }
           </section>
         }
 
-        <section class="doc-page__examples" id="doc-examples">
-          <h2 class="doc-page__section-title">Examples</h2>
-          <div class="doc-page__examples-grid">
-            @for (example of examples(); track example.title) {
-              <demo-example-card [title]="example.title" [html]="example.html" [ts]="example.ts">
-                <ng-container [ngComponentOutlet]="example.component"></ng-container>
-              </demo-example-card>
-            }
-          </div>
-        </section>
+        @if (showExamples()) {
+          <section class="doc-page__examples" id="doc-examples">
+            <h2 class="doc-page__section-title">Examples</h2>
+            <div class="doc-page__examples-grid">
+              @for (example of examples(); track example.title) {
+                <demo-example-card [title]="example.title" [html]="example.html" [ts]="example.ts">
+                  <ng-container [ngComponentOutlet]="example.component"></ng-container>
+                </demo-example-card>
+              }
+            </div>
+          </section>
+        }
       } @else {
         <nsh-empty-state
           align="center"
@@ -91,11 +334,6 @@ import { getDocEntry } from '../shared/doc-registry';
         text-decoration: none;
         white-space: nowrap;
         cursor: pointer;
-      }
-
-      .doc-page__tab[disabled] {
-        color: #8791a3;
-        cursor: default;
       }
 
       .doc-page__tab--active {
@@ -146,14 +384,308 @@ import { getDocEntry } from '../shared/doc-registry';
         color: #2b3345;
       }
 
+      .doc-page__empty-state-block {
+        display: grid;
+        gap: 10px;
+      }
+
+      .doc-page__muted-text {
+        margin: 0;
+        color: #5f697d;
+      }
+
+      .doc-page__api-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 28px;
+        align-items: start;
+      }
+
+      .doc-page__api-content {
+        display: grid;
+        gap: 28px;
+      }
+
+      .doc-page__api-section {
+        display: grid;
+        gap: 16px;
+        scroll-margin-top: 92px;
+      }
+
+      .doc-page__api-section-title {
+        margin: 0;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+        font-weight: 500;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #d5dae7;
+      }
+
+      .doc-page__api-target {
+        display: grid;
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid #d0d7e5;
+        border-radius: 14px;
+        background: #f8faff;
+        scroll-margin-top: 92px;
+      }
+
+      .doc-page__api-target-title {
+        margin: 0;
+        font-size: 1.42rem;
+        font-weight: 600;
+      }
+
+      .doc-page__api-meta-grid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .doc-page__api-meta-row {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.95rem;
+      }
+
+      .doc-page__inline-code {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: #e8edf7;
+        border: 1px solid #d6deec;
+        color: #1f2738;
+        font-family: var(--nsh-font-family-mono, ui-monospace, monospace);
+        font-size: 0.88rem;
+      }
+
+      .doc-page__api-table-wrap {
+        border: 1px solid #ced5e5;
+        border-radius: 10px;
+        background: #ffffff;
+        overflow: auto;
+      }
+
+      .doc-page__api-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 640px;
+      }
+
+      .doc-page__api-table th,
+      .doc-page__api-table td {
+        padding: 12px 14px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .doc-page__api-table thead th {
+        font-size: 0.92rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #2a3347;
+      }
+
+      .doc-page__api-table tbody tr + tr td {
+        border-top: 1px solid #dbe1ed;
+      }
+
+      .doc-page__signal-alias {
+        display: inline-block;
+        margin-left: 8px;
+        font-size: 0.8rem;
+        color: #5b6780;
+      }
+
+      .doc-page__signal-kind {
+        display: inline-flex;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #e6edf9;
+        color: #144eaa;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .doc-page__api-empty-signals {
+        margin: 0;
+        color: #5f697d;
+      }
+
+      .doc-page__api-toc {
+        position: sticky;
+        top: 16px;
+        display: grid;
+        gap: 8px;
+        padding-left: 16px;
+        border-left: 4px solid #d7e4fa;
+      }
+
+      .doc-page__api-toc-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2533;
+        margin-bottom: 4px;
+      }
+
+      .doc-page__api-toc-link {
+        text-decoration: none;
+        color: #2f3a50;
+        font-size: 0.96rem;
+      }
+
+      .doc-page__api-toc-link--section {
+        margin-top: 4px;
+        font-weight: 700;
+        color: #1f2636;
+      }
+
+      .doc-page__api-toc-link:not(.doc-page__api-toc-link--section) {
+        padding-left: 12px;
+      }
+
+      .doc-page__api-toc-link:hover {
+        color: #0f4ea9;
+      }
+
+      .doc-page__styling {
+        display: grid;
+        gap: 20px;
+      }
+
+      .doc-page__styling-code {
+        margin: 0;
+        border: 1px solid #cfd6e6;
+        border-radius: 14px;
+        background: #eef3fb;
+        color: #202a3b;
+        padding: 18px 20px;
+        overflow: auto;
+        font-family: var(--nsh-font-family-mono, ui-monospace, monospace);
+        font-size: 0.98rem;
+        line-height: 1.55;
+      }
+
+      .doc-page__styling-intro {
+        margin: 0;
+        color: #2f3a4f;
+      }
+
+      .doc-page__styling-filters {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(260px, 1fr) auto;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .doc-page__filter-field {
+        display: block;
+      }
+
+      .doc-page__filter-field input,
+      .doc-page__filter-field select {
+        width: 100%;
+        height: 52px;
+        border: 1px solid #aab4c6;
+        border-radius: 8px;
+        background: #f7f9fd;
+        color: #273245;
+        font: inherit;
+        font-size: 1rem;
+        padding: 0 14px;
+      }
+
+      .doc-page__filter-field input:focus-visible,
+      .doc-page__filter-field select:focus-visible {
+        outline: 2px solid rgba(26, 115, 232, 0.3);
+        outline-offset: 1px;
+      }
+
+      .doc-page__filter-reset {
+        border: 0;
+        background: transparent;
+        color: #0f4ea9;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .doc-page__filter-reset[disabled] {
+        color: #8f99ab;
+        cursor: default;
+      }
+
+      .doc-page__styling-table-wrap {
+        border: 1px solid #d5dae7;
+        border-radius: 10px;
+        overflow: auto;
+      }
+
+      .doc-page__styling-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+
+      .doc-page__styling-table th,
+      .doc-page__styling-table td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #d7ddea;
+      }
+
+      .doc-page__styling-table th {
+        font-size: 0.92rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .doc-page__styling-empty {
+        margin: 0;
+        color: #5a667d;
+      }
+
+      .doc-page__sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       .doc-page__examples {
         display: grid;
         gap: 16px;
+        scroll-margin-top: 92px;
       }
 
       .doc-page__examples-grid {
         display: grid;
         gap: 16px;
+      }
+
+      @media (max-width: 1240px) {
+        .doc-page__api-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .doc-page__api-toc {
+          display: none;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .doc-page__styling-filters {
+          grid-template-columns: 1fr;
+        }
       }
 
       @media (max-width: 720px) {
@@ -176,10 +708,105 @@ import { getDocEntry } from '../shared/doc-registry';
 export class DocPageComponent {
   private readonly route = inject(ActivatedRoute);
 
+  readonly tabs = DOC_TABS;
+
   private readonly docId = toSignal(this.route.paramMap.pipe(map((params) => params.get('id'))), {
     initialValue: null,
   });
 
+  private readonly tabParam = toSignal(this.route.queryParamMap.pipe(map((params) => params.get('tab'))), {
+    initialValue: null,
+  });
+
   readonly entry = computed(() => getDocEntry(this.docId()));
+  readonly metadata = computed(
+    () => DOC_ENTRY_METADATA[this.entry()?.id ?? ''] ?? EMPTY_ENTRY_METADATA
+  );
+
+  readonly activeTab = computed<DocTabId>(() => normalizeTab(this.tabParam()));
+  readonly showExamples = computed(
+    () => this.activeTab() === 'overview' || this.activeTab() === 'examples'
+  );
+
   readonly examples = computed(() => this.entry()?.exampleProvider() ?? []);
+
+  readonly apiGroups = computed<ReadonlyArray<ApiGroup>>(() => {
+    const apiTargets = this.metadata().api;
+
+    return API_GROUP_DEFS.map((groupDef) => {
+      const targets = apiTargets.filter((target) => target.kind === groupDef.kind);
+      return {
+        id: `api-${groupDef.kind}s`,
+        kind: groupDef.kind,
+        title: groupDef.title,
+        targets,
+      };
+    }).filter((group) => group.targets.length > 0);
+  });
+
+  readonly stylingTokens = computed(() => this.metadata().stylingTokens);
+
+  readonly tokenNameFilter = signal('');
+  readonly tokenSourceFilter = signal('all');
+
+  readonly stylingSources = computed(() => {
+    const values = new Set(this.stylingTokens().map((token) => token.source));
+    return Array.from(values).sort((left, right) => left.localeCompare(right));
+  });
+
+  readonly filteredStylingTokens = computed<ReadonlyArray<DocStylingTokenMetadata>>(() => {
+    const nameFilter = this.tokenNameFilter().trim().toLowerCase();
+    const sourceFilter = this.tokenSourceFilter();
+
+    return this.stylingTokens().filter((token) => {
+      const matchesName = !nameFilter || token.name.toLowerCase().includes(nameFilter);
+      const matchesSource = sourceFilter === 'all' || token.source === sourceFilter;
+      return matchesName && matchesSource;
+    });
+  });
+
+  readonly hasActiveStylingFilters = computed(
+    () => this.tokenNameFilter().trim().length > 0 || this.tokenSourceFilter() !== 'all'
+  );
+
+  readonly stylingSnippet = computed(() => {
+    const entry = this.entry();
+    const tokens = this.stylingTokens().slice(0, 6);
+
+    if (!entry || tokens.length === 0) {
+      return `/* No component-level styling tokens were extracted for this entry. */`;
+    }
+
+    const lines = [
+      `/* ${entry.title} tokens from nsh-kit-ui */`,
+      ':root {',
+      ...tokens.map((token) => `  ${token.name}: /* value */;`),
+      '}',
+    ];
+
+    return lines.join('\n');
+  });
+
+  targetAnchor(group: ApiGroup, target: DocApiTargetMetadata): string {
+    return `${group.id}-${toSlug(target.name)}`;
+  }
+
+  signalBinding(signalDoc: DocSignalMetadata): string {
+    const bindingName = signalDoc.alias ?? signalDoc.name;
+
+    if (signalDoc.kind === 'output') {
+      return `(${bindingName})="on${toPascalCase(signalDoc.name)}($event)"`;
+    }
+
+    if (signalDoc.kind === 'model') {
+      return `[(${bindingName})]="${signalDoc.name}"`;
+    }
+
+    return `[${bindingName}]="${signalDoc.name}"`;
+  }
+
+  resetStylingFilters(): void {
+    this.tokenNameFilter.set('');
+    this.tokenSourceFilter.set('all');
+  }
 }

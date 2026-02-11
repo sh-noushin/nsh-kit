@@ -10,6 +10,7 @@
     "build:lib": "ng build nsh-kit-ui --configuration production",
     "test:lib": "ng test nsh-kit-ui --watch=false",
     "serve:demo": "ng serve demo",
+    "generate:docs-meta": "node tools/generate-doc-metadata.cjs",
     "verify:package": "powershell -ExecutionPolicy Bypass -File tools/verify-package.ps1"
   },
   "prettier": {
