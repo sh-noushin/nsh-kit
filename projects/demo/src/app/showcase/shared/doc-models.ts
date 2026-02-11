@@ -18,6 +18,7 @@ export interface DocEntry {
   id: string;
   title: string;
   description: string;
+  usage?: ReadonlyArray<string>;
   route: string;
   category: DocCategoryId;
   exampleProvider: () => ReadonlyArray<DocExample>;

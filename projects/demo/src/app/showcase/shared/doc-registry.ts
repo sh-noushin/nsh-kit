@@ -56,7 +56,12 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
   {
     id: 'avatar',
     title: 'Avatar',
-    description: 'Initials, images, and status indicators.',
+    description: 'Identity chips for people, teams, and status in compact UI areas.',
+    usage: [
+      'Provide a full name so initials and accessibility labels are derived automatically.',
+      'Use status for presence and reserve rounded shapes for compact lists or cards.',
+      'Prefer real images for people; fall back to initials for system users or groups.',
+    ],
     route: '/showcase/avatar',
     category: 'components',
     exampleProvider: () => avatarExamples,

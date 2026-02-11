@@ -24,6 +24,17 @@ import { getDocEntry } from '../shared/doc-registry';
           </div>
         </header>
 
+        @if (doc.usage?.length) {
+          <section class="doc-page__usage">
+            <div class="doc-page__usage-title">Usage guidelines</div>
+            <ul class="doc-page__usage-list">
+              @for (item of doc.usage; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </section>
+        }
+
         <section class="doc-page__examples">
           @for (example of examples(); track example.title) {
             <demo-example-card [title]="example.title" [html]="example.html" [ts]="example.ts">
@@ -67,6 +78,31 @@ import { getDocEntry } from '../shared/doc-registry';
       .doc-page__subtitle {
         margin: 0;
         color: var(--nsh-color-text-muted);
+      }
+
+      .doc-page__usage {
+        padding: var(--nsh-space-lg);
+        border-radius: var(--nsh-radius-xl);
+        background: #ffffff;
+        box-shadow: var(--nsh-elevation-1);
+        border: 1px solid color-mix(in srgb, var(--nsh-color-outline) 70%, transparent);
+      }
+
+      .doc-page__usage-title {
+        font-size: var(--nsh-font-size-sm);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--nsh-color-text-muted);
+        font-weight: var(--nsh-font-weight-semibold);
+        margin-bottom: var(--nsh-space-sm);
+      }
+
+      .doc-page__usage-list {
+        margin: 0;
+        padding-left: var(--nsh-space-lg);
+        display: grid;
+        gap: var(--nsh-space-xs);
+        color: var(--nsh-color-text);
       }
 
       .doc-page__examples {
