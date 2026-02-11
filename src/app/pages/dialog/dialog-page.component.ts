@@ -20,6 +20,8 @@ import {
   NshDialogService,
   NshDialogTitleComponent,
   NshToolbarComponent,
+  NshToolbarEndDirective,
+  NshToolbarStartDirective,
 } from 'nsh-kit-ui';
 
 interface DialogDemoCase {
@@ -147,7 +149,12 @@ class DialogResultContentComponent {
 @Component({
   selector: 'app-dialog-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NshToolbarComponent, NshButtonComponent],
+  imports: [
+    NshToolbarComponent,
+    NshToolbarEndDirective,
+    NshToolbarStartDirective,
+    NshButtonComponent,
+  ],
   template: `
     <div class="dialog-page">
       <h1 class="dialog-page__title">Dialog</h1>
@@ -170,7 +177,7 @@ class DialogResultContentComponent {
           <p class="dialog-page__hint">Icon button inside toolbar opens a dialog.</p>
         </div>
 
-        <nsh-toolbar color="surface" variant="dense">
+        <nsh-toolbar color="surface" variant="surface" density="compact">
           <span nshToolbarStart class="dialog-page__toolbar-title">Toolbar</span>
           <nsh-button
             nshToolbarEnd

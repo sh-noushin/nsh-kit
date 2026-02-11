@@ -38,6 +38,9 @@ export * from './lib/components/tabs';
 export * from './lib/overlays/tooltip';
 export * from './lib/overlays/snackbar';
 export * from './lib/overlays/dialog';
+export * from './lib/overlays/autocomplete-panel';
+export * from './lib/overlays/menu-panel';
+export * from './lib/overlays/select-panel';
 
 // Forms
 export * from './lib/forms/cva';

@@ -1,2 +1,1 @@
-const context = require.context('./app', true, /\.spec\.ts$/);
-context.keys().forEach(context);
+import.meta.glob('./app/**/*.spec.ts', { eager: true });
