@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 
 import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-ui';
+import { highlightSnippet } from '../code-highlight.util';
 
 @Component({
   selector: 'demo-code-tabs',
@@ -35,7 +36,7 @@ import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-u
           </nsh-button>
         </div>
         @if (html()) {
-          <pre class="code-tabs__code"><code>{{ html() }}</code></pre>
+          <pre class="code-tabs__code"><code class="hljs" [innerHTML]="highlightedHtml()"></code></pre>
         } @else {
           <div class="code-tabs__empty">No HTML snippet provided.</div>
         }
@@ -56,7 +57,7 @@ import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-u
           </nsh-button>
         </div>
         @if (ts()) {
-          <pre class="code-tabs__code"><code>{{ ts() }}</code></pre>
+          <pre class="code-tabs__code"><code class="hljs" [innerHTML]="highlightedTs()"></code></pre>
         } @else {
           <div class="code-tabs__empty">No TS snippet provided.</div>
         }
@@ -110,40 +111,21 @@ import { NshButtonComponent, NshTabComponent, NshTabsComponent } from 'nsh-kit-u
         margin: 0;
         padding: 16px;
         overflow: auto;
-        background: var(--nsh-color-text, #000);
-        color: var(--nsh-color-surface, #fff);
+        background: #0b0f14;
+        color: #e6edf3;
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border: 1px solid color-mix(in srgb, var(--nsh-color-surface, #fff) 22%, transparent);
+        border: 1px solid #2a3441;
         font-family: var(--nsh-font-family-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
         font-size: 0.88rem;
         line-height: var(--nsh-line-height-normal);
       }
 
-      .code-tabs__code :where(.tok-comment) {
-        color: color-mix(in srgb, var(--nsh-color-surface) 62%, var(--nsh-color-text-muted));
-        font-style: italic;
-      }
-
-      .code-tabs__code :where(.tok-punct) {
-        color: color-mix(in srgb, var(--nsh-color-surface) 65%, transparent);
-      }
-
-      .code-tabs__code :where(.tok-tag, .tok-keyword) {
-        color: var(--nsh-color-secondary);
-        font-weight: 600;
-      }
-
-      .code-tabs__code :where(.tok-attr) {
-        color: var(--nsh-color-tertiary);
-      }
-
-      .code-tabs__code :where(.tok-string) {
-        color: var(--nsh-color-success);
-      }
-
-      .code-tabs__code :where(.tok-number) {
-        color: var(--nsh-color-warn);
+      .code-tabs__code code.hljs {
+        display: block;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
       }
 
       .code-tabs__empty {
@@ -160,6 +142,8 @@ export class CodeTabsComponent {
 
   readonly activeIndex = signal(0);
   readonly lastCopied = signal<'html' | 'ts' | null>(null);
+  readonly highlightedHtml = computed(() => highlightSnippet(this.html(), 'html'));
+  readonly highlightedTs = computed(() => highlightSnippet(this.ts(), 'typescript'));
 
   copy(value: string, kind: 'html' | 'ts'): void {
     if (!value) {

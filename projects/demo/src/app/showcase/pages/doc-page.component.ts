@@ -15,6 +15,7 @@ import {
   type DocSignalMetadata,
   type DocStylingTokenMetadata,
 } from '../shared/doc-source-metadata';
+import { highlightSnippet } from '../shared/code-highlight.util';
 import { getDocEntry } from '../shared/doc-registry';
 
 type DocTabId = 'overview' | 'api' | 'styling' | 'examples';
@@ -205,9 +206,9 @@ function toPascalCase(value: string): string {
         }
 
         @if (activeTab() === 'styling') {
-          <section class="doc-page__styling">
-            @if (stylingTokens().length) {
-              <pre class="doc-page__styling-code"><code>{{ stylingSnippet() }}</code></pre>
+            <section class="doc-page__styling">
+              @if (stylingTokens().length) {
+              <pre class="doc-page__styling-code"><code class="hljs" [innerHTML]="highlightedStylingSnippet()"></code></pre>
 
               <p class="doc-page__styling-intro">
                 Styling tokens below are extracted from the component override surface in
@@ -558,15 +559,23 @@ function toPascalCase(value: string): string {
 
       .doc-page__styling-code {
         margin: 0;
-        border: 1px solid #cfd6e6;
+        border: 1px solid #2a3441;
         border-radius: 14px;
-        background: #eef3fb;
-        color: #202a3b;
+        background: #0b0f14;
+        color: #e6edf3;
         padding: 18px 20px;
         overflow: auto;
         font-family: var(--nsh-font-family-mono, ui-monospace, monospace);
         font-size: 0.98rem;
         line-height: 1.55;
+      }
+
+      .doc-page__styling-code code.hljs {
+        display: block;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
       }
 
       .doc-page__styling-intro {
@@ -786,6 +795,10 @@ export class DocPageComponent {
 
     return lines.join('\n');
   });
+
+  readonly highlightedStylingSnippet = computed(() =>
+    highlightSnippet(this.stylingSnippet(), 'css')
+  );
 
   targetAnchor(group: ApiGroup, target: DocApiTargetMetadata): string {
     return `${group.id}-${toSlug(target.name)}`;
