@@ -102,6 +102,14 @@ function toPascalCase(value: string): string {
             <p class="doc-page__subtitle">{{ doc.description }}</p>
           </header>
 
+          @if (doc.overview?.length) {
+            <section class="doc-page__overview">
+              @for (paragraph of doc.overview; track paragraph) {
+                <p class="doc-page__overview-paragraph">{{ paragraph }}</p>
+              }
+            </section>
+          }
+
           @if (doc.usage?.length) {
             <section class="doc-page__usage">
               <h2 class="doc-page__section-title">Usage guidelines</h2>
@@ -210,9 +218,19 @@ function toPascalCase(value: string): string {
               @if (stylingTokens().length) {
               <pre class="doc-page__styling-code"><code class="hljs" [innerHTML]="highlightedStylingSnippet()"></code></pre>
 
+              @if (entry()?.stylingGuide?.length) {
+                <div class="doc-page__styling-guide">
+                  <p class="doc-page__styling-guide-title">How to customize this component</p>
+                  @for (paragraph of entry()!.stylingGuide; track paragraph) {
+                    <p class="doc-page__styling-guide-text">{{ paragraph }}</p>
+                  }
+                </div>
+              }
+
               <p class="doc-page__styling-intro">
                 Styling tokens below are extracted from the component override surface in
                 <code class="doc-page__inline-code">nsh-kit-ui</code> source.
+                Apply them globally on <code class="doc-page__inline-code">:root</code>, or scope them by setting the variables on the component selector (or a wrapper element).
               </p>
 
               <h2 class="doc-page__section-title">Style Tokens</h2>
@@ -226,19 +244,6 @@ function toPascalCase(value: string): string {
                     [value]="tokenNameFilter()"
                     (input)="tokenNameFilter.set($any($event.target).value ?? '')"
                   />
-                </label>
-
-                <label class="doc-page__filter-field">
-                  <span class="doc-page__sr-only">Filter by source file</span>
-                  <select
-                    [value]="tokenSourceFilter()"
-                    (change)="tokenSourceFilter.set($any($event.target).value ?? 'all')"
-                  >
-                    <option value="all">Filter by source file</option>
-                    @for (sourcePath of stylingSources(); track sourcePath) {
-                      <option [value]="sourcePath">{{ sourcePath }}</option>
-                    }
-                  </select>
                 </label>
 
                 <button
@@ -257,14 +262,33 @@ function toPascalCase(value: string): string {
                     <thead>
                       <tr>
                         <th scope="col">Token</th>
-                        <th scope="col">Source file</th>
+                        <th scope="col">Description</th>
                       </tr>
                     </thead>
                     <tbody>
                       @for (token of filteredStylingTokens(); track token.name) {
                         <tr>
-                          <td><code>{{ token.name }}</code></td>
-                          <td><code>{{ token.source }}</code></td>
+                          <td class="doc-page__styling-token-cell">
+                            <code>{{ token.name }}</code>
+                            <button
+                              type="button"
+                              class="doc-page__styling-copy-icon"
+                              (click)="copyStylingToken(token.name)"
+                              [attr.aria-label]="'Copy ' + token.name"
+                              [attr.title]="lastCopiedToken() === token.name ? 'Copied' : 'Copy'"
+                            >
+                              <span class="doc-page__sr-only">
+                                @if (lastCopiedToken() === token.name) {
+                                  Copied
+                                } @else {
+                                  Copy
+                                }
+                              </span>
+                            </button>
+                          </td>
+                          <td class="doc-page__styling-description">
+                            {{ getTokenDescription(token.name) }}
+                          </td>
                         </tr>
                       }
                     </tbody>
@@ -361,6 +385,19 @@ function toPascalCase(value: string): string {
         color: #404c63;
         font-size: clamp(1rem, 1.4vw, 1.25rem);
         line-height: 1.65;
+      }
+
+      .doc-page__overview {
+        display: grid;
+        gap: 12px;
+        max-width: 78ch;
+      }
+
+      .doc-page__overview-paragraph {
+        margin: 0;
+        color: #2b3345;
+        font-size: 0.95rem;
+        line-height: 1.7;
       }
 
       .doc-page__usage {
@@ -578,6 +615,29 @@ function toPascalCase(value: string): string {
         font: inherit;
       }
 
+      .doc-page__styling-guide {
+        display: grid;
+        gap: 12px;
+        padding: 14px 16px;
+        background: #f7f9fd;
+        border-radius: 10px;
+        border-left: 4px solid #1a73e8;
+      }
+
+      .doc-page__styling-guide-title {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1f2533;
+      }
+
+      .doc-page__styling-guide-text {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #2b3345;
+        line-height: 1.6;
+      }
+
       .doc-page__styling-intro {
         margin: 0;
         color: #2f3a4f;
@@ -585,7 +645,7 @@ function toPascalCase(value: string): string {
 
       .doc-page__styling-filters {
         display: grid;
-        grid-template-columns: minmax(220px, 1fr) minmax(260px, 1fr) auto;
+        grid-template-columns: minmax(260px, 1fr) auto;
         gap: 14px;
         align-items: center;
       }
@@ -637,7 +697,7 @@ function toPascalCase(value: string): string {
       .doc-page__styling-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 720px;
+        min-width: 640px;
       }
 
       .doc-page__styling-table th,
@@ -647,10 +707,78 @@ function toPascalCase(value: string): string {
         border-bottom: 1px solid #d7ddea;
       }
 
+      .doc-page__styling-table td code {
+        display: inline-block;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .doc-page__styling-token-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .doc-page__styling-token-cell code {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
       .doc-page__styling-table th {
         font-size: 0.92rem;
         letter-spacing: 0.03em;
         text-transform: uppercase;
+      }
+
+      .doc-page__styling-copy-icon {
+        width: 34px;
+        height: 34px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        position: relative;
+        flex: 0 0 auto;
+      }
+
+      .doc-page__styling-copy-icon::before,
+      .doc-page__styling-copy-icon::after {
+        content: '';
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #0f4ea9;
+        border-radius: 3px;
+        box-sizing: border-box;
+      }
+
+      .doc-page__styling-copy-icon::before {
+        top: 10px;
+        left: 12px;
+        opacity: 0.9;
+      }
+
+      .doc-page__styling-copy-icon::after {
+        top: 7px;
+        left: 9px;
+        opacity: 0.55;
+      }
+
+      .doc-page__styling-copy-icon:hover {
+        background: rgba(15, 78, 169, 0.08);
+      }
+
+      .doc-page__styling-copy-icon:focus-visible {
+        outline: 2px solid rgba(26, 115, 232, 0.3);
+        outline-offset: 2px;
+      }
+
+      .doc-page__styling-description {
+        color: #556176;
+        font-size: 0.9rem;
       }
 
       .doc-page__styling-empty {
@@ -733,9 +861,7 @@ export class DocPageComponent {
   );
 
   readonly activeTab = computed<DocTabId>(() => normalizeTab(this.tabParam()));
-  readonly showExamples = computed(
-    () => this.activeTab() === 'overview' || this.activeTab() === 'examples'
-  );
+  readonly showExamples = computed(() => this.activeTab() === 'examples');
 
   readonly examples = computed(() => this.entry()?.exampleProvider() ?? []);
 
@@ -756,39 +882,40 @@ export class DocPageComponent {
   readonly stylingTokens = computed(() => this.metadata().stylingTokens);
 
   readonly tokenNameFilter = signal('');
-  readonly tokenSourceFilter = signal('all');
-
-  readonly stylingSources = computed(() => {
-    const values = new Set(this.stylingTokens().map((token) => token.source));
-    return Array.from(values).sort((left, right) => left.localeCompare(right));
-  });
+  readonly lastCopiedToken = signal<string | null>(null);
 
   readonly filteredStylingTokens = computed<ReadonlyArray<DocStylingTokenMetadata>>(() => {
     const nameFilter = this.tokenNameFilter().trim().toLowerCase();
-    const sourceFilter = this.tokenSourceFilter();
 
     return this.stylingTokens().filter((token) => {
       const matchesName = !nameFilter || token.name.toLowerCase().includes(nameFilter);
-      const matchesSource = sourceFilter === 'all' || token.source === sourceFilter;
-      return matchesName && matchesSource;
+      return matchesName;
     });
   });
 
-  readonly hasActiveStylingFilters = computed(
-    () => this.tokenNameFilter().trim().length > 0 || this.tokenSourceFilter() !== 'all'
-  );
+  readonly hasActiveStylingFilters = computed(() => this.tokenNameFilter().trim().length > 0);
 
   readonly stylingSnippet = computed(() => {
     const entry = this.entry();
     const tokens = this.stylingTokens().slice(0, 6);
+
+    const selector =
+      this.metadata().api.find((target) => target.kind === 'component' && !!target.selector)?.selector ?? null;
 
     if (!entry || tokens.length === 0) {
       return `/* No component-level styling tokens were extracted for this entry. */`;
     }
 
     const lines = [
-      `/* ${entry.title} tokens from nsh-kit-ui */`,
+      `/* ${entry.title} styling tokens (CSS variables) */`,
+      '',
+      '/* Global override (affects all instances) */',
       ':root {',
+      ...tokens.map((token) => `  ${token.name}: /* value */;`),
+      '}',
+      '',
+      `/* Scoped override (affects only matching elements) */`,
+      `${selector ?? '.my-scope'} {`,
       ...tokens.map((token) => `  ${token.name}: /* value */;`),
       '}',
     ];
@@ -799,6 +926,41 @@ export class DocPageComponent {
   readonly highlightedStylingSnippet = computed(() =>
     highlightSnippet(this.stylingSnippet(), 'css')
   );
+
+  copyStylingToken(tokenName: string): void {
+    if (!tokenName) {
+      return;
+    }
+
+    if (navigator.clipboard?.writeText) {
+      void navigator.clipboard.writeText(tokenName).then(() => {
+        this.lastCopiedToken.set(tokenName);
+        setTimeout(() => this.lastCopiedToken.set(null), 1200);
+      });
+      return;
+    }
+
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = tokenName;
+      textarea.setAttribute('readonly', 'true');
+      textarea.style.position = 'absolute';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      this.lastCopiedToken.set(tokenName);
+      setTimeout(() => this.lastCopiedToken.set(null), 1200);
+    } catch {
+      this.lastCopiedToken.set(null);
+    }
+  }
+
+  getTokenDescription(tokenName: string): string {
+    const descriptions = this.entry()?.tokenDescriptions;
+    return descriptions?.[tokenName] ?? 'CSS custom property for styling override';
+  }
 
   targetAnchor(group: ApiGroup, target: DocApiTargetMetadata): string {
     return `${group.id}-${toSlug(target.name)}`;
@@ -820,6 +982,5 @@ export class DocPageComponent {
 
   resetStylingFilters(): void {
     this.tokenNameFilter.set('');
-    this.tokenSourceFilter.set('all');
   }
 }

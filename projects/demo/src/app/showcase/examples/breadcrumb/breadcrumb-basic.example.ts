@@ -8,7 +8,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshBreadcrumbComponent],
   template: `
-    <nsh-breadcrumb [items]="items()" separator="chevron"></nsh-breadcrumb>
+    <nsh-breadcrumb [items]="items()" separator="slash"></nsh-breadcrumb>
   `,
 })
 export class BreadcrumbBasicExampleComponent {
@@ -19,7 +19,7 @@ export class BreadcrumbBasicExampleComponent {
   ]);
 }
 
-export const breadcrumbBasicHtml = `<nsh-breadcrumb [items]="items" separator="chevron"></nsh-breadcrumb>`;
+export const breadcrumbBasicHtml = `<nsh-breadcrumb [items]="items" separator="slash"></nsh-breadcrumb>`;
 
 export const breadcrumbBasicTs = `import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';

@@ -18,8 +18,11 @@ export interface DocEntry {
   id: string;
   title: string;
   description: string;
+  overview?: ReadonlyArray<string>;
   usage?: ReadonlyArray<string>;
+  stylingGuide?: ReadonlyArray<string>;
   route: string;
   category: DocCategoryId;
   exampleProvider: () => ReadonlyArray<DocExample>;
+  tokenDescriptions?: Readonly<Record<string, string>>;
 }
