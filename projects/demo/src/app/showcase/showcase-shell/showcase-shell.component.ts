@@ -7,9 +7,9 @@ import {
   signal,
 } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 import { NshListComponent, NshListItemComponent } from 'nsh-kit-ui';
 
@@ -271,10 +271,21 @@ import type { DocCategoryId, DocEntry } from '../shared/doc-models';
 })
 export class ShowcaseShellComponent {
   private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly viewportScroller = inject(ViewportScroller);
 
-  readonly currentId = signal<string | null>(null);
+  private readonly routeId = toSignal(
+    this.activatedRoute.firstChild
+      ? this.activatedRoute.firstChild.paramMap.pipe(map((params) => params.get('id') ?? null))
+      : this.router.events.pipe(
+          filter((event) => event instanceof NavigationEnd),
+          map(() => this.extractIdFromRouter())
+        ),
+    { initialValue: null }
+  );
+
+  readonly currentId = computed(() => this.routeId());
   readonly categories = DOC_CATEGORIES;
   readonly currentEntry = computed(() => getDocEntry(this.currentId()));
   readonly activeCategory = computed<DocCategoryId>(
@@ -286,12 +297,9 @@ export class ShowcaseShellComponent {
   });
 
   constructor() {
-    this.updateCurrentId();
-
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.updateCurrentId();
         this.scrollMainToTop();
       });
   }
@@ -309,9 +317,17 @@ export class ShowcaseShellComponent {
     return section?.entries[0]?.route ?? '/showcase/button';
   }
 
-  private updateCurrentId(): void {
-    const id = this.router.routerState.snapshot.root.firstChild?.firstChild?.paramMap.get('id') ?? null;
-    this.currentId.set(id);
+  private extractIdFromRouter(): string | null {
+    // Try to find the :id param from the activated route tree
+    let route = this.activatedRoute;
+    while (route) {
+      const id = route.snapshot.paramMap.get('id');
+      if (id) {
+        return id;
+      }
+      route = route.firstChild as ActivatedRoute;
+    }
+    return null;
   }
 
   private scrollMainToTop(): void {

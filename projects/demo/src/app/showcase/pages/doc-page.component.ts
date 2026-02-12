@@ -198,7 +198,7 @@ function toPascalCase(value: string): string {
                     {{ group.title }}
                   </a>
                   @for (target of group.targets; track target.name) {
-                    <a class="doc-page__api-toc-link" [href]="'#' + targetAnchor(group, target)">
+                    <a class="doc-page__api-toc-link" [routerLink]="entry()?.route">
                       {{ target.name }}
                     </a>
                   }
