@@ -968,16 +968,142 @@ export class DocPageComponent {
 
   signalBinding(signalDoc: DocSignalMetadata): string {
     const bindingName = signalDoc.alias ?? signalDoc.name;
+    const exampleValue = this.getExampleValue(signalDoc.name);
 
     if (signalDoc.kind === 'output') {
       return `(${bindingName})="on${toPascalCase(signalDoc.name)}($event)"`;
     }
 
     if (signalDoc.kind === 'model') {
-      return `[(${bindingName})]="${signalDoc.name}"`;
+      return `[(${bindingName})]="${exampleValue}"`;
     }
 
-    return `[${bindingName}]="${signalDoc.name}"`;
+    return `[${bindingName}]="${exampleValue}"`;
+  }
+
+  private getExampleValue(signalName: string): string {
+    // Real example values for common signal names
+    const examplesByName: Record<string, string> = {
+      // Avatar
+      name: '"John Doe"',
+      ariaLabel: '"John Doe profile"',
+      initials: '"JD"',
+      status: '"online"',
+      size: '"lg"',
+      shape: '"circle"',
+      src: '"assets/avatar.jpg"',
+      alt: '"User avatar"',
+
+      // Badge
+      content: '"5"',
+
+      // Button
+      variant: '"primary"',
+      disabled: 'false',
+      loading: 'false',
+
+      // Card
+      elevation: '2',
+
+      // Breadcrumb
+      href: '"/"',
+
+      // Checkbox
+      checked: 'false',
+      indeterminate: 'false',
+
+      // Radio
+      value: '"option1"',
+
+      // Slider
+      min: '0',
+      max: '100',
+      step: '1',
+
+      // Input
+      placeholder: '"Enter text..."',
+      type: '"text"',
+      inputValue: '""',
+
+      // Textarea
+      rows: '4',
+
+      // Select
+      options: '[{id: 1, label: "Option 1"}]',
+
+      // Chips/List
+      chipItems: '["Tag 1", "Tag 2"]',
+
+      // Progress
+      progress: '65',
+
+      // Spinner
+      diameter: '48',
+
+      // Skeleton
+      lines: '3',
+
+      // Stepper
+      activeStep: '0',
+      steps: '[{label: "Step 1"}]',
+
+      // Tabs
+      activeTab: '0',
+      tabs: '[{label: "Tab 1"}]',
+
+      // Table
+      columns: '[{key: "name"}]',
+      dataRows: '[{name: "John"}]',
+
+      // Toolbar
+      title: '"Toolbar Title"',
+
+      // Paginator
+      pageSize: '10',
+      pageSizeOptions: '[10, 25]',
+      totalItems: '100',
+
+      // Divider
+      vertical: 'false',
+
+      // Empty State
+      icon: '"search"',
+      emptyTitle: '"No results"',
+      emptyMessage: '"Try different keywords"',
+
+      // Menu
+      menuItems: '[{label: "Item 1"}]',
+
+      // Sidenav
+      opened: 'true',
+      position: '"start"',
+
+      // Dialog
+      dialogMessage: '"Dialog content"',
+
+      // Snackbar
+      duration: '3000',
+
+      // Tooltip
+      text: '"Helpful tooltip"',
+      placement: '"top"',
+
+      // Autocomplete
+      suggestions: '["Apple", "Banana"]',
+
+      // Form Field
+      label: '"Form Label"',
+
+      // Sort
+      direction: '"asc"',
+
+      // Common patterns
+      color: '"primary"',
+      dense: 'false',
+      readonly: 'false',
+    };
+
+    return examplesByName[signalName] ?? `"example"`;
   }
 
   resetStylingFilters(): void {

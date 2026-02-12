@@ -240,8 +240,7 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
   <a nsh-breadcrumb href="/admin/users/list">List</a>
   <span nsh-breadcrumb>Edit User</span>
 </nav>`,
-    ]
-
+    ],
     tokenDescriptions: {
       '--nsh-breadcrumb-separator': 'Visual divider: "/" slash, ">" angle, "–" dash, "\\" backslash, "◀" arrow',
       '--nsh-breadcrumb-separator-color': 'Color: #999 medium gray, #ccc light gray, #666 dark gray',
@@ -317,8 +316,7 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
   <button nsh-button><mat-icon>delete</mat-icon></button>
   <button nsh-button><mat-icon>edit</mat-icon></button>
 </div>`,
-    ]
-
+    ],
     tokenDescriptions: {
       '--nsh-button-radius': 'Corner roundness: 0 sharp, 4px subtle rounded, 8px rounded (pill)',
       '--nsh-button-gap': 'Space between icon and text (8px tight, 12px comfortable, 16px spacious)',
@@ -1114,7 +1112,7 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
     {{item.name}}
   </label>
 </div>`,
-    ]
+    ],
     tokenDescriptions: {
       '--nsh-checkbox-size': 'Box dimension: 16px (small), 18px (compact), 20px (standard), 24px (large), 28px (extra-large)',
       '--nsh-checkbox-radius': 'Corners: 0 (sharp square), 2px (subtle), 3px (slightly rounded), 4px (rounded)',
@@ -1198,7 +1196,7 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
     <label><nsh-radio value="wallet"></nsh-radio>Digital Wallet</label>
   </nsh-radio-group>
 </fieldset>`,
-    ]
+    ],
     tokenDescriptions: {
       '--nsh-radio-size': 'Circle diameter: 16px (compact), 18px, 20px (standard), 24px (large), 28px (extra-large)',
       '--nsh-radio-border': 'Unselected ring: 2px solid #999 standard, 2px solid #666 bold, 1.5px solid #ccc light',
@@ -1279,7 +1277,7 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
     Share Analytics
   </label>
 </div>`,
-    ]
+    ],
     tokenDescriptions: {
       '--nsh-switch-width': 'Track width: 40px (small), 44px (compact), 48px (standard), 52px (large), 56px (extra-large)',
       '--nsh-switch-height': 'Track height: 20px (compact), 22px, 24px (standard), 26px (comfortable), 28px (spacious)',
@@ -1354,7 +1352,7 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
   <nsh-slider [min]="10" [max]="1000" [value]="minPrice" (change)="updateMinPrice($event)"></nsh-slider>
   <nsh-slider [min]="10" [max]="1000" [value]="maxPrice" (change)="updateMaxPrice($event)"></nsh-slider>
 </div>`,
-    ]
+    ],
     tokenDescriptions: {
       '--nsh-slider-track-height': 'Line thickness: 2px (thin), 4px (subtle), 6px (standard), 8px (bold), 10px (thick)',
       '--nsh-slider-track-bg': 'Empty portion: #e0e0e0 light, #d0d0d0 medium, #bbb dark gray',
@@ -1378,9 +1376,65 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
       'Ensure the selected value is clearly visible and that the control has a descriptive label for accessibility.',
     ],
     stylingGuide: [
-      'DROPDOWN: .form-field nsh-select { --nsh-select-height: 40px; --nsh-select-padding: 8px 12px; --nsh-select-border: 1px solid #ccc; --nsh-select-radius: 4px; --nsh-select-panel-bg: #fff; --nsh-select-panel-shadow: 0 2px 8px rgba(0,0,0,0.15); --nsh-select-option-padding: 12px 16px; }',
-      'LARGE select: .filter nsh-select { --nsh-select-height: 48px; --nsh-select-padding: 10px 14px; --nsh-select-option-padding: 16px 20px; --nsh-select-panel-shadow: 0 4px 16px rgba(0,0,0,0.2); }',
-      'HTML: <label>Choose:<nsh-select [options]="items"></nsh-select></label> - Click to open panel below/above, options styled with your padding token',
+      `/* GLOBAL - Default select dropdown styling (paste in styles.scss) */
+:root {
+  --nsh-select-height: 40px;
+  --nsh-select-padding: 8px 12px;
+  --nsh-select-border: 1px solid #ccc;
+  --nsh-select-radius: 4px;
+  --nsh-select-panel-bg: #fff;
+  --nsh-select-panel-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --nsh-select-option-padding: 12px 16px;
+}`,
+      `/* SCOPED - Different select styles (paste in component.scss) */
+/* Standard form select */
+.form-field nsh-select {
+  --nsh-select-height: 40px;
+  --nsh-select-padding: 8px 12px;
+  --nsh-select-border: 1px solid #ccc;
+  --nsh-select-radius: 4px;
+}
+
+/* Large filter dropdown */
+.filter-menu nsh-select {
+  --nsh-select-height: 48px;
+  --nsh-select-padding: 10px 14px;
+  --nsh-select-option-padding: 16px 20px;
+  --nsh-select-panel-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Compact inline select */
+.toolbar-select nsh-select {
+  --nsh-select-height: 32px;
+  --nsh-select-padding: 6px 10px;
+  --nsh-select-option-padding: 8px 12px;
+}`,
+      `/* HTML USAGE - Add select dropdowns */
+<div class="form-field">
+  <label>Choose Category</label>
+  <nsh-select [value]="selectedCategory" (change)="updateCategory($event)\">
+    <nsh-select-option *ngFor="let cat of categories\" [value]="cat.id\">
+      {{cat.name}}
+    </nsh-select-option>
+  </nsh-select>
+</div>
+
+<div class="filter-menu\">
+  <label>Filter by Status</label>
+  <nsh-select [value]="filter\" (change)="applyFilter($event)\">
+    <nsh-select-option value="all\">All Items</nsh-select-option>
+    <nsh-select-option value="active\">Active</nsh-select-option>
+    <nsh-select-option value="archived\">Archived</nsh-select-option>
+  </nsh-select>
+</div>
+
+<div class=\"toolbar-select\">
+  <nsh-select [value]="sortBy\" (change)=\"updateSort($event)\">\
+    <nsh-select-option value="name\">Sort by Name</nsh-select-option>
+    <nsh-select-option value="date\">Sort by Date</nsh-select-option>
+    <nsh-select-option value="size\">Sort by Size</nsh-select-option>
+  </nsh-select>
+</div>`,
     ],
     tokenDescriptions: {
       '--nsh-select-height': 'Trigger height: 32px (compact), 40px (standard), 44px, 48px (large), 56px (xl)',
@@ -1507,9 +1561,27 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
       'Keep messaging specific and actionable. Instead of "Invalid", explain the expected format or the allowed range.',
     ],
     stylingGuide: [
-      'STANDARD form: <nsh-form-field> <label>Email</label> <nsh-input nsh-input placeholder=\"user@example.com\"></nsh-input> <hint>We\'ll never share</hint> </nsh-form-field>',
-      'WITH error: .email-field nsh-form-field { --nsh-form-field-label-color: #333; --nsh-form-field-hint-color: #999; --nsh-form-field-error-color: #d32f2f; --nsh-form-field-label-font-size: 13px; }',
-      'CSS class for styling: <nsh-form-field [state]=\"invalid ? \'error\' : \\'valid\\'\" >',
+      `/* STANDARD form field */
+<nsh-form-field>
+  <label>Email</label>
+  <nsh-input placeholder="user@example.com"></nsh-input>
+  <hint>We'll never share this email</hint>
+</nsh-form-field>`,
+      `/* Error state styling */
+.email-field nsh-form-field {
+  --nsh-form-field-label-color: #333;
+  --nsh-form-field-hint-color: #999;
+  --nsh-form-field-error-color: #d32f2f;
+  --nsh-form-field-label-font-size: 13px;
+}`,
+      `/* Conditional state binding */
+<nsh-form-field [class]="invalid ? 'has-error' : 'valid'">
+  <label>Required Field</label>
+  <nsh-input formControl="email"></nsh-input>
+  @if (invalid) {
+    <hint class="error">Please enter a valid email</hint>
+  }
+</nsh-form-field>`,
     ],
     tokenDescriptions: {
       '--nsh-form-field-padding': 'Wrapper space: 10px (compact), 12px (standard), 16px (spacious), 20px (generous)',
