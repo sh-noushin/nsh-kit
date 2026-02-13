@@ -17,6 +17,7 @@ import {
 } from '../shared/doc-source-metadata';
 import { highlightSnippet } from '../shared/code-highlight.util';
 import { getDocEntry } from '../shared/doc-registry';
+import { getSignalDescription as getSignalDescriptionText } from '../shared/signal-descriptions';
 
 type DocTabId = 'overview' | 'api' | 'styling' | 'examples';
 
@@ -158,6 +159,7 @@ function toPascalCase(value: string): string {
                                   <th scope="col">Signal</th>
                                   <th scope="col">Kind</th>
                                   <th scope="col">Type</th>
+                                  <th scope="col">Description</th>
                                   <th scope="col">How to use</th>
                                   <th scope="col">Required</th>
                                 </tr>
@@ -175,6 +177,9 @@ function toPascalCase(value: string): string {
                                       <span class="doc-page__signal-kind">{{ signalDoc.kind }}</span>
                                     </td>
                                     <td><code>{{ signalDoc.type }}</code></td>
+                                    <td class="doc-page__signal-description">
+                                      {{ getSignalDescription(signalDoc) }}
+                                    </td>
                                     <td><code>{{ signalBinding(signalDoc) }}</code></td>
                                     <td>{{ signalDoc.required ? 'Yes' : 'No' }}</td>
                                   </tr>
@@ -504,12 +509,13 @@ function toPascalCase(value: string): string {
         border-radius: 10px;
         background: #ffffff;
         overflow: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .doc-page__api-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 640px;
+        min-width: 1100px;
       }
 
       .doc-page__api-table th,
@@ -524,6 +530,11 @@ function toPascalCase(value: string): string {
         letter-spacing: 0.03em;
         text-transform: uppercase;
         color: #2a3347;
+        font-weight: 600;
+        background: #f7f9fd;
+        position: sticky;
+        top: 0;
+        z-index: 10;
       }
 
       .doc-page__api-table tbody tr + tr td {
@@ -551,6 +562,13 @@ function toPascalCase(value: string): string {
       .doc-page__api-empty-signals {
         margin: 0;
         color: #5f697d;
+      }
+
+      .doc-page__signal-description {
+        color: #556176;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-width: 300px;
       }
 
       .doc-page__api-toc {
@@ -982,6 +1000,18 @@ export class DocPageComponent {
   }
 
   private getExampleValue(signalName: string): string {
+    const componentId = this.entry()?.id;
+
+    if (componentId === 'breadcrumb') {
+      if (signalName === 'items') {
+        return 'items()';
+      }
+
+      if (signalName === 'itemIcons') {
+        return 'itemIcons()';
+      }
+    }
+
     // Real example values for common signal names
     const examplesByName: Record<string, string> = {
       // Avatar
@@ -1108,5 +1138,10 @@ export class DocPageComponent {
 
   resetStylingFilters(): void {
     this.tokenNameFilter.set('');
+  }
+
+  getSignalDescription(signalDoc: DocSignalMetadata): string {
+    const componentId = this.entry()?.id;
+    return getSignalDescriptionText(componentId ?? '', signalDoc.name, signalDoc.kind, signalDoc.type);
   }
 }

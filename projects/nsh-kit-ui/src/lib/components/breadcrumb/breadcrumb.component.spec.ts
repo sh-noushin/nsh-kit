@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { NshBreadcrumbComponent, type NshBreadcrumbItem } from './breadcrumb.component';
+import { NshBreadcrumbComponent, type NshBreadcrumbIconValue, type NshBreadcrumbItem } from './breadcrumb.component';
 
 @Component({
   standalone: true,
@@ -10,6 +10,13 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from './breadcrumb.com
     <nsh-breadcrumb
       [items]="items"
       [separator]="separator"
+      [variant]="variant"
+      [elevation]="elevation"
+      [shadow]="shadow"
+      [compact]="compact"
+      [activeIndex]="activeIndex"
+      [accentColor]="accentColor"
+      [itemIcons]="itemIcons"
       [maxItems]="maxItems"
       [ariaLabel]="ariaLabel"
     />
@@ -18,6 +25,13 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from './breadcrumb.com
 class HostComponent {
   items: NshBreadcrumbItem[] = [];
   separator: 'slash' | 'chevron' | 'dot' | 'custom' = 'chevron';
+  variant: 'minimal' | 'soft' | 'solid' | 'segmented' | 'steps' = 'minimal';
+  elevation: 'flat' | 'raised' = 'flat';
+  shadow = false;
+  compact = false;
+  activeIndex: number | null = null;
+  accentColor: string | null = null;
+  itemIcons: Record<string, NshBreadcrumbIconValue> | null = null;
   maxItems: number | null = null;
   ariaLabel = 'Breadcrumb';
 }
@@ -130,5 +144,90 @@ describe('NshBreadcrumbComponent', () => {
     for (const sep of Array.from(seps)) {
       expect(sep.getAttribute('aria-hidden')).toBe('true');
     }
+  });
+
+  it('renders item icons from item and object map', async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items = [
+      { id: 'home', label: 'Home' },
+      { label: 'Library', icon: 'folder' },
+      { label: 'Current' },
+    ];
+    fixture.componentInstance.itemIcons = {
+      home: 'home',
+    };
+    fixture.detectChanges();
+
+    const icons = fixture.nativeElement.querySelectorAll('.nsh-breadcrumb__item-icon') as NodeListOf<HTMLElement>;
+    expect(icons.length).toBe(2);
+  });
+
+  it('renders inline svg icons from icon object map', async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items = [
+      { id: 'home', label: 'Home' },
+      { label: 'Current' },
+    ];
+    fixture.componentInstance.itemIcons = {
+      home: {
+        svg: '<svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"></path><path d="M5 10v10h14V10"></path></svg>',
+      },
+    };
+    fixture.detectChanges();
+
+    const svgIcons = fixture.nativeElement.querySelectorAll('.nsh-breadcrumb__item-icon--svg') as NodeListOf<HTMLElement>;
+    expect(svgIcons.length).toBe(1);
+    expect(svgIcons[0]?.innerHTML).toContain('<svg');
+  });
+
+  it('applies variant and elevation/shadow classes', async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items = [{ label: 'Home' }, { label: 'Current' }];
+    fixture.componentInstance.variant = 'segmented';
+    fixture.componentInstance.elevation = 'raised';
+    fixture.componentInstance.shadow = true;
+    fixture.detectChanges();
+
+    const nav = fixture.nativeElement.querySelector('.nsh-breadcrumb') as HTMLElement;
+    expect(nav.getAttribute('data-variant')).toBe('segmented');
+    expect(nav.classList.contains('nsh-breadcrumb--raised')).toBe(true);
+    expect(nav.classList.contains('nsh-breadcrumb--shadow')).toBe(true);
+  });
+
+  it('applies steps variant active item and accent color variable', async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items = [
+      { label: 'ECMAScript', href: '/a' },
+      { label: 'HTML5', href: '/b' },
+      { label: 'Node.js', href: '/c' },
+      { label: 'Linux' },
+    ];
+    fixture.componentInstance.variant = 'steps';
+    fixture.componentInstance.activeIndex = 0;
+    fixture.componentInstance.accentColor = '#e91e63';
+    fixture.detectChanges();
+
+    const nav = fixture.nativeElement.querySelector('.nsh-breadcrumb') as HTMLElement;
+    expect(nav.style.getPropertyValue('--nsh-breadcrumb-accent').trim()).toBe('#e91e63');
+
+    const activeItems = fixture.nativeElement.querySelectorAll('.nsh-breadcrumb__item--active') as NodeListOf<HTMLElement>;
+    expect(activeItems.length).toBe(1);
+    expect(activeItems[0]?.textContent).toContain('ECMAScript');
   });
 });

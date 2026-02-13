@@ -226,10 +226,45 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
         "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts",
         "signals": [
           {
+            "name": "accentColor",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          },
+          {
+            "name": "activeIndex",
+            "alias": null,
+            "kind": "input",
+            "type": "number | null",
+            "required": false
+          },
+          {
             "name": "ariaLabel",
             "alias": null,
             "kind": "input",
             "type": "string",
+            "required": false
+          },
+          {
+            "name": "compact",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "elevation",
+            "alias": null,
+            "kind": "input",
+            "type": "NshBreadcrumbElevation",
+            "required": false
+          },
+          {
+            "name": "itemIcons",
+            "alias": null,
+            "kind": "input",
+            "type": "Record<string, string> | null",
             "required": false
           },
           {
@@ -252,11 +287,29 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
             "kind": "input",
             "type": "NshBreadcrumbSeparator",
             "required": false
+          },
+          {
+            "name": "shadow",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "variant",
+            "alias": null,
+            "kind": "input",
+            "type": "NshBreadcrumbVariant",
+            "required": false
           }
         ]
       }
     ],
     "stylingTokens": [
+      {
+        "name": "--nsh-breadcrumb-accent",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
       {
         "name": "--nsh-breadcrumb-font-size",
         "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
@@ -270,7 +323,27 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
         "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
       },
       {
+        "name": "--nsh-breadcrumb-item-bg",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
+        "name": "--nsh-breadcrumb-item-bg-current",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
+        "name": "--nsh-breadcrumb-item-radius",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
         "name": "--nsh-breadcrumb-separator-color",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
+        "name": "--nsh-breadcrumb-shadow",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
+        "name": "--nsh-breadcrumb-surface",
         "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
       },
       {
@@ -808,69 +881,6 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
             "alias": null,
             "kind": "output",
             "type": "void",
-            "required": false
-          }
-        ]
-      }
-    ],
-    "stylingTokens": []
-  },
-  "menu-panel": {
-    "api": [
-      {
-        "name": "NshMenuPanelComponent",
-        "kind": "component",
-        "selector": "nsh-menu-panel",
-        "exportAs": null,
-        "source": "projects/nsh-kit-ui/src/lib/overlays/menu-panel/menu-panel.component.ts",
-        "signals": [
-          {
-            "name": "ariaLabel",
-            "alias": null,
-            "kind": "input",
-            "type": "string | null",
-            "required": false
-          },
-          {
-            "name": "autoFocus",
-            "alias": null,
-            "kind": "input",
-            "type": "boolean",
-            "required": false
-          },
-          {
-            "name": "closeOnItemClick",
-            "alias": null,
-            "kind": "input",
-            "type": "boolean",
-            "required": false
-          },
-          {
-            "name": "panelId",
-            "alias": null,
-            "kind": "input",
-            "type": "string",
-            "required": false
-          },
-          {
-            "name": "template",
-            "alias": null,
-            "kind": "input",
-            "type": "TemplateRef<unknown> | null",
-            "required": false
-          },
-          {
-            "name": "width",
-            "alias": null,
-            "kind": "input",
-            "type": "string | null",
-            "required": false
-          },
-          {
-            "name": "closeRequested",
-            "alias": null,
-            "kind": "output",
-            "type": "NshMenuCloseReason",
             "required": false
           }
         ]
