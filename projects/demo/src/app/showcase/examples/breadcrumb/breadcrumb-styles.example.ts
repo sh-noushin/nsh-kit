@@ -8,117 +8,107 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshBreadcrumbComponent],
   template: `
-    <div class="control-grid">
-      <label class="field">
-        Soft Accent
-        <input type="color" [value]="softAccent()" (input)="setSoftAccent($event)" />
-      </label>
-      <label class="field">
-        Solid Accent
-        <input type="color" [value]="solidAccent()" (input)="setSolidAccent($event)" />
-      </label>
-      <label class="field">
-        Segmented Accent
-        <input type="color" [value]="segmentedAccent()" (input)="setSegmentedAccent($event)" />
-      </label>
-    </div>
-
     <div class="example-stack">
-      <div class="example-label">Soft (card-like)</div>
-      <nsh-breadcrumb
-        [items]="softItems"
-        [preventNavigation]="true"
-        [truncateOnClick]="true"
-        variant="soft"
-        separator="chevron"
-        elevation="raised"
-        [accentColor]="softAccent()"
-        [style.--nsh-breadcrumb-surface]="softSurface()"
-        [style.--nsh-breadcrumb-item-bg]="softInactive()"
-        [style.--nsh-breadcrumb-item-bg-current]="softAccent()"
-        [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
-        [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
-        [style.--nsh-breadcrumb-item-min-width]="'132px'"
-        [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-        [shadow]="true"
-      ></nsh-breadcrumb>
+      <div class="example-block">
+        <label class="field">
+          Soft (card-like)
+          <input type="color" [value]="softAccent()" (input)="setSoftAccent($event)" />
+        </label>
+        <nsh-breadcrumb
+          [items]="softItems"
+          [preventNavigation]="true"
+          [truncateOnClick]="true"
+          variant="soft"
+          separator="chevron"
+          elevation="raised"
+          [accentColor]="softAccent()"
+          [style.--nsh-breadcrumb-surface]="softSurface()"
+          [style.--nsh-breadcrumb-item-bg]="softInactive()"
+          [style.--nsh-breadcrumb-item-bg-current]="softAccent()"
+          [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
+          [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
+          [style.--nsh-breadcrumb-item-min-width]="'132px'"
+          [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
+          [shadow]="true"
+        ></nsh-breadcrumb>
+      </div>
 
-      <div class="example-label">Solid (vivid)</div>
-      <nsh-breadcrumb
-        [items]="baseItems"
-        [preventNavigation]="true"
-        [truncateOnClick]="true"
-        variant="solid"
-        separator="slash"
-        elevation="raised"
-        [accentColor]="solidAccent()"
-        [style.--nsh-breadcrumb-surface]="solidSurface()"
-        [style.--nsh-breadcrumb-item-bg]="'transparent'"
-        [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
-        [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
-        [style.--nsh-breadcrumb-item-min-width]="'132px'"
-        [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-        [shadow]="true"
-      ></nsh-breadcrumb>
+      <div class="example-block">
+        <label class="field">
+          Solid (vivid)
+          <input type="color" [value]="solidAccent()" (input)="setSolidAccent($event)" />
+        </label>
+        <nsh-breadcrumb
+          [items]="baseItems"
+          [preventNavigation]="true"
+          [truncateOnClick]="true"
+          variant="solid"
+          separator="slash"
+          elevation="raised"
+          [accentColor]="solidAccent()"
+          [style.--nsh-breadcrumb-surface]="solidSurface()"
+          [style.--nsh-breadcrumb-item-bg]="'transparent'"
+          [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
+          [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
+          [style.--nsh-breadcrumb-item-min-width]="'132px'"
+          [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
+          [shadow]="true"
+        ></nsh-breadcrumb>
+      </div>
 
-      <div class="example-label">Segmented / Ribbon</div>
-      <nsh-breadcrumb
-        [items]="baseItems"
-        [preventNavigation]="true"
-        [truncateOnClick]="true"
-        variant="segmented"
-        separator="chevron"
-        elevation="raised"
-        [accentColor]="segmentedAccent()"
-        [style.--nsh-breadcrumb-surface]="segmentedSurface()"
-        [style.--nsh-breadcrumb-item-bg]="segmentedInactive()"
-        [style.--nsh-breadcrumb-item-bg-current]="segmentedAccent()"
-        [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
-        [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
-        [style.--nsh-breadcrumb-item-min-width]="'132px'"
-        [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-        [shadow]="true"
-      ></nsh-breadcrumb>
+      <div class="example-block">
+        <label class="field">
+          Segmented / Ribbon
+          <input type="color" [value]="segmentedAccent()" (input)="setSegmentedAccent($event)" />
+        </label>
+        <nsh-breadcrumb
+          [items]="baseItems"
+          [preventNavigation]="true"
+          [truncateOnClick]="true"
+          variant="segmented"
+          separator="chevron"
+          elevation="raised"
+          [accentColor]="segmentedAccent()"
+          [style.--nsh-breadcrumb-surface]="segmentedSurface()"
+          [style.--nsh-breadcrumb-item-bg]="segmentedInactive()"
+          [style.--nsh-breadcrumb-item-bg-current]="segmentedAccent()"
+          [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
+          [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
+          [style.--nsh-breadcrumb-item-min-width]="'132px'"
+          [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
+          [shadow]="true"
+        ></nsh-breadcrumb>
+      </div>
     </div>
   `,
   styles: [
     `
-      .control-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
       .field {
         display: grid;
         gap: 6px;
         font-size: 0.78rem;
-        color: #4c5870;
         font-weight: 600;
-        min-width: 140px;
+        color: #111;
       }
 
       input[type='color'] {
-        height: 34px;
-        width: 100%;
-        border-radius: 8px;
+        height: 24px;
+        width: 84px;
+        border-radius: 6px;
         border: 1px solid #c8d2e2;
         background: #fff;
-        padding: 4px;
+        padding: 2px;
         cursor: pointer;
       }
 
       .example-stack {
         display: grid;
-        gap: 14px;
+        gap: 18px;
       }
 
-      .example-label {
-        font-size: 0.86rem;
-        font-weight: 700;
-        color: #4c5870;
-        letter-spacing: 0.02em;
+      .example-block {
+        display: grid;
+        gap: 10px;
       }
     `,
   ],
@@ -165,38 +155,56 @@ export class BreadcrumbStylesExampleComponent {
 }
 
 export const breadcrumbStylesHtml = `<div class="example-stack">
-  <nsh-breadcrumb
-    [items]="softItems"
-    [preventNavigation]="true"
-    [truncateOnClick]="true"
-    variant="soft"
-    separator="chevron"
-    elevation="raised"
-    style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-    [shadow]="true"
-  ></nsh-breadcrumb>
+  <div class="example-block">
+    <label class="field">
+      Soft (card-like)
+      <input type="color" />
+    </label>
+    <nsh-breadcrumb
+      [items]="softItems"
+      [preventNavigation]="true"
+      [truncateOnClick]="true"
+      variant="soft"
+      separator="chevron"
+      elevation="raised"
+      style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
+      [shadow]="true"
+    ></nsh-breadcrumb>
+  </div>
 
-  <nsh-breadcrumb
-    [items]="baseItems"
-    [preventNavigation]="true"
-    [truncateOnClick]="true"
-    variant="solid"
-    separator="slash"
-    elevation="raised"
-    style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-    [shadow]="true"
-  ></nsh-breadcrumb>
+  <div class="example-block">
+    <label class="field">
+      Solid (vivid)
+      <input type="color" />
+    </label>
+    <nsh-breadcrumb
+      [items]="baseItems"
+      [preventNavigation]="true"
+      [truncateOnClick]="true"
+      variant="solid"
+      separator="slash"
+      elevation="raised"
+      style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
+      [shadow]="true"
+    ></nsh-breadcrumb>
+  </div>
 
-  <nsh-breadcrumb
-    [items]="baseItems"
-    [preventNavigation]="true"
-    [truncateOnClick]="true"
-    variant="segmented"
-    separator="chevron"
-    elevation="raised"
-    style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-    [shadow]="true"
-  ></nsh-breadcrumb>
+  <div class="example-block">
+    <label class="field">
+      Segmented / Ribbon
+      <input type="color" />
+    </label>
+    <nsh-breadcrumb
+      [items]="baseItems"
+      [preventNavigation]="true"
+      [truncateOnClick]="true"
+      variant="segmented"
+      separator="chevron"
+      elevation="raised"
+      style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
+      [shadow]="true"
+    ></nsh-breadcrumb>
+  </div>
 </div>`;
 
 export const breadcrumbStylesTs = `import { ChangeDetectionStrategy, Component } from '@angular/core';
