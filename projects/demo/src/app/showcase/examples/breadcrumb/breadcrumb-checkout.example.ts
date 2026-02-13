@@ -11,6 +11,8 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
     <nsh-breadcrumb
       [items]="items()"
       [itemIcons]="iconMap()"
+      [preventNavigation]="true"
+      [truncateOnClick]="true"
       variant="segmented"
       separator="chevron"
       elevation="raised"
@@ -24,9 +26,9 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 })
 export class BreadcrumbCheckoutExampleComponent {
   readonly items = signal<NshBreadcrumbItem[]>([
-    { id: 'cart', label: 'Cart', href: '/showcase/breadcrumb' },
-    { id: 'billing', label: 'Billing', href: '/showcase/breadcrumb' },
-    { id: 'shipping', label: 'Shipping', href: '/showcase/breadcrumb' },
+    { id: 'cart', label: 'Cart', href: '#' },
+    { id: 'billing', label: 'Billing', href: '#' },
+    { id: 'shipping', label: 'Shipping', href: '#' },
     { id: 'payment', label: 'Payment' },
   ]);
 
@@ -41,6 +43,8 @@ export class BreadcrumbCheckoutExampleComponent {
 export const breadcrumbCheckoutHtml = `<nsh-breadcrumb
   [items]="items"
   [itemIcons]="iconMap"
+  [preventNavigation]="true"
+  [truncateOnClick]="true"
   variant="segmented"
   separator="chevron"
   style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
@@ -60,9 +64,9 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 })
 export class BreadcrumbCheckoutExampleComponent {
   readonly items: NshBreadcrumbItem[] = [
-    { id: 'cart', label: 'Cart', href: '/showcase/breadcrumb' },
-    { id: 'billing', label: 'Billing', href: '/showcase/breadcrumb' },
-    { id: 'shipping', label: 'Shipping', href: '/showcase/breadcrumb' },
+    { id: 'cart', label: 'Cart', href: '#' },
+    { id: 'billing', label: 'Billing', href: '#' },
+    { id: 'shipping', label: 'Shipping', href: '#' },
     { id: 'payment', label: 'Payment' }
   ];
 

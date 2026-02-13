@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject, input, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { NshIconComponent } from '../../foundations/icon';
@@ -73,6 +73,7 @@ type RenderedCrumb =
                     class="nsh-breadcrumb__link"
                     [href]="crumb.item.href"
                     [attr.aria-label]="crumb.item.ariaLabel ?? null"
+                    (click)="onLinkClick($event, crumb.originalIndex)"
                   >
                     <span class="nsh-breadcrumb__step-index">{{ crumb.originalIndex + 1 }}</span>
                     @if (itemIcon) {
@@ -452,8 +453,8 @@ type RenderedCrumb =
     }
 
     .nsh-breadcrumb[data-variant='segmented'] .nsh-breadcrumb__text--current {
-      background: var(--_breadcrumb-item-bg-current);
-      color: var(--nsh-color-surface);
+      background: color-mix(in srgb, var(--_breadcrumb-item-bg-current) 66%, var(--_breadcrumb-accent) 34%);
+      color: color-mix(in srgb, var(--_breadcrumb-accent) 90%, var(--nsh-color-text) 10%);
       font-weight: var(--nsh-font-weight-semibold);
       z-index: 2;
     }
@@ -535,10 +536,17 @@ type RenderedCrumb =
       color: color-mix(in srgb, var(--_breadcrumb-accent) 88%, var(--nsh-color-text) 12%);
       border-color: color-mix(in srgb, var(--nsh-color-surface) 72%, transparent);
     }
+
+    .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__text--current .nsh-breadcrumb__step-index {
+      background: color-mix(in srgb, var(--nsh-color-surface) 88%, var(--_breadcrumb-accent) 12%);
+      color: color-mix(in srgb, var(--_breadcrumb-accent) 88%, var(--nsh-color-text) 12%);
+      border-color: color-mix(in srgb, var(--nsh-color-surface) 72%, transparent);
+    }
   `,
 })
 export class NshBreadcrumbComponent {
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly truncatedIndex = signal<number | null>(null);
 
   readonly items = input<NshBreadcrumbItem[]>([]);
   readonly separator = input<NshBreadcrumbSeparator>('chevron');
@@ -546,6 +554,8 @@ export class NshBreadcrumbComponent {
   readonly elevation = input<NshBreadcrumbElevation>('flat');
   readonly shadow = input(false, { transform: booleanAttribute });
   readonly compact = input(false, { transform: booleanAttribute });
+  readonly preventNavigation = input(false, { transform: booleanAttribute });
+  readonly truncateOnClick = input(false, { transform: booleanAttribute });
   readonly activeIndex = input<number | null>(null);
   readonly accentColor = input<string | null>(null);
   readonly itemIcons = input<Record<string, NshBreadcrumbIconValue> | null>(null);
@@ -614,16 +624,42 @@ export class NshBreadcrumbComponent {
     return null;
   }
 
+  onLinkClick(event: Event, index: number): void {
+    if (this.truncateOnClick()) {
+      event.preventDefault();
+      this.truncatedIndex.set(index);
+      return;
+    }
+
+    if (this.preventNavigation()) {
+      event.preventDefault();
+    }
+  }
+
   isStepActive(index: number): boolean {
     const selected = this.activeIndex();
     if (selected != null) {
       return index === selected;
     }
-    return index === this.items().length - 1;
+    return index === this.visibleItems().length - 1;
   }
 
-  readonly renderedCrumbs = computed<RenderedCrumb[]>(() => {
+  private readonly visibleItems = computed<NshBreadcrumbItem[]>(() => {
     const items = this.items();
+    if (!this.truncateOnClick()) {
+      return items;
+    }
+
+    const truncatedIndex = this.truncatedIndex();
+    if (truncatedIndex == null) {
+      return items;
+    }
+
+    return items.slice(0, Math.min(truncatedIndex + 1, items.length));
+  });
+
+  readonly renderedCrumbs = computed<RenderedCrumb[]>(() => {
+    const items = this.visibleItems();
     if (!items.length) {
       return [];
     }

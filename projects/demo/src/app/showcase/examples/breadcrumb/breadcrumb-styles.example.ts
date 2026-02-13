@@ -12,6 +12,8 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       <div class="example-label">Soft (card-like)</div>
       <nsh-breadcrumb
         [items]="softItems()"
+        [preventNavigation]="true"
+        [truncateOnClick]="true"
         variant="soft"
         separator="chevron"
         elevation="raised"
@@ -25,6 +27,8 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       <div class="example-label">Solid (vivid)</div>
       <nsh-breadcrumb
         [items]="baseItems()"
+        [preventNavigation]="true"
+        [truncateOnClick]="true"
         variant="solid"
         separator="slash"
         elevation="raised"
@@ -38,6 +42,8 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       <div class="example-label">Segmented / Ribbon</div>
       <nsh-breadcrumb
         [items]="baseItems()"
+        [preventNavigation]="true"
+        [truncateOnClick]="true"
         variant="segmented"
         separator="chevron"
         elevation="raised"
@@ -67,14 +73,14 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 })
 export class BreadcrumbStylesExampleComponent {
   readonly baseItems = signal<NshBreadcrumbItem[]>([
-    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
-    { id: 'profile', label: 'Profile', href: '/showcase/breadcrumb' },
+    { id: 'home', label: 'Home', href: '#' },
+    { id: 'profile', label: 'Profile', href: '#' },
     { id: 'settings', label: 'Settings' },
   ]);
 
   readonly softItems = signal<NshBreadcrumbItem[]>([
-    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
-    { id: 'profile', label: 'Profile', href: '/showcase/breadcrumb' },
+    { id: 'home', label: 'Home', href: '#' },
+    { id: 'profile', label: 'Profile', href: '#' },
     { id: 'settings', label: 'Settings' },
   ]);
 
@@ -83,6 +89,8 @@ export class BreadcrumbStylesExampleComponent {
 export const breadcrumbStylesHtml = `<div class="example-stack">
   <nsh-breadcrumb
     [items]="softItems"
+    [preventNavigation]="true"
+    [truncateOnClick]="true"
     variant="soft"
     separator="chevron"
     elevation="raised"
@@ -92,6 +100,8 @@ export const breadcrumbStylesHtml = `<div class="example-stack">
 
   <nsh-breadcrumb
     [items]="baseItems"
+    [preventNavigation]="true"
+    [truncateOnClick]="true"
     variant="solid"
     separator="slash"
     elevation="raised"
@@ -101,6 +111,8 @@ export const breadcrumbStylesHtml = `<div class="example-stack">
 
   <nsh-breadcrumb
     [items]="baseItems"
+    [preventNavigation]="true"
+    [truncateOnClick]="true"
     variant="segmented"
     separator="chevron"
     elevation="raised"
@@ -121,14 +133,14 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 })
 export class BreadcrumbStylesExampleComponent {
   readonly baseItems: NshBreadcrumbItem[] = [
-    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
-    { id: 'profile', label: 'Profile', href: '/showcase/breadcrumb' },
+    { id: 'home', label: 'Home', href: '#' },
+    { id: 'profile', label: 'Profile', href: '#' },
     { id: 'settings', label: 'Settings' }
   ];
 
   readonly softItems: NshBreadcrumbItem[] = [
-    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
-    { id: 'profile', label: 'Profile', href: '/showcase/breadcrumb' },
+    { id: 'home', label: 'Home', href: '#' },
+    { id: 'profile', label: 'Profile', href: '#' },
     { id: 'settings', label: 'Settings' }
   ];
 

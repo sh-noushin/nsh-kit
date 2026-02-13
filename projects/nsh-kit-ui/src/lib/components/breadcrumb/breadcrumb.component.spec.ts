@@ -15,6 +15,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbIconValue, type NshBreadcrumb
       [shadow]="shadow"
       [compact]="compact"
       [activeIndex]="activeIndex"
+      [truncateOnClick]="truncateOnClick"
       [accentColor]="accentColor"
       [itemIcons]="itemIcons"
       [maxItems]="maxItems"
@@ -29,6 +30,7 @@ class HostComponent {
   elevation: 'flat' | 'raised' = 'flat';
   shadow = false;
   compact = false;
+  truncateOnClick = false;
   activeIndex: number | null = null;
   accentColor: string | null = null;
   itemIcons: Record<string, NshBreadcrumbIconValue> | null = null;
@@ -229,5 +231,36 @@ describe('NshBreadcrumbComponent', () => {
     const activeItems = fixture.nativeElement.querySelectorAll('.nsh-breadcrumb__item--active') as NodeListOf<HTMLElement>;
     expect(activeItems.length).toBe(1);
     expect(activeItems[0]?.textContent).toContain('ECMAScript');
+  });
+
+  it('truncateOnClick removes trailing crumbs when clicking a previous crumb', async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items = [
+      { label: 'Home', href: '/a' },
+      { label: 'Section', href: '/b' },
+      { label: 'Article', href: '/c' },
+      { label: 'Details' },
+    ];
+    fixture.componentInstance.truncateOnClick = true;
+    fixture.detectChanges();
+
+    const linksBefore = fixture.nativeElement.querySelectorAll('a.nsh-breadcrumb__link') as NodeListOf<HTMLAnchorElement>;
+    expect(linksBefore.length).toBe(3);
+
+    linksBefore[1]?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+
+    const itemsAfter = fixture.nativeElement.querySelectorAll('.nsh-breadcrumb__item') as NodeListOf<HTMLElement>;
+    expect(itemsAfter.length).toBe(2);
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Home');
+    expect(text).toContain('Section');
+    expect(text).not.toContain('Article');
+    expect(text).not.toContain('Details');
   });
 });

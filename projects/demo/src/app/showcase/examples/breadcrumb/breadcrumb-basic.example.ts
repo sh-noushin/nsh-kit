@@ -17,6 +17,8 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 
     <nsh-breadcrumb
       [items]="items()"
+      [preventNavigation]="true"
+      [truncateOnClick]="true"
       separator="chevron"
       variant="steps"
       [activeIndex]="3"
@@ -63,9 +65,9 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 })
 export class BreadcrumbBasicExampleComponent {
   readonly items = signal<NshBreadcrumbItem[]>([
-    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
-    { id: 'blog', label: 'Blog', href: '/showcase/breadcrumb' },
-    { id: 'cooking', label: 'Cooking', href: '/showcase/breadcrumb' },
+    { id: 'home', label: 'Home', href: '#' },
+    { id: 'blog', label: 'Blog', href: '#' },
+    { id: 'cooking', label: 'Cooking', href: '#' },
     { id: 'iceCream', label: 'Ice cream' },
   ]);
 
@@ -84,6 +86,8 @@ export class BreadcrumbBasicExampleComponent {
 
 export const breadcrumbBasicHtml = `<nsh-breadcrumb
   [items]="items"
+  [preventNavigation]="true"
+  [truncateOnClick]="true"
   separator="chevron"
   variant="steps"
   [activeIndex]="3"
@@ -107,9 +111,9 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 })
 export class BreadcrumbBasicExampleComponent {
   readonly items: NshBreadcrumbItem[] = [
-    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
-    { id: 'blog', label: 'Blog', href: '/showcase/breadcrumb' },
-    { id: 'cooking', label: 'Cooking', href: '/showcase/breadcrumb' },
+    { id: 'home', label: 'Home', href: '#' },
+    { id: 'blog', label: 'Blog', href: '#' },
+    { id: 'cooking', label: 'Cooking', href: '#' },
     { id: 'iceCream', label: 'Ice cream' }
   ];
 

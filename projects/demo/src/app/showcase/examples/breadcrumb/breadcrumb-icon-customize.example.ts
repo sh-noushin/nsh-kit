@@ -30,6 +30,8 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
 
     <nsh-breadcrumb
       [items]="items()"
+      [preventNavigation]="true"
+      [truncateOnClick]="true"
       variant="segmented"
       separator="chevron"
       [activeIndex]="3"
@@ -98,13 +100,13 @@ export class BreadcrumbIconCustomizeExampleComponent {
   readonly items = computed<NshBreadcrumbItem[]>(() => {
     const selected = this.selectedIcons();
     return [
-      { id: 'home', label: 'Home', icon: selected.home, href: '/showcase/breadcrumb' },
-      { id: 'blog', label: 'Blog', icon: selected.blog, href: '/showcase/breadcrumb' },
+      { id: 'home', label: 'Home', icon: selected.home, href: '#' },
+      { id: 'blog', label: 'Blog', icon: selected.blog, href: '#' },
       {
         id: 'cooking',
         label: 'Cooking',
         icon: selected.cooking,
-        href: '/showcase/breadcrumb',
+        href: '#',
       },
       { id: 'iceCream', label: 'Ice cream', icon: selected.iceCream },
     ];
@@ -135,6 +137,8 @@ export class BreadcrumbIconCustomizeExampleComponent {
 
 export const breadcrumbIconCustomizeHtml = `<nsh-breadcrumb
   [items]="items()"
+  [preventNavigation]="true"
+  [truncateOnClick]="true"
   variant="segmented"
   separator="chevron"
   [activeIndex]="3"
@@ -172,9 +176,9 @@ export class BreadcrumbIconCustomizeExampleComponent {
   readonly items = computed<NshBreadcrumbItem[]>(() => {
     const selected = this.selectedIcons();
     return [
-      { id: 'home', label: 'Home', icon: selected.home, href: '/showcase/breadcrumb' },
-      { id: 'blog', label: 'Blog', icon: selected.blog, href: '/showcase/breadcrumb' },
-      { id: 'cooking', label: 'Cooking', icon: selected.cooking, href: '/showcase/breadcrumb' },
+      { id: 'home', label: 'Home', icon: selected.home, href: '#' },
+      { id: 'blog', label: 'Blog', icon: selected.blog, href: '#' },
+      { id: 'cooking', label: 'Cooking', icon: selected.cooking, href: '#' },
       { id: 'iceCream', label: 'Ice cream', icon: selected.iceCream }
     ];
   });
