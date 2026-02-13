@@ -358,7 +358,7 @@ type RenderedCrumb =
       display: inline-flex;
       padding: var(--nsh-space-xs) var(--nsh-space-sm);
       border-radius: var(--nsh-radius-lg);
-      background: color-mix(in srgb, var(--nsh-color-primary) 86%, var(--nsh-color-surface) 14%);
+      background: var(--_breadcrumb-surface);
       align-items: center;
       max-width: 100%;
     }

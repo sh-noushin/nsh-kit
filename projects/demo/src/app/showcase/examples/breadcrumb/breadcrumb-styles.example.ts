@@ -52,7 +52,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
         separator="slash"
         elevation="raised"
         [accentColor]="solidAccent()"
-        [style.--nsh-breadcrumb-surface]="solidAccent()"
+        [style.--nsh-breadcrumb-surface]="'#1976d2'"
         [style.--nsh-breadcrumb-item-bg]="'transparent'"
         [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
         [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
