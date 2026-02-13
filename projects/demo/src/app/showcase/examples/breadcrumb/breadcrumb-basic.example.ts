@@ -69,7 +69,7 @@ export class BreadcrumbBasicExampleComponent {
     { id: 'iceCream', label: 'Ice cream' },
   ]);
 
-  readonly accentColor = signal('#1976d2');
+  readonly accentColor = signal('#2e7d32');
 
   readonly surfaceColor = computed(() => `color-mix(in srgb, ${this.accentColor()} 12%, white)`);
   readonly inactiveColor = computed(() => `color-mix(in srgb, ${this.accentColor()} 26%, white)`);
@@ -113,5 +113,5 @@ export class BreadcrumbBasicExampleComponent {
     { id: 'iceCream', label: 'Ice cream' }
   ];
 
-  accentColor = '#1976d2';
+  accentColor = '#2e7d32';
 }`;
