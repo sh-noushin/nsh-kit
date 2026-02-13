@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 
@@ -8,63 +8,77 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshBreadcrumbComponent],
   template: `
-    <div class="palette-row">
-      <button type="button" class="swatch swatch--pink" (click)="setAccent('#e91e63')" aria-label="Pink"></button>
-      <button type="button" class="swatch swatch--blue" (click)="setAccent('#1976d2')" aria-label="Blue"></button>
-      <button type="button" class="swatch swatch--purple" (click)="setAccent('#6a5acd')" aria-label="Purple"></button>
-      <button type="button" class="swatch swatch--green" (click)="setAccent('#2e7d32')" aria-label="Green"></button>
+    <div class="control-row">
+      <label class="field">
+        Accent color
+        <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
+      </label>
     </div>
 
     <nsh-breadcrumb
       [items]="items()"
       separator="chevron"
       variant="steps"
-      [activeIndex]="0"
+      [activeIndex]="3"
       [accentColor]="accentColor()"
+      [style.--nsh-breadcrumb-surface]="surfaceColor()"
+      [style.--nsh-breadcrumb-item-bg]="inactiveColor()"
+      [style.--nsh-breadcrumb-item-bg-current]="accentColor()"
+      [style.--nsh-breadcrumb-text-color-current]="accentColor()"
       [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
       [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
       [style.--nsh-breadcrumb-item-min-width]="'132px'"
       [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-      elevation="raised"
-      [shadow]="true"
     ></nsh-breadcrumb>
   `,
   styles: [
     `
-      .palette-row {
-        display: flex;
-        gap: 8px;
+      .control-row {
+        display: grid;
+        grid-template-columns: minmax(120px, 200px);
         margin-bottom: 10px;
       }
 
-      .swatch {
-        width: 22px;
-        height: 22px;
-        border-radius: 999px;
-        border: 2px solid #fff;
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);
-        cursor: pointer;
+      .field {
+        display: grid;
+        gap: 6px;
+        font-size: 0.78rem;
+        color: #4c5870;
+        font-weight: 600;
       }
 
-      .swatch--pink { background: #e91e63; }
-      .swatch--blue { background: #1976d2; }
-      .swatch--purple { background: #6a5acd; }
-      .swatch--green { background: #2e7d32; }
+      input {
+        height: 34px;
+        border-radius: 8px;
+        border: 1px solid #c8d2e2;
+        background: #fff;
+        padding-inline: 10px;
+      }
+
+      input[type='color'] {
+        padding: 4px;
+      }
     `,
   ],
 })
 export class BreadcrumbBasicExampleComponent {
   readonly items = signal<NshBreadcrumbItem[]>([
-    { id: 'ecmascript', label: 'ECMAScript', href: '/showcase/breadcrumb' },
-    { id: 'html', label: 'HTML5', href: '/showcase/breadcrumb' },
-    { id: 'node', label: 'Node.js', href: '/showcase/breadcrumb' },
-    { id: 'linux', label: 'Linux' },
+    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
+    { id: 'blog', label: 'Blog', href: '/showcase/breadcrumb' },
+    { id: 'cooking', label: 'Cooking', href: '/showcase/breadcrumb' },
+    { id: 'iceCream', label: 'Ice cream' },
   ]);
 
-  readonly accentColor = signal('#e91e63');
+  readonly accentColor = signal('#1976d2');
 
-  setAccent(color: string): void {
-    this.accentColor.set(color);
+  readonly surfaceColor = computed(() => `color-mix(in srgb, ${this.accentColor()} 12%, white)`);
+  readonly inactiveColor = computed(() => `color-mix(in srgb, ${this.accentColor()} 26%, white)`);
+
+  setAccent(event: Event): void {
+    const value = (event.target as HTMLInputElement | null)?.value;
+    if (value) {
+      this.accentColor.set(value);
+    }
   }
 }
 
@@ -72,11 +86,13 @@ export const breadcrumbBasicHtml = `<nsh-breadcrumb
   [items]="items"
   separator="chevron"
   variant="steps"
-  [activeIndex]="0"
+  [activeIndex]="3"
   [accentColor]="accentColor"
+  [style.--nsh-breadcrumb-surface]="surfaceColor()"
+  [style.--nsh-breadcrumb-item-bg]="inactiveColor()"
+  [style.--nsh-breadcrumb-item-bg-current]="accentColor()"
+  [style.--nsh-breadcrumb-text-color-current]="accentColor()"
   style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-  elevation="raised"
-  [shadow]="true"
 ></nsh-breadcrumb>`;
 
 export const breadcrumbBasicTs = `import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -91,11 +107,11 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 })
 export class BreadcrumbBasicExampleComponent {
   readonly items: NshBreadcrumbItem[] = [
-    { id: 'ecmascript', label: 'ECMAScript', href: '/showcase/breadcrumb' },
-    { id: 'html', label: 'HTML5', href: '/showcase/breadcrumb' },
-    { id: 'node', label: 'Node.js', href: '/showcase/breadcrumb' },
-    { id: 'linux', label: 'Linux' }
+    { id: 'home', label: 'Home', href: '/showcase/breadcrumb' },
+    { id: 'blog', label: 'Blog', href: '/showcase/breadcrumb' },
+    { id: 'cooking', label: 'Cooking', href: '/showcase/breadcrumb' },
+    { id: 'iceCream', label: 'Ice cream' }
   ];
 
-  accentColor = '#e91e63';
+  accentColor = '#1976d2';
 }`;

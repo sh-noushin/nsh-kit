@@ -461,14 +461,16 @@ type RenderedCrumb =
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__list {
       gap: 0;
       overflow: hidden;
-      border-radius: var(--nsh-radius-md);
-      border: 1px solid color-mix(in srgb, var(--_breadcrumb-accent) 35%, var(--nsh-color-border) 65%);
-      background: var(--nsh-color-surface);
+      border-radius: var(--nsh-radius-lg);
+      border: 1px solid color-mix(in srgb, var(--nsh-color-border) 68%, transparent);
+      background: color-mix(in srgb, var(--nsh-color-surface) 92%, var(--nsh-color-primary) 8%);
     }
 
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__item {
       gap: 0;
-      color: var(--_breadcrumb-accent);
+      color: var(--_breadcrumb-text-color-current);
+      position: relative;
+      z-index: 1;
     }
 
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__separator {
@@ -480,46 +482,58 @@ type RenderedCrumb =
       position: relative;
       padding:
         var(--nsh-breadcrumb-item-padding-block, var(--nsh-space-xs))
-        calc(var(--nsh-breadcrumb-item-padding-inline, var(--nsh-space-md)) + 8px)
+        calc(var(--nsh-breadcrumb-item-padding-inline, var(--nsh-space-md)) + 6px)
         var(--nsh-breadcrumb-item-padding-block, var(--nsh-space-xs))
         var(--nsh-breadcrumb-item-padding-inline, var(--nsh-space-md));
       min-width: var(--_breadcrumb-item-min-width);
-      margin-right: -6px;
-      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%);
-      background: var(--nsh-color-surface);
-      color: var(--_breadcrumb-accent);
-      border-inline-end: 1px solid color-mix(in srgb, var(--_breadcrumb-accent) 45%, transparent);
+      background: var(--_breadcrumb-item-bg);
+      color: var(--_breadcrumb-text-color-current);
+      border-radius: 0;
+      margin-right: -8px;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%, 10px 50%);
       z-index: 1;
       text-decoration: none;
       gap: var(--nsh-space-xs);
       justify-content: center;
       text-align: center;
+      font-weight: var(--nsh-font-weight-semibold);
     }
 
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__item:first-child .nsh-breadcrumb__link,
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__item:first-child .nsh-breadcrumb__text {
-      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
-      padding-left: var(--nsh-breadcrumb-item-padding-inline, var(--nsh-space-md));
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+      padding-left: calc(
+        var(--nsh-breadcrumb-item-padding-inline, var(--nsh-space-md)) + var(--nsh-space-sm)
+      );
+    }
+
+    .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__text--current {
+      background: var(--_breadcrumb-item-bg-current);
+      color: var(--nsh-color-surface);
+      font-weight: var(--nsh-font-weight-semibold);
+      z-index: 2;
     }
 
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__step-index {
       display: inline-flex;
-      background: color-mix(in srgb, var(--_breadcrumb-accent) 16%, var(--nsh-color-surface) 84%);
-      color: var(--_breadcrumb-accent);
+      margin-inline-end: var(--nsh-space-xs);
+      border-width: 1px;
+      background: color-mix(in srgb, var(--nsh-color-surface) 90%, var(--_breadcrumb-accent) 10%);
+      color: currentColor;
+      border-color: color-mix(in srgb, currentColor 55%, transparent);
     }
 
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__item--active .nsh-breadcrumb__link,
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__item--active .nsh-breadcrumb__text {
-      background: var(--_breadcrumb-accent);
+      background: var(--_breadcrumb-item-bg-current);
       color: var(--nsh-color-surface);
-      border-inline-end-color: color-mix(in srgb, var(--_breadcrumb-accent) 60%, transparent);
       z-index: 2;
     }
 
     .nsh-breadcrumb[data-variant='steps'] .nsh-breadcrumb__item--active .nsh-breadcrumb__step-index {
-      background: color-mix(in srgb, var(--_breadcrumb-accent) 24%, var(--nsh-color-surface) 76%);
-      color: var(--_breadcrumb-accent);
-      border-color: color-mix(in srgb, var(--_breadcrumb-accent) 70%, transparent);
+      background: color-mix(in srgb, var(--nsh-color-surface) 88%, var(--_breadcrumb-accent) 12%);
+      color: color-mix(in srgb, var(--_breadcrumb-accent) 88%, var(--nsh-color-text) 12%);
+      border-color: color-mix(in srgb, var(--nsh-color-surface) 72%, transparent);
     }
   `,
 })
