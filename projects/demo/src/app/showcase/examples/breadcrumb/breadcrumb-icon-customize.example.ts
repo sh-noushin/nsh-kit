@@ -10,17 +10,19 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshBreadcrumbComponent],
   template: `
-    <div class="control-row">
-      <label class="toggle">
-        <input type="checkbox" [checked]="showShadow()" (change)="showShadow.set(!showShadow())" />
-        Shadow
-      </label>
-
+    <div class="control-row control-row--top">
       <div class="field">
         Accent color
         <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
       </div>
 
+      <label class="toggle">
+        <input type="checkbox" [checked]="showShadow()" (change)="showShadow.set(!showShadow())" />
+        <span>Shadow</span>
+      </label>
+    </div>
+
+    <div class="control-row control-row--icons">
       @for (choice of iconChoices; track choice.id) {
         <div class="field">
           {{ choice.label }} icon
@@ -61,13 +63,13 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
         font-size: 0.78rem;
         font-weight: 600;
         color: #111;
-        align-self: flex-end;
-        padding-bottom: 6px;
       }
 
       .toggle input {
         width: 16px;
+        min-width: 16px;
         height: 16px;
+        margin: 0;
       }
 
       .control-row {
@@ -75,6 +77,21 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
         flex-wrap: wrap;
         align-items: center;
         gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .control-row--top {
+        align-items: flex-end;
+        gap: 24px;
+        margin-bottom: 10px;
+      }
+
+      .control-row--top .toggle {
+        align-self: end;
+        margin-bottom: 8px;
+      }
+
+      .control-row--icons {
         margin-bottom: 16px;
       }
 
@@ -86,7 +103,7 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
         font-weight: 600;
       }
 
-      input,
+      input:not([type='checkbox']),
       select {
         height: 30px;
         min-width: 100px;
@@ -162,16 +179,29 @@ export class BreadcrumbIconCustomizeExampleComponent {
   }
 }
 
-export const breadcrumbIconCustomizeHtml = `<div class="control-row">
-  <label class="toggle">
-    <input type="checkbox" [checked]="showShadow()" (change)="showShadow.set(!showShadow())" />
-    Shadow
-  </label>
-
+export const breadcrumbIconCustomizeHtml = `<div class="control-row control-row--top">
   <div class="field">
     Accent color
     <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
   </div>
+
+  <label class="toggle">
+    <input type="checkbox" [checked]="showShadow()" (change)="showShadow.set(!showShadow())" />
+    <span>Shadow</span>
+  </label>
+</div>
+
+<div class="control-row control-row--icons">
+  @for (choice of iconChoices; track choice.id) {
+    <div class="field">
+      {{ choice.label }} icon
+      <select [value]="selectedIcons()[choice.id]" (change)="setIcon(choice.id, $event)">
+        @for (icon of iconOptions; track icon) {
+          <option [value]="icon">{{ icon }}</option>
+        }
+      </select>
+    </div>
+  }
 </div>
 
 <nsh-breadcrumb
