@@ -52,7 +52,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
         separator="slash"
         elevation="raised"
         [accentColor]="solidAccent()"
-        [style.--nsh-breadcrumb-surface]="'#1976d2'"
+        [style.--nsh-breadcrumb-surface]="solidSurface()"
         [style.--nsh-breadcrumb-item-bg]="'transparent'"
         [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
         [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
@@ -142,6 +142,8 @@ export class BreadcrumbStylesExampleComponent {
 
   readonly softSurface = computed(() => `color-mix(in srgb, ${this.softAccent()} 10%, white)`);
   readonly softInactive = computed(() => `color-mix(in srgb, ${this.softAccent()} 20%, white)`);
+
+  readonly solidSurface = computed(() => `color-mix(in srgb, ${this.solidAccent()} 86%, black)`);
 
   readonly segmentedSurface = computed(() => `color-mix(in srgb, ${this.segmentedAccent()} 12%, white)`);
   readonly segmentedInactive = computed(() => `color-mix(in srgb, ${this.segmentedAccent()} 26%, white)`);
