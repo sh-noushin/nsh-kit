@@ -169,7 +169,7 @@ type RenderedCrumb =
       --_breadcrumb-item-min-width: var(--nsh-breadcrumb-item-min-width, auto);
       --_breadcrumb-shadow: var(
         --nsh-breadcrumb-shadow,
-        0 8px 24px color-mix(in srgb, var(--nsh-color-shadow) 20%, transparent)
+        0 8px 16px color-mix(in srgb, var(--nsh-color-shadow, rgba(15, 23, 42, 1)) 15%, transparent)
       );
 
       --_breadcrumb-focus-ring: color-mix(
@@ -184,13 +184,17 @@ type RenderedCrumb =
       font-size: var(--_breadcrumb-font-size);
       line-height: var(--nsh-line-height-tight);
       --_breadcrumb-accent: var(--nsh-breadcrumb-accent, var(--nsh-color-primary));
+      display: inline-flex;
+      vertical-align: middle;
+      border-radius: var(--nsh-radius-lg);
     }
 
-    .nsh-breadcrumb--raised .nsh-breadcrumb__list {
-      box-shadow: var(--_breadcrumb-shadow);
+    .nsh-breadcrumb[data-variant='soft'] {
+      border-radius: var(--nsh-radius-pill);
     }
 
-    .nsh-breadcrumb--shadow .nsh-breadcrumb__list {
+    .nsh-breadcrumb--raised,
+    .nsh-breadcrumb--shadow {
       box-shadow: var(--_breadcrumb-shadow);
     }
 

@@ -11,20 +11,25 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
   imports: [NshBreadcrumbComponent],
   template: `
     <div class="control-row">
-      <label class="field">
-        Accent color
-        <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
+      <label class="toggle">
+        <input type="checkbox" [checked]="showShadow()" (change)="showShadow.set(!showShadow())" />
+        Shadow
       </label>
 
+      <div class="field">
+        Accent color
+        <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
+      </div>
+
       @for (choice of iconChoices; track choice.id) {
-        <label class="field">
+        <div class="field">
           {{ choice.label }} icon
           <select [value]="selectedIcons()[choice.id]" (change)="setIcon(choice.id, $event)">
             @for (icon of iconOptions; track icon) {
               <option [value]="icon">{{ icon }}</option>
             }
           </select>
-        </label>
+        </div>
       }
     </div>
 
@@ -35,6 +40,7 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
       variant="segmented"
       separator="chevron"
       [activeIndex]="3"
+      [shadow]="showShadow()"
       [accentColor]="accentColor()"
       [style.--nsh-breadcrumb-surface]="surfaceColor()"
       [style.--nsh-breadcrumb-item-bg]="inactiveColor()"
@@ -48,32 +54,52 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
   `,
   styles: [
     `
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #111;
+        align-self: flex-end;
+        padding-bottom: 6px;
+      }
+
+      .toggle input {
+        width: 16px;
+        height: 16px;
+      }
+
       .control-row {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(120px, 1fr));
-        gap: 10px;
-        margin-bottom: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
       }
 
       .field {
         display: grid;
         gap: 6px;
         font-size: 0.78rem;
-        color: #4c5870;
+        color: #111;
         font-weight: 600;
       }
 
       input,
       select {
-        height: 34px;
+        height: 30px;
+        min-width: 100px;
         border-radius: 8px;
         border: 1px solid #c8d2e2;
         background: #fff;
-        padding-inline: 10px;
+        padding-inline: 8px;
+        font-size: 0.85rem;
       }
 
       input[type='color'] {
-        padding: 4px;
+        width: 60px;
+        padding: 3px;
       }
     `,
   ],
@@ -89,6 +115,7 @@ export class BreadcrumbIconCustomizeExampleComponent {
   ];
 
   readonly accentColor = signal('#ec4899');
+  readonly showShadow = signal(true);
 
   readonly selectedIcons = signal<Record<CrumbId, string>>({
     home: 'home',
@@ -135,35 +162,36 @@ export class BreadcrumbIconCustomizeExampleComponent {
   }
 }
 
-export const breadcrumbIconCustomizeHtml = `<nsh-breadcrumb
-  [items]="items()"
-  [preventNavigation]="true"
-  [truncateOnClick]="true"
+export const breadcrumbIconCustomizeHtml = `<div class="control-row">
+  <label class="toggle">
+    <input type="checkbox" [checked]="showShadow()" (change)="showShadow.set(!showShadow())" />
+    Shadow
+  </label>
+
+  <div class="field">
+    Accent color
+    <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
+  </div>
+</div>
+
+<nsh-breadcrumb
+  [items]="items"
   variant="segmented"
-  separator="chevron"
-  [activeIndex]="3"
+  [shadow]="showShadow()"
   [accentColor]="accentColor()"
-  [style.--nsh-breadcrumb-surface]="surfaceColor()"
-  [style.--nsh-breadcrumb-item-bg]="inactiveColor()"
-  [style.--nsh-breadcrumb-item-bg-current]="accentColor()"
-  [style.--nsh-breadcrumb-text-color-current]="accentColor()"
-  [style.--nsh-breadcrumb-item-padding-inline]="'var(--nsh-space-md)'"
-  [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
-  [style.--nsh-breadcrumb-item-min-width]="'132px'"
-  [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
 ></nsh-breadcrumb>`;
 
-export const breadcrumbIconCustomizeTs = `import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+export const breadcrumbIconCustomizeTs = `import { Component, computed, signal } from '@angular/core';
 import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 
 @Component({
-  selector: 'demo-breadcrumb-icon-customize-example',
+  selector: 'example-breadcrumb-icons',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshBreadcrumbComponent],
   templateUrl: './breadcrumb-icon-customize.example.html'
 })
 export class BreadcrumbIconCustomizeExampleComponent {
+  readonly showShadow = signal(true);
   readonly accentColor = signal('#ec4899');
 
   readonly selectedIcons = signal({

@@ -9,6 +9,11 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
   imports: [NshBreadcrumbComponent],
   template: `
     <div class="example-stack">
+      <label class="toggle">
+        <input type="checkbox" [checked]="showShadow()" (change)="setShadow($event)" />
+        Shadow
+      </label>
+
       <div class="example-block">
         <label class="field">
           Soft (card-like)
@@ -20,7 +25,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
           [truncateOnClick]="true"
           variant="soft"
           separator="chevron"
-          elevation="raised"
+          elevation="flat"
           [accentColor]="softAccent()"
           [style.--nsh-breadcrumb-surface]="softSurface()"
           [style.--nsh-breadcrumb-item-bg]="softInactive()"
@@ -29,7 +34,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
           [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
           [style.--nsh-breadcrumb-item-min-width]="'132px'"
           [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-          [shadow]="true"
+          [shadow]="showShadow()"
         ></nsh-breadcrumb>
       </div>
 
@@ -44,7 +49,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
           [truncateOnClick]="true"
           variant="solid"
           separator="slash"
-          elevation="raised"
+          elevation="flat"
           [accentColor]="solidAccent()"
           [style.--nsh-breadcrumb-surface]="solidSurface()"
           [style.--nsh-breadcrumb-item-bg]="'transparent'"
@@ -52,7 +57,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
           [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
           [style.--nsh-breadcrumb-item-min-width]="'132px'"
           [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-          [shadow]="true"
+          [shadow]="showShadow()"
         ></nsh-breadcrumb>
       </div>
 
@@ -67,7 +72,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
           [truncateOnClick]="true"
           variant="segmented"
           separator="chevron"
-          elevation="raised"
+          elevation="flat"
           [accentColor]="segmentedAccent()"
           [style.--nsh-breadcrumb-surface]="segmentedSurface()"
           [style.--nsh-breadcrumb-item-bg]="segmentedInactive()"
@@ -76,13 +81,27 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
           [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
           [style.--nsh-breadcrumb-item-min-width]="'132px'"
           [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-          [shadow]="true"
+          [shadow]="showShadow()"
         ></nsh-breadcrumb>
       </div>
     </div>
   `,
   styles: [
     `
+        .toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: #111;
+        }
+
+        .toggle input {
+          width: 16px;
+          height: 16px;
+        }
+
       .field {
         display: grid;
         gap: 6px;
@@ -109,6 +128,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       .example-block {
         display: grid;
         gap: 10px;
+        padding: 10px 0;
       }
     `,
   ],
@@ -129,6 +149,7 @@ export class BreadcrumbStylesExampleComponent {
   readonly softAccent = signal('#673ab7');
   readonly solidAccent = signal('#1976d2');
   readonly segmentedAccent = signal('#c2185b');
+  readonly showShadow = signal(true);
 
   readonly softSurface = computed(() => `color-mix(in srgb, ${this.softAccent()} 10%, white)`);
   readonly softInactive = computed(() => `color-mix(in srgb, ${this.softAccent()} 20%, white)`);
@@ -152,82 +173,73 @@ export class BreadcrumbStylesExampleComponent {
     const value = (event.target as HTMLInputElement | null)?.value;
     if (value) this.segmentedAccent.set(value);
   }
+
+  setShadow(event: Event): void {
+    this.showShadow.set((event.target as HTMLInputElement | null)?.checked ?? true);
+  }
 }
 
 export const breadcrumbStylesHtml = `<div class="example-stack">
+  <label class="toggle">
+    <input type="checkbox" [checked]="showShadow()" (change)="setShadow($event)" />
+    Shadow
+  </label>
+
+  <!-- Soft Variant -->
   <div class="example-block">
     <label class="field">
       Soft (card-like)
-      <input type="color" />
+      <input type="color" [value]="softAccent()" (input)="setSoftAccent($event)" />
     </label>
     <nsh-breadcrumb
-      [items]="softItems"
-      [preventNavigation]="true"
-      [truncateOnClick]="true"
+      [items]="baseItems"
       variant="soft"
-      separator="chevron"
-      elevation="raised"
-      style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-      [shadow]="true"
+      [shadow]="showShadow()"
+      [accentColor]="softAccent()"
     ></nsh-breadcrumb>
   </div>
 
+  <!-- Segmented Variant -->
   <div class="example-block">
-    <label class="field">
-      Solid (vivid)
-      <input type="color" />
+    <label class="field" style="color: var(--nsh-breadcrumb-accent)">
+      Segmented
+      <input type="color" [value]="segmentedAccent()" (input)="setSegmentedAccent($event)"/>
     </label>
     <nsh-breadcrumb
       [items]="baseItems"
-      [preventNavigation]="true"
-      [truncateOnClick]="true"
-      variant="solid"
-      separator="slash"
-      elevation="raised"
-      style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-      [shadow]="true"
-    ></nsh-breadcrumb>
-  </div>
-
-  <div class="example-block">
-    <label class="field">
-      Segmented / Ribbon
-      <input type="color" />
-    </label>
-    <nsh-breadcrumb
-      [items]="baseItems"
-      [preventNavigation]="true"
-      [truncateOnClick]="true"
       variant="segmented"
-      separator="chevron"
-      elevation="raised"
-      style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-      [shadow]="true"
+      [shadow]="showShadow()"
+      [accentColor]="segmentedAccent()"
     ></nsh-breadcrumb>
   </div>
 </div>`;
 
-export const breadcrumbStylesTs = `import { ChangeDetectionStrategy, Component } from '@angular/core';
+export const breadcrumbStylesTs = `import { Component, signal } from '@angular/core';
 import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 
 @Component({
-  selector: 'demo-breadcrumb-styles-example',
+  selector: 'example-breadcrumb-styles',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshBreadcrumbComponent],
   templateUrl: './breadcrumb-styles.example.html'
 })
 export class BreadcrumbStylesExampleComponent {
+  readonly showShadow = signal(true);
+  readonly softAccent = signal('#673ab7');
+
   readonly baseItems: NshBreadcrumbItem[] = [
-    { id: 'home', label: 'Home', href: '#' },
-    { id: 'profile', label: 'Profile', href: '#' },
-    { id: 'settings', label: 'Settings' }
+    { label: 'Home', href: '#' },
+    { label: 'Products', href: '#' },
+    { label: 'Details' }
   ];
 
-  readonly softItems: NshBreadcrumbItem[] = [
-    { id: 'home', label: 'Home', href: '#' },
-    { id: 'profile', label: 'Profile', href: '#' },
-    { id: 'settings', label: 'Settings' }
-  ];
+  setShadow(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.showShadow.set(checked);
+  }
 
+  setSoftAccent(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.softAccent.set(value);
+  }
 }`;
