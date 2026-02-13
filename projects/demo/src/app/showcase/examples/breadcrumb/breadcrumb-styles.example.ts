@@ -17,7 +17,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       <div class="example-block">
         <label class="field">
           Soft (card-like)
-          <input type="color" [value]="softAccent()" (input)="setSoftAccent($event)" />
+          <input class="demo-showcase-color-picker" type="color" [value]="softAccent()" (input)="setSoftAccent($event)" />
         </label>
         <nsh-breadcrumb
           [items]="softItems"
@@ -41,7 +41,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       <div class="example-block">
         <label class="field">
           Solid (vivid)
-          <input type="color" [value]="solidAccent()" (input)="setSolidAccent($event)" />
+          <input class="demo-showcase-color-picker" type="color" [value]="solidAccent()" (input)="setSolidAccent($event)" />
         </label>
         <nsh-breadcrumb
           [items]="baseItems"
@@ -64,7 +64,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       <div class="example-block">
         <label class="field">
           Segmented / Ribbon
-          <input type="color" [value]="segmentedAccent()" (input)="setSegmentedAccent($event)" />
+          <input class="demo-showcase-color-picker" type="color" [value]="segmentedAccent()" (input)="setSegmentedAccent($event)" />
         </label>
         <nsh-breadcrumb
           [items]="baseItems"
@@ -108,16 +108,6 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
         font-size: 0.78rem;
         font-weight: 600;
         color: #111;
-      }
-
-      input[type='color'] {
-        height: 24px;
-        width: 84px;
-        border-radius: 6px;
-        border: 1px solid #c8d2e2;
-        background: #fff;
-        padding: 2px;
-        cursor: pointer;
       }
 
       .example-stack {
@@ -189,7 +179,7 @@ export const breadcrumbStylesHtml = `<div class="example-stack">
   <div class="example-block">
     <label class="field">
       Soft (card-like)
-      <input type="color" [value]="softAccent()" (input)="setSoftAccent($event)" />
+      <input class="demo-showcase-color-picker" type="color" [value]="softAccent()" (input)="setSoftAccent($event)" />
     </label>
     <nsh-breadcrumb
       [items]="baseItems"
@@ -203,7 +193,7 @@ export const breadcrumbStylesHtml = `<div class="example-stack">
   <div class="example-block">
     <label class="field" style="color: var(--nsh-breadcrumb-accent)">
       Segmented
-      <input type="color" [value]="segmentedAccent()" (input)="setSegmentedAccent($event)"/>
+      <input class="demo-showcase-color-picker" type="color" [value]="segmentedAccent()" (input)="setSegmentedAccent($event)"/>
     </label>
     <nsh-breadcrumb
       [items]="baseItems"

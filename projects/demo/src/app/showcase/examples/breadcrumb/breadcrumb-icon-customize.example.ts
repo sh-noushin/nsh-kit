@@ -13,7 +13,7 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
     <div class="control-row control-row--top">
       <div class="field">
         Accent color
-        <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
+        <input class="demo-showcase-color-picker" type="color" [value]="accentColor()" (input)="setAccent($event)" />
       </div>
 
       <label class="toggle">
@@ -103,7 +103,7 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
         font-weight: 600;
       }
 
-      input:not([type='checkbox']),
+      input:not([type='checkbox']):not([type='color']),
       select {
         height: 30px;
         min-width: 100px;
@@ -112,11 +112,6 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
         background: #fff;
         padding-inline: 8px;
         font-size: 0.85rem;
-      }
-
-      input[type='color'] {
-        width: 60px;
-        padding: 3px;
       }
     `,
   ],
@@ -182,7 +177,7 @@ export class BreadcrumbIconCustomizeExampleComponent {
 export const breadcrumbIconCustomizeHtml = `<div class="control-row control-row--top">
   <div class="field">
     Accent color
-    <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
+    <input class="demo-showcase-color-picker" type="color" [value]="accentColor()" (input)="setAccent($event)" />
   </div>
 
   <label class="toggle">

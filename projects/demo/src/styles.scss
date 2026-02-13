@@ -28,3 +28,13 @@ body {
 	position: relative;
 	overflow: hidden;
 }
+
+.demo-showcase-color-picker[type='color'] {
+	height: 24px;
+	width: 84px;
+	border-radius: 6px;
+	border: 1px solid #c8d2e2;
+	background: #fff;
+	padding: 2px;
+	cursor: pointer;
+}

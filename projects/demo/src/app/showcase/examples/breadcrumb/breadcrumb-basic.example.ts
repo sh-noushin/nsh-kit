@@ -11,7 +11,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
     <div class="control-row">
       <label class="field">
         Accent color
-        <input type="color" [value]="accentColor()" (input)="setAccent($event)" />
+        <input class="demo-showcase-color-picker" type="color" [value]="accentColor()" (input)="setAccent($event)" />
       </label>
 
       <label class="toggle">
@@ -72,16 +72,12 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
         font-weight: 600;
       }
 
-      input {
+      input:not([type='color']):not([type='checkbox']) {
         height: 34px;
         border-radius: 8px;
         border: 1px solid #c8d2e2;
         background: #fff;
         padding-inline: 10px;
-      }
-
-      input[type='color'] {
-        padding: 4px;
       }
     `,
   ],
