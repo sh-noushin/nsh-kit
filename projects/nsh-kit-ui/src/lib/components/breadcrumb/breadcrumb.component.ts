@@ -362,7 +362,7 @@ type RenderedCrumb =
     }
 
     .nsh-breadcrumb[data-variant='solid'] .nsh-breadcrumb__item {
-      flex: 1 1 0;
+      flex: 0 0 auto;
       min-width: 0;
       justify-content: center;
       position: relative;
@@ -374,7 +374,7 @@ type RenderedCrumb =
       color: var(--nsh-color-surface);
       justify-content: center;
       text-align: center;
-      width: 100%;
+      width: auto;
       min-width: 0;
       padding: var(--_breadcrumb-item-padding-block, var(--nsh-space-xxs))
         var(--_breadcrumb-item-padding-inline, var(--nsh-space-sm));
@@ -454,7 +454,7 @@ type RenderedCrumb =
 
     .nsh-breadcrumb[data-variant='segmented'] .nsh-breadcrumb__text--current {
       background: color-mix(in srgb, var(--_breadcrumb-item-bg-current) 66%, var(--_breadcrumb-accent) 34%);
-      color: color-mix(in srgb, var(--_breadcrumb-accent) 90%, var(--nsh-color-text) 10%);
+      color: var(--nsh-color-surface);
       font-weight: var(--nsh-font-weight-semibold);
       z-index: 2;
     }
