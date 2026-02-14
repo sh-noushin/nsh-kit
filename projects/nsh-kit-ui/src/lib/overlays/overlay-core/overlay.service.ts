@@ -45,7 +45,7 @@ export class NshOverlayService {
     container.style.left = '0px';
     container.style.top = '0px';
     container.style.zIndex =
-      config.zIndex ?? 'var(--nsh-z-dropdown, var(--nsh-z-index-dropdown))';
+      config.zIndex ?? 'var(--nsh-z-dropdown, var(--nsh-z-index-dropdown, 1200))';
 
     container.dataset['placement'] = config.placement ?? 'bottom-start';
 
@@ -152,7 +152,7 @@ export class NshOverlayService {
 
     container.style.position = 'fixed';
     container.style.inset = '0px';
-    container.style.zIndex = config.zIndex ?? 'var(--nsh-z-overlay)';
+    container.style.zIndex = config.zIndex ?? 'var(--nsh-z-overlay, 1300)';
 
     document.body.appendChild(container);
 

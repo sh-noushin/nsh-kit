@@ -241,6 +241,37 @@ function inferTypeFromLiteral(node) {
   return 'unknown';
 }
 
+function hasExportModifier(node) {
+  return !!node.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword);
+}
+
+function extractConfigInterfaceSignals(interfaceNode, sourceFile) {
+  const signals = [];
+
+  for (const member of interfaceNode.members) {
+    if (!ts.isPropertySignature(member) || !member.name) {
+      continue;
+    }
+
+    const signalName = ts.isIdentifier(member.name) || ts.isStringLiteral(member.name)
+      ? member.name.text
+      : member.name.getText(sourceFile);
+
+    const signalType = member.type ? member.type.getText(sourceFile) : 'unknown';
+
+    signals.push({
+      name: signalName,
+      alias: null,
+      kind: 'input',
+      type: signalType,
+      required: !member.questionToken,
+    });
+  }
+
+  signals.sort((left, right) => left.name.localeCompare(right.name));
+  return signals;
+}
+
 function extractSignals(classNode, sourceFile) {
   const signals = [];
 
@@ -314,6 +345,7 @@ function extractApiEntities(tsFilePath) {
 
   const entities = [];
   const componentStyleTokens = new Set();
+  const seenEntityNames = new Set();
 
   for (const node of sourceFile.statements) {
     if (!ts.isClassDeclaration(node) || !node.name) {
@@ -348,7 +380,54 @@ function extractApiEntities(tsFilePath) {
         source: toWorkspacePath(tsFilePath),
         signals: extractSignals(node, sourceFile),
       });
+      seenEntityNames.add(node.name.text);
     }
+  }
+
+  for (const node of sourceFile.statements) {
+    if (!ts.isInterfaceDeclaration(node) || !node.name || !hasExportModifier(node)) {
+      continue;
+    }
+
+    const interfaceName = node.name.text;
+    if (!/^Nsh[A-Za-z0-9]*Config$/.test(interfaceName) || interfaceName.startsWith('NshResolved')) {
+      continue;
+    }
+
+    entities.push({
+      name: interfaceName,
+      kind: 'service',
+      selector: null,
+      exportAs: null,
+      source: toWorkspacePath(tsFilePath),
+      signals: extractConfigInterfaceSignals(node, sourceFile),
+    });
+    seenEntityNames.add(interfaceName);
+  }
+
+  for (const node of sourceFile.statements) {
+    if (!ts.isClassDeclaration(node) || !node.name || !hasExportModifier(node)) {
+      continue;
+    }
+
+    const className = node.name.text;
+    if (seenEntityNames.has(className)) {
+      continue;
+    }
+
+    if (!/^Nsh[A-Za-z0-9]*Ref$/.test(className)) {
+      continue;
+    }
+
+    entities.push({
+      name: className,
+      kind: 'service',
+      selector: null,
+      exportAs: null,
+      source: toWorkspacePath(tsFilePath),
+      signals: [],
+    });
+    seenEntityNames.add(className);
   }
 
   return {

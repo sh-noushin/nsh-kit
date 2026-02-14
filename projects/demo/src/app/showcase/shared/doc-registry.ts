@@ -35,6 +35,7 @@ import { switchExamples } from '../examples/switch/switch.examples';
 import { textareaExamples } from '../examples/textarea/textarea.examples';
 
 import { dialogExamples } from '../examples/dialog/dialog.examples';
+import { bottomSheetExamples } from '../examples/bottom-sheet/bottom-sheet.examples';
 import { snackbarExamples } from '../examples/snackbar/snackbar.examples';
 import { tooltipExamples } from '../examples/tooltip/tooltip.examples';
 
@@ -1618,6 +1619,50 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
     route: '/showcase/dialog',
     category: 'overlays',
     exampleProvider: () => dialogExamples,
+  },
+  {
+    id: 'bottom-sheet',
+    title: 'Bottom Sheet',
+    description: 'Mobile-first action sheet anchored to the bottom of the viewport.',
+    overview: [
+      'Bottom sheets present contextual actions or short supplemental tasks while keeping users in their current screen flow.',
+      'They work best for mobile and responsive layouts where a bottom-anchored surface feels natural for thumb reach and quick choice actions.',
+      'Choose bottom sheets for lightweight decisions (share, filter, choose destination). Use dialogs when the task is blocking, complex, or form-heavy.',
+      'Good bottom sheets are concise, easy to dismiss, keyboard-accessible, and return focus to the trigger after close.',
+      'Open with NshBottomSheetService.open(component, config). The call returns NshBottomSheetRef, which you can use to dismiss and observe afterDismissed().',
+    ],
+    usage: [
+      'Use for short action menus, quick routing choices, and secondary tasks tied to the current page context.',
+      'Avoid long forms or multi-step flows; use a dialog or full page when the task requires sustained attention.',
+      'Keep one clear primary path and easy dismissal (backdrop, Escape, and explicit close/cancel action).',
+      'On desktop, constrain width and height so the sheet reads as a focused surface rather than a full-screen modal.',
+      'Use semantic labels (ariaLabel in config) so assistive technologies announce purpose clearly.',
+      'Share data with content by setting config.data and injecting NSH_BOTTOM_SHEET_DATA in the sheet component.',
+      'Provide NSH_BOTTOM_SHEET_DEFAULT_OPTIONS at app root to define global defaults for close behavior and sizing.',
+      'Use afterDismissed() to restore focus manually when the original trigger element no longer exists.',
+    ],
+    stylingGuide: [
+      'GLOBAL baseline: :root { --nsh-bottom-sheet-bg: #ffffff; --nsh-bottom-sheet-fg: #1f2533; --nsh-bottom-sheet-radius: 24px 24px 0 0; --nsh-bottom-sheet-padding: 20px; }',
+      'Desktop fit: :root { --nsh-bottom-sheet-max-width: 720px; --nsh-bottom-sheet-max-height: 78vh; --nsh-bottom-sheet-width: 100%; }',
+      'Backdrop and elevation: :root { --nsh-bottom-sheet-backdrop-bg: rgba(13, 23, 38, 0.42); --nsh-bottom-sheet-shadow: 0 -8px 32px rgba(13, 23, 38, 0.22); }',
+      'Usage: bottomSheet.open(MySheetComponent, { ariaLabel: "Share actions", maxWidth: "720px", maxHeight: "80vh" });',
+      'Data: bottomSheet.open(MySheetComponent, { data: { names: ["Frodo", "Bilbo"] } });',
+      'Global defaults: { provide: NSH_BOTTOM_SHEET_DEFAULT_OPTIONS, useValue: { closeOnBackdropClick: false } }',
+    ],
+    tokenDescriptions: {
+      '--nsh-bottom-sheet-bg': 'Sheet surface background (e.g., #fff, #f8fafc, #fdfdff)',
+      '--nsh-bottom-sheet-fg': 'Primary text/foreground color (e.g., #1f2533, #2a3040)',
+      '--nsh-bottom-sheet-backdrop-bg': 'Backdrop overlay opacity and color (e.g., rgba(13,23,38,.42))',
+      '--nsh-bottom-sheet-radius': 'Top corner radius; keep bottom corners at 0 (e.g., 20px 20px 0 0)',
+      '--nsh-bottom-sheet-shadow': 'Surface elevation shadow (e.g., 0 -8px 32px rgba(0,0,0,.22))',
+      '--nsh-bottom-sheet-padding': 'Internal content spacing (e.g., 16px, 20px, 24px)',
+      '--nsh-bottom-sheet-width': 'Explicit width value (commonly 100% for responsive bottom anchoring)',
+      '--nsh-bottom-sheet-max-width': 'Maximum width on larger viewports (e.g., 640px, 720px, 840px)',
+      '--nsh-bottom-sheet-max-height': 'Height cap before internal scroll appears (e.g., 72vh, 80vh)',
+    },
+    route: '/showcase/bottom-sheet',
+    category: 'overlays',
+    exampleProvider: () => bottomSheetExamples,
   },
   {
     id: 'snackbar',

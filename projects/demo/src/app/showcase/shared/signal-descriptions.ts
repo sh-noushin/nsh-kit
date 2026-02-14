@@ -246,6 +246,28 @@ export const SIGNAL_DESCRIPTIONS: Record<string, Record<string, string>> = {
     confirmText: 'Text for the confirm/action button',
   },
 
+  // Bottom Sheet Overlay
+  'bottom-sheet': {
+    ariaLabel: 'Accessible label announced by screen readers for the opened sheet surface.',
+    autoFocus: 'Whether focus moves into the sheet automatically when it opens.',
+    closeOnBackdropClick: 'Whether clicking the backdrop dismisses the sheet.',
+    closeOnEscape: 'Whether pressing Escape dismisses the sheet.',
+    disableScroll: 'Whether page scroll is locked while the sheet is open.',
+    width: 'Requested sheet width (commonly "100%" for edge-to-edge bottom anchoring).',
+    maxWidth: 'Maximum sheet width on larger screens (for example: "640px", "720px").',
+    maxHeight: 'Maximum sheet height before content scrolls (for example: "70vh", "80vh").',
+    data: 'Arbitrary data payload passed to sheet content and available via NSH_BOTTOM_SHEET_DATA.',
+    bottomSheetRef:
+      'Required sheet reference used by the container; dismiss from content with injected NshBottomSheetRef.',
+    componentInputs: 'Input map passed to a content component when opening via NshBottomSheetService.open(...).',
+    config:
+      'Resolved bottom-sheet configuration (aria label, close behavior, auto focus, width/maxWidth/maxHeight).',
+    contentComponent:
+      'Component type rendered inside the sheet when using NshBottomSheetService.open(component, config).',
+    contentTemplate:
+      'Template rendered inside the sheet when using NshBottomSheetService.openTemplate(template, config).',
+  },
+
   // Snackbar Component
   snackbar: {
     message: 'Message text displayed in the snackbar notification',

@@ -264,7 +264,7 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
             "name": "itemIcons",
             "alias": null,
             "kind": "input",
-            "type": "Record<string, string> | null",
+            "type": "Record<string, NshBreadcrumbIconValue> | null",
             "required": false
           },
           {
@@ -282,6 +282,13 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
             "required": false
           },
           {
+            "name": "preventNavigation",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
             "name": "separator",
             "alias": null,
             "kind": "input",
@@ -290,6 +297,13 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
           },
           {
             "name": "shadow",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "truncateOnClick",
             "alias": null,
             "kind": "input",
             "type": "boolean",
@@ -328,6 +342,18 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
       },
       {
         "name": "--nsh-breadcrumb-item-bg-current",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
+        "name": "--nsh-breadcrumb-item-min-width",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
+        "name": "--nsh-breadcrumb-item-padding-block",
+        "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
+      },
+      {
+        "name": "--nsh-breadcrumb-item-padding-inline",
         "source": "projects/nsh-kit-ui/src/lib/components/breadcrumb/breadcrumb.component.ts"
       },
       {
@@ -3408,6 +3434,65 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
         ]
       },
       {
+        "name": "NshDialogConfig",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/dialog/dialog.types.ts",
+        "signals": [
+          {
+            "name": "ariaLabel",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          },
+          {
+            "name": "closeOnBackdropClick",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "closeOnEscape",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "disableScroll",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "maxWidth",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          },
+          {
+            "name": "width",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "NshDialogRef",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/dialog/dialog-ref.ts",
+        "signals": []
+      },
+      {
         "name": "NshDialogService",
         "kind": "service",
         "selector": null,
@@ -3467,6 +3552,180 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
       }
     ]
   },
+  "bottom-sheet": {
+    "api": [
+      {
+        "name": "NshBottomSheetContainerComponent",
+        "kind": "component",
+        "selector": "nsh-bottom-sheet-container",
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts",
+        "signals": [
+          {
+            "name": "bottomSheetRef",
+            "alias": null,
+            "kind": "input",
+            "type": "NshBottomSheetRef<any>",
+            "required": true
+          },
+          {
+            "name": "componentInputs",
+            "alias": null,
+            "kind": "input",
+            "type": "Record<string, unknown> | null",
+            "required": false
+          },
+          {
+            "name": "config",
+            "alias": null,
+            "kind": "input",
+            "type": "NshBottomSheetConfig | null",
+            "required": false
+          },
+          {
+            "name": "contentComponent",
+            "alias": null,
+            "kind": "input",
+            "type": "Type<any> | null",
+            "required": false
+          },
+          {
+            "name": "contentTemplate",
+            "alias": null,
+            "kind": "input",
+            "type": "TemplateRef<unknown> | null",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "NshBottomSheetConfig",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet.types.ts",
+        "signals": [
+          {
+            "name": "ariaLabel",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          },
+          {
+            "name": "autoFocus",
+            "alias": null,
+            "kind": "input",
+            "type": "NshBottomSheetAutoFocusTarget",
+            "required": false
+          },
+          {
+            "name": "closeOnBackdropClick",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "closeOnEscape",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "data",
+            "alias": null,
+            "kind": "input",
+            "type": "unknown",
+            "required": false
+          },
+          {
+            "name": "disableScroll",
+            "alias": null,
+            "kind": "input",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "maxHeight",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          },
+          {
+            "name": "maxWidth",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          },
+          {
+            "name": "width",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "NshBottomSheetRef",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-ref.ts",
+        "signals": []
+      },
+      {
+        "name": "NshBottomSheetService",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet.service.ts",
+        "signals": []
+      }
+    ],
+    "stylingTokens": [
+      {
+        "name": "--nsh-bottom-sheet-backdrop-bg",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-bg",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-fg",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-max-height",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-max-width",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-padding",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-radius",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-shadow",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      },
+      {
+        "name": "--nsh-bottom-sheet-width",
+        "source": "projects/nsh-kit-ui/src/lib/overlays/bottom-sheet/bottom-sheet-container.component.ts"
+      }
+    ]
+  },
   "snackbar": {
     "api": [
       {
@@ -3475,6 +3734,65 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
         "selector": "nsh-snackbar-container",
         "exportAs": null,
         "source": "projects/nsh-kit-ui/src/lib/overlays/snackbar/snackbar-container.component.ts",
+        "signals": []
+      },
+      {
+        "name": "NshSnackbarConfig",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/snackbar/snackbar.types.ts",
+        "signals": [
+          {
+            "name": "actionText",
+            "alias": null,
+            "kind": "input",
+            "type": "string | null",
+            "required": false
+          },
+          {
+            "name": "ariaLive",
+            "alias": null,
+            "kind": "input",
+            "type": "'polite' | 'assertive'",
+            "required": false
+          },
+          {
+            "name": "durationMs",
+            "alias": null,
+            "kind": "input",
+            "type": "number | null",
+            "required": false
+          },
+          {
+            "name": "maxStack",
+            "alias": null,
+            "kind": "input",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "position",
+            "alias": null,
+            "kind": "input",
+            "type": "NshSnackbarPosition",
+            "required": false
+          },
+          {
+            "name": "variant",
+            "alias": null,
+            "kind": "input",
+            "type": "NshSnackbarVariant",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "NshSnackbarRef",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/overlays/snackbar/snackbar-ref.ts",
         "signals": []
       },
       {
@@ -3602,6 +3920,36 @@ export const DOC_ENTRY_METADATA: Readonly<Record<string, DocEntryMetadata>> = {
             "alias": "nshTheme",
             "kind": "input",
             "type": "NshThemeConfig | null",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "NshThemeConfig",
+        "kind": "service",
+        "selector": null,
+        "exportAs": null,
+        "source": "projects/nsh-kit-ui/src/lib/foundations/theme/theme.model.ts",
+        "signals": [
+          {
+            "name": "density",
+            "alias": null,
+            "kind": "input",
+            "type": "NshDensityMode",
+            "required": false
+          },
+          {
+            "name": "mode",
+            "alias": null,
+            "kind": "input",
+            "type": "NshThemeMode",
+            "required": false
+          },
+          {
+            "name": "tokens",
+            "alias": null,
+            "kind": "input",
+            "type": "DeepPartial<NshTokens>",
             "required": false
           }
         ]

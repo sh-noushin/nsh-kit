@@ -43,4 +43,9 @@ export const routes: Routes = [
 		loadComponent: () =>
 			import('./pages/dialog/dialog-page.component').then((m) => m.DialogPageComponent),
 	},
+	{
+		path: 'bottom-sheet',
+		loadComponent: () =>
+			import('./pages/bottom-sheet/bottom-sheet-page.component').then((m) => m.BottomSheetPageComponent),
+	},
 ];
