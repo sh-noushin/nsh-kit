@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 import { NshButtonComponent } from 'nsh-kit-ui';
 
@@ -8,7 +8,29 @@ import { NshButtonComponent } from 'nsh-kit-ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshButtonComponent],
   template: `
-    <div class="button-overview">
+    <div class="example-stack">
+      <div class="control-row">
+        <div class="field">
+          Accent color
+          <input
+            class="demo-showcase-color-picker"
+            type="color"
+            [value]="accentColor()"
+            (input)="setAccent($event)"
+          />
+        </div>
+      </div>
+
+      <div
+        class="button-overview"
+        [style.--btn-accent]="accentColor()"
+        [style.--btn-elevated-bg]="elevatedBg()"
+        [style.--btn-tonal-bg]="tonalBg()"
+        [style.--btn-tonal-fg]="tonalFg()"
+        [style.--btn-outline-border]="outlineBorder()"
+        [style.--btn-fab-bg]="fabBg()"
+        [style.--btn-fab-fg]="fabFg()"
+      >
       <div class="button-overview__row">
         <div class="button-overview__label">Text</div>
         <div class="button-overview__actions">
@@ -140,9 +162,29 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         </div>
       </div>
     </div>
+    </div>
   `,
   styles: [
     `
+      .example-stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .control-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 24px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        font-size: 0.78rem;
+        color: #111;
+        font-weight: 600;
+      }
+
       .button-overview {
         border-radius: 12px;
         border: 1px solid #cfd5e1;
@@ -186,31 +228,31 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         --nsh-density-control-height: 40px;
         --nsh-density-padding-inline: 10px;
         --nsh-button-bg: transparent;
-        --nsh-button-fg: #0b5db7;
+        --nsh-button-fg: var(--btn-accent, #0b5db7);
       }
 
       .btn--elevated {
-        --nsh-button-bg: #ebedf2;
-        --nsh-button-fg: #0b5db7;
+        --nsh-button-bg: var(--btn-elevated-bg, #ebedf2);
+        --nsh-button-fg: var(--btn-accent, #0b5db7);
       }
 
       .btn--outlined {
-        --nsh-button-fg: #0b5db7;
-        --nsh-button-border-color: #7f8899;
+        --nsh-button-fg: var(--btn-accent, #0b5db7);
+        --nsh-button-border-color: var(--btn-outline-border, #7f8899);
       }
 
       .btn--filled {
-        --nsh-button-bg: #0b5db7;
+        --nsh-button-bg: var(--btn-accent, #0b5db7);
         --nsh-button-fg: #fff;
       }
 
       .btn--tonal {
-        --nsh-button-bg: #c1cde8;
-        --nsh-button-fg: #49556f;
+        --nsh-button-bg: var(--btn-tonal-bg, #c1cde8);
+        --nsh-button-fg: var(--btn-tonal-fg, #49556f);
       }
 
       .btn--link {
-        --nsh-button-fg: #0b5db7;
+        --nsh-button-fg: var(--btn-accent, #0b5db7);
       }
 
       .btn--state-disabled {
@@ -228,7 +270,7 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         --nsh-density-padding-inline: 8px;
         --nsh-density-padding-block: 8px;
         --nsh-button-bg: transparent;
-        --nsh-button-fg: #4c5565;
+        --nsh-button-fg: color-mix(in srgb, var(--btn-accent, #0b5db7) 46%, #4c5565);
       }
 
       .btn--icon-only {
@@ -237,8 +279,8 @@ import { NshButtonComponent } from 'nsh-kit-ui';
 
       .fab {
         --nsh-button-radius: 18px;
-        --nsh-button-bg: #c2d0ea;
-        --nsh-button-fg: #0b5aa9;
+        --nsh-button-bg: var(--btn-fab-bg, #c2d0ea);
+        --nsh-button-fg: var(--btn-fab-fg, #0b5aa9);
       }
 
       .fab--default {
@@ -270,9 +312,41 @@ import { NshButtonComponent } from 'nsh-kit-ui';
     `,
   ],
 })
-export class ButtonOverviewExampleComponent {}
+export class ButtonOverviewExampleComponent {
+  readonly accentColor = signal('#0b5db7');
+  readonly elevatedBg = computed(() => `color-mix(in srgb, ${this.accentColor()} 8%, white)`);
+  readonly tonalBg = computed(() => `color-mix(in srgb, ${this.accentColor()} 24%, white)`);
+  readonly tonalFg = computed(() => `color-mix(in srgb, ${this.accentColor()} 64%, #1f2533)`);
+  readonly outlineBorder = computed(() => `color-mix(in srgb, ${this.accentColor()} 42%, #7f8899)`);
+  readonly fabBg = computed(() => `color-mix(in srgb, ${this.accentColor()} 22%, white)`);
+  readonly fabFg = computed(() => `color-mix(in srgb, ${this.accentColor()} 90%, #0b5aa9)`);
 
-export const buttonOverviewHtml = `<div class="button-overview">
+  setAccent(event: Event): void {
+    const value = (event.target as HTMLInputElement | null)?.value;
+    if (value) {
+      this.accentColor.set(value);
+    }
+  }
+}
+
+export const buttonOverviewHtml = `<div class="example-stack">
+  <div class="control-row">
+    <div class="field">
+      Accent color
+      <input class="demo-showcase-color-picker" type="color" [value]="accentColor()" (input)="setAccent($event)" />
+    </div>
+  </div>
+
+  <div
+    class="button-overview"
+    [style.--btn-accent]="accentColor()"
+    [style.--btn-elevated-bg]="elevatedBg()"
+    [style.--btn-tonal-bg]="tonalBg()"
+    [style.--btn-tonal-fg]="tonalFg()"
+    [style.--btn-outline-border]="outlineBorder()"
+    [style.--btn-fab-bg]="fabBg()"
+    [style.--btn-fab-fg]="fabFg()"
+  >
   <div class="button-overview__row">
     <div class="button-overview__label">Text</div>
     <div class="button-overview__actions">
@@ -350,9 +424,10 @@ export const buttonOverviewHtml = `<div class="button-overview">
       <nsh-button variant="tonal" class="btn fab fab--extended btn--link" leadingIcon="favorite">Link</nsh-button>
     </div>
   </div>
+  </div>
 </div>`;
 
-export const buttonOverviewTs = `import { ChangeDetectionStrategy, Component } from '@angular/core';
+export const buttonOverviewTs = `import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { NshButtonComponent } from 'nsh-kit-ui';
 
 @Component({
@@ -362,4 +437,19 @@ import { NshButtonComponent } from 'nsh-kit-ui';
   imports: [NshButtonComponent],
   templateUrl: './button-overview.example.html'
 })
-export class ButtonOverviewExampleComponent {}`;
+export class ButtonOverviewExampleComponent {
+  readonly accentColor = signal('#0b5db7');
+  readonly elevatedBg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 8%, white)\`);
+  readonly tonalBg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 24%, white)\`);
+  readonly tonalFg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 64%, #1f2533)\`);
+  readonly outlineBorder = computed(() => \`color-mix(in srgb, \${this.accentColor()} 42%, #7f8899)\`);
+  readonly fabBg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 22%, white)\`);
+  readonly fabFg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 90%, #0b5aa9)\`);
+
+  setAccent(event: Event): void {
+    const value = (event.target as HTMLInputElement | null)?.value;
+    if (value) {
+      this.accentColor.set(value);
+    }
+  }
+}`;
