@@ -48,8 +48,6 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
         font-size: 0.78rem;
         font-weight: 600;
         color: #111;
-        align-self: end;
-        margin-bottom: 8px;
       }
 
       .toggle input {
@@ -59,7 +57,7 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
 
       .control-row {
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         gap: 24px;
         margin-bottom: 12px;
       }

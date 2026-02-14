@@ -81,6 +81,7 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
       }
 
       .control-row--top {
+        flex-wrap: nowrap;
         align-items: flex-end;
         gap: 24px;
         margin-bottom: 10px;
@@ -88,7 +89,7 @@ type CrumbId = 'home' | 'blog' | 'cooking' | 'iceCream';
 
       .control-row--top .toggle {
         align-self: end;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
       }
 
       .control-row--icons {
