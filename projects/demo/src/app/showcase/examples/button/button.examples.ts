@@ -1,6 +1,11 @@
 import type { DocExample } from '../../shared/doc-models';
 
 import {
+  ButtonOverviewExampleComponent,
+  buttonOverviewHtml,
+  buttonOverviewTs,
+} from './button-overview.example';
+import {
   ButtonBasicExampleComponent,
   buttonBasicHtml,
   buttonBasicTs,
@@ -12,6 +17,12 @@ import {
 } from './button-loading.example';
 
 export const buttonExamples: ReadonlyArray<DocExample> = [
+  {
+    title: 'Button overview',
+    component: ButtonOverviewExampleComponent,
+    html: buttonOverviewHtml,
+    ts: buttonOverviewTs,
+  },
   {
     title: 'Basic variants',
     component: ButtonBasicExampleComponent,

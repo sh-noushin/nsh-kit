@@ -23,6 +23,11 @@ const DEMO_ICON_ASSETS = {
   'credit-card': '/icons/material/credit-card.svg',
   truck: '/icons/material/truck.svg',
   check: '/icons/material/check.svg',
+  delete: '/icons/material/delete.svg',
+  favorite: '/icons/material/favorite.svg',
+  menu: '/icons/material/menu.svg',
+  'more-vert': '/icons/material/more-vert.svg',
+  'open-in-new': '/icons/material/open-in-new.svg',
   'chevron-right': '/icons/material/chevron-right.svg',
 } as const;
 
