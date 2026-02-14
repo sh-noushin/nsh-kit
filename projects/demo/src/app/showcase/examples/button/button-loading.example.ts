@@ -21,14 +21,16 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         </div>
       </div>
 
-      <div class="example-row">
-        <nsh-button variant="filled" [loading]="true" [style.--nsh-button-bg]="accentColor()">Saving</nsh-button>
-        <nsh-button
-          variant="tonal"
-          [loading]="true"
-          [style.--nsh-button-bg]="tonalBg()"
-          [style.--nsh-button-fg]="tonalFg()"
-        >
+      <div
+        class="example-row"
+        [style.--btn-accent]="accentColor()"
+        [style.--btn-tonal-bg]="tonalBg()"
+        [style.--btn-tonal-fg]="tonalFg()"
+      >
+        <nsh-button variant="filled" class="loading-btn loading-btn--filled" [loading]="true">
+          Saving
+        </nsh-button>
+        <nsh-button variant="tonal" class="loading-btn loading-btn--tonal" [loading]="true">
           Processing
         </nsh-button>
       </div>
@@ -58,7 +60,26 @@ import { NshButtonComponent } from 'nsh-kit-ui';
       .example-row {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--nsh-space-sm);
+        align-items: center;
+        gap: 0;
+      }
+
+      .loading-btn {
+        --nsh-button-radius: 0px;
+        --nsh-density-control-height: 56px;
+        --nsh-density-padding-inline: 22px;
+        --nsh-density-padding-block: 12px;
+        margin-right: 12px;
+      }
+
+      .loading-btn--filled {
+        --nsh-button-bg: var(--btn-accent, #0b5db7);
+        --nsh-button-fg: #f4f8ff;
+      }
+
+      .loading-btn--tonal {
+        --nsh-button-bg: var(--btn-tonal-bg, #dce8f6);
+        --nsh-button-fg: var(--btn-tonal-fg, #4f7cb1);
       }
     `,
   ],
@@ -84,9 +105,9 @@ export const buttonLoadingHtml = `<div class="example-stack">
     </div>
   </div>
 
-  <div class="example-row">
-    <nsh-button variant="filled" [loading]="true" [style.--nsh-button-bg]="accentColor()">Saving</nsh-button>
-    <nsh-button variant="tonal" [loading]="true" [style.--nsh-button-bg]="tonalBg()" [style.--nsh-button-fg]="tonalFg()">Processing</nsh-button>
+  <div class="example-row" [style.--btn-accent]="accentColor()" [style.--btn-tonal-bg]="tonalBg()" [style.--btn-tonal-fg]="tonalFg()">
+    <nsh-button variant="filled" class="loading-btn loading-btn--filled" [loading]="true">Saving</nsh-button>
+    <nsh-button variant="tonal" class="loading-btn loading-btn--tonal" [loading]="true">Processing</nsh-button>
   </div>
 </div>`;
 

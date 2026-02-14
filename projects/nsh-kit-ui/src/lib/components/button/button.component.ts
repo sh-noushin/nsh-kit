@@ -57,6 +57,10 @@ export type NshButtonColor =
         @if (trailingIcon(); as iconName) {
           <nsh-icon class="nsh-button__icon" [name]="iconName" [size]="iconSize()"></nsh-icon>
         }
+
+        @if (showLoadingTrailingSpacer()) {
+          <span class="nsh-button__loading-spacer" aria-hidden="true"></span>
+        }
       </span>
     </button>
   `,
@@ -146,6 +150,15 @@ export type NshButtonColor =
       border: 0.125rem solid color-mix(in srgb, currentColor 25%, transparent);
       border-top-color: currentColor;
       animation: nsh-button-spin var(--nsh-motion-duration-slow) linear infinite;
+      flex: 0 0 auto;
+    }
+
+    .nsh-button__loading-spacer {
+      width: var(--_btn-icon-size);
+      height: var(--_btn-icon-size);
+      flex: 0 0 auto;
+      visibility: hidden;
+      pointer-events: none;
     }
 
     @keyframes nsh-button-spin {
@@ -234,10 +247,14 @@ export type NshButtonColor =
       background: color-mix(in srgb, var(--_btn-bg) 86%, var(--nsh-color-surface));
     }
 
-    .nsh-button:disabled,
-    .nsh-button.nsh-button--loading {
+    .nsh-button:disabled {
       cursor: not-allowed;
       opacity: 0.72;
+    }
+
+    .nsh-button.nsh-button--loading {
+      cursor: progress;
+      opacity: 1;
     }
 
     .nsh-button.nsh-focus-visible {
@@ -259,4 +276,8 @@ export class NshButtonComponent {
 
   readonly isDisabled = computed(() => this.disabled() || this.loading());
   readonly iconSize = computed(() => '1.125em');
+  readonly showLoadingTrailingSpacer = computed(() => {
+    const trailingIcon = (this.trailingIcon() ?? '').trim();
+    return this.loading() && trailingIcon.length === 0;
+  });
 }
