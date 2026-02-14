@@ -19,6 +19,15 @@ import { NshButtonComponent } from 'nsh-kit-ui';
             (input)="setAccent($event)"
           />
         </div>
+
+        <label class="field">
+          Size
+          <select class="control-select" [value]="size()" (change)="setSize($event)">
+            <option value="sm">Small</option>
+            <option value="md">Medium</option>
+            <option value="lg">Large</option>
+          </select>
+        </label>
       </div>
 
       <div
@@ -34,55 +43,55 @@ import { NshButtonComponent } from 'nsh-kit-ui';
       <div class="button-overview__row">
         <div class="button-overview__label">Text</div>
         <div class="button-overview__actions">
-          <nsh-button variant="text" class="btn btn--text">Basic</nsh-button>
-          <nsh-button variant="text" class="btn btn--text btn--state-disabled" [disabled]="true">
+          <nsh-button variant="text" class="btn btn--text" [size]="size()">Basic</nsh-button>
+          <nsh-button variant="text" class="btn btn--text btn--state-disabled" [size]="size()" [disabled]="true">
             Disabled
           </nsh-button>
-          <nsh-button variant="text" class="btn btn--text btn--link">Link</nsh-button>
+          <nsh-button variant="text" class="btn btn--text btn--link" [size]="size()">Link</nsh-button>
         </div>
       </div>
 
       <div class="button-overview__row">
         <div class="button-overview__label">Elevated</div>
         <div class="button-overview__actions">
-          <nsh-button variant="tonal" class="btn btn--elevated btn--raised">Basic</nsh-button>
-          <nsh-button variant="tonal" class="btn btn--elevated btn--state-disabled" [disabled]="true">
+          <nsh-button variant="tonal" class="btn btn--elevated btn--raised" [size]="size()">Basic</nsh-button>
+          <nsh-button variant="tonal" class="btn btn--elevated btn--state-disabled" [size]="size()" [disabled]="true">
             Disabled
           </nsh-button>
-          <nsh-button variant="tonal" class="btn btn--elevated btn--raised btn--link">Link</nsh-button>
+          <nsh-button variant="tonal" class="btn btn--elevated btn--raised btn--link" [size]="size()">Link</nsh-button>
         </div>
       </div>
 
       <div class="button-overview__row">
         <div class="button-overview__label">Outlined</div>
         <div class="button-overview__actions">
-          <nsh-button variant="outlined" class="btn btn--outlined">Basic</nsh-button>
-          <nsh-button variant="outlined" class="btn btn--outlined btn--state-disabled" [disabled]="true">
+          <nsh-button variant="outlined" class="btn btn--outlined" [size]="size()">Basic</nsh-button>
+          <nsh-button variant="outlined" class="btn btn--outlined btn--state-disabled" [size]="size()" [disabled]="true">
             Disabled
           </nsh-button>
-          <nsh-button variant="outlined" class="btn btn--outlined btn--link">Link</nsh-button>
+          <nsh-button variant="outlined" class="btn btn--outlined btn--link" [size]="size()">Link</nsh-button>
         </div>
       </div>
 
       <div class="button-overview__row">
         <div class="button-overview__label">Filled</div>
         <div class="button-overview__actions">
-          <nsh-button variant="filled" class="btn btn--filled">Basic</nsh-button>
-          <nsh-button variant="filled" class="btn btn--filled btn--state-disabled" [disabled]="true">
+          <nsh-button variant="filled" class="btn btn--filled" [size]="size()">Basic</nsh-button>
+          <nsh-button variant="filled" class="btn btn--filled btn--state-disabled" [size]="size()" [disabled]="true">
             Disabled
           </nsh-button>
-          <nsh-button variant="filled" class="btn btn--filled">Link</nsh-button>
+          <nsh-button variant="filled" class="btn btn--filled" [size]="size()">Link</nsh-button>
         </div>
       </div>
 
       <div class="button-overview__row">
         <div class="button-overview__label">Tonal</div>
         <div class="button-overview__actions">
-          <nsh-button variant="tonal" class="btn btn--tonal">Basic</nsh-button>
-          <nsh-button variant="tonal" class="btn btn--tonal btn--state-disabled" [disabled]="true">
+          <nsh-button variant="tonal" class="btn btn--tonal" [size]="size()">Basic</nsh-button>
+          <nsh-button variant="tonal" class="btn btn--tonal btn--state-disabled" [size]="size()" [disabled]="true">
             Disabled
           </nsh-button>
-          <nsh-button variant="tonal" class="btn btn--tonal btn--link">Link</nsh-button>
+          <nsh-button variant="tonal" class="btn btn--tonal btn--link" [size]="size()">Link</nsh-button>
         </div>
       </div>
 
@@ -92,12 +101,14 @@ import { NshButtonComponent } from 'nsh-kit-ui';
           <nsh-button
             variant="text"
             class="btn btn--icon btn--icon-only"
+            [size]="size()"
             ariaLabel="More options"
             leadingIcon="more-vert"
           ></nsh-button>
           <nsh-button
             variant="text"
             class="btn btn--icon btn--icon-only"
+            [size]="size()"
             ariaLabel="Open in new"
             leadingIcon="open-in-new"
           ></nsh-button>
@@ -110,12 +121,14 @@ import { NshButtonComponent } from 'nsh-kit-ui';
           <nsh-button
             variant="tonal"
             class="btn fab fab--default btn--icon-only"
+            [size]="size()"
             ariaLabel="Delete"
             leadingIcon="delete"
           ></nsh-button>
           <nsh-button
             variant="tonal"
             class="btn fab fab--default btn--icon-only btn--state-disabled"
+            [size]="size()"
             ariaLabel="Favorite disabled"
             leadingIcon="favorite"
             [disabled]="true"
@@ -129,12 +142,14 @@ import { NshButtonComponent } from 'nsh-kit-ui';
           <nsh-button
             variant="tonal"
             class="btn fab fab--mini btn--icon-only"
+            [size]="size()"
             ariaLabel="Menu"
             leadingIcon="menu"
           ></nsh-button>
           <nsh-button
             variant="tonal"
             class="btn fab fab--mini btn--icon-only btn--state-disabled"
+            [size]="size()"
             ariaLabel="Home disabled"
             leadingIcon="home"
             [disabled]="true"
@@ -145,18 +160,19 @@ import { NshButtonComponent } from 'nsh-kit-ui';
       <div class="button-overview__row">
         <div class="button-overview__label">Extended FAB</div>
         <div class="button-overview__actions">
-          <nsh-button variant="tonal" class="btn fab fab--extended btn--link" leadingIcon="favorite">
+          <nsh-button variant="tonal" class="btn fab fab--extended btn--link" [size]="size()" leadingIcon="favorite">
             Basic
           </nsh-button>
           <nsh-button
             variant="tonal"
             class="btn fab fab--extended btn--state-disabled"
+            [size]="size()"
             leadingIcon="favorite"
             [disabled]="true"
           >
             Disabled
           </nsh-button>
-          <nsh-button variant="tonal" class="btn fab fab--extended btn--link" leadingIcon="favorite">
+          <nsh-button variant="tonal" class="btn fab fab--extended btn--link" [size]="size()" leadingIcon="favorite">
             Link
           </nsh-button>
         </div>
@@ -183,6 +199,16 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         font-size: 0.78rem;
         color: #111;
         font-weight: 600;
+      }
+
+      .control-select {
+        min-height: 32px;
+        border: 1px solid #c7d0df;
+        border-radius: 8px;
+        padding: 0 10px;
+        background: #fff;
+        color: #1f2533;
+        font: inherit;
       }
 
       .button-overview {
@@ -314,6 +340,7 @@ import { NshButtonComponent } from 'nsh-kit-ui';
 })
 export class ButtonOverviewExampleComponent {
   readonly accentColor = signal('#0b5db7');
+  readonly size = signal<'sm' | 'md' | 'lg'>('md');
   readonly elevatedBg = computed(() => `color-mix(in srgb, ${this.accentColor()} 8%, white)`);
   readonly tonalBg = computed(() => `color-mix(in srgb, ${this.accentColor()} 24%, white)`);
   readonly tonalFg = computed(() => `color-mix(in srgb, ${this.accentColor()} 64%, #1f2533)`);
@@ -327,6 +354,13 @@ export class ButtonOverviewExampleComponent {
       this.accentColor.set(value);
     }
   }
+
+  setSize(event: Event): void {
+    const value = (event.target as HTMLSelectElement | null)?.value;
+    if (value === 'sm' || value === 'md' || value === 'lg') {
+      this.size.set(value);
+    }
+  }
 }
 
 export const buttonOverviewHtml = `<div class="example-stack">
@@ -335,6 +369,15 @@ export const buttonOverviewHtml = `<div class="example-stack">
       Accent color
       <input class="demo-showcase-color-picker" type="color" [value]="accentColor()" (input)="setAccent($event)" />
     </div>
+
+    <label class="field">
+      Size
+      <select class="control-select" [value]="size()" (change)="setSize($event)">
+        <option value="sm">Small</option>
+        <option value="md">Medium</option>
+        <option value="lg">Large</option>
+      </select>
+    </label>
   </div>
 
   <div
@@ -350,78 +393,78 @@ export const buttonOverviewHtml = `<div class="example-stack">
   <div class="button-overview__row">
     <div class="button-overview__label">Text</div>
     <div class="button-overview__actions">
-      <nsh-button variant="text" class="btn btn--text">Basic</nsh-button>
-      <nsh-button variant="text" class="btn btn--text btn--state-disabled" [disabled]="true">Disabled</nsh-button>
-      <nsh-button variant="text" class="btn btn--text btn--link">Link</nsh-button>
+      <nsh-button variant="text" class="btn btn--text" [size]="size()">Basic</nsh-button>
+      <nsh-button variant="text" class="btn btn--text btn--state-disabled" [size]="size()" [disabled]="true">Disabled</nsh-button>
+      <nsh-button variant="text" class="btn btn--text btn--link" [size]="size()">Link</nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Elevated</div>
     <div class="button-overview__actions">
-      <nsh-button variant="tonal" class="btn btn--elevated btn--raised">Basic</nsh-button>
-      <nsh-button variant="tonal" class="btn btn--elevated btn--state-disabled" [disabled]="true">Disabled</nsh-button>
-      <nsh-button variant="tonal" class="btn btn--elevated btn--raised btn--link">Link</nsh-button>
+      <nsh-button variant="tonal" class="btn btn--elevated btn--raised" [size]="size()">Basic</nsh-button>
+      <nsh-button variant="tonal" class="btn btn--elevated btn--state-disabled" [size]="size()" [disabled]="true">Disabled</nsh-button>
+      <nsh-button variant="tonal" class="btn btn--elevated btn--raised btn--link" [size]="size()">Link</nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Outlined</div>
     <div class="button-overview__actions">
-      <nsh-button variant="outlined" class="btn btn--outlined">Basic</nsh-button>
-      <nsh-button variant="outlined" class="btn btn--outlined btn--state-disabled" [disabled]="true">Disabled</nsh-button>
-      <nsh-button variant="outlined" class="btn btn--outlined btn--link">Link</nsh-button>
+      <nsh-button variant="outlined" class="btn btn--outlined" [size]="size()">Basic</nsh-button>
+      <nsh-button variant="outlined" class="btn btn--outlined btn--state-disabled" [size]="size()" [disabled]="true">Disabled</nsh-button>
+      <nsh-button variant="outlined" class="btn btn--outlined btn--link" [size]="size()">Link</nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Filled</div>
     <div class="button-overview__actions">
-      <nsh-button variant="filled" class="btn btn--filled">Basic</nsh-button>
-      <nsh-button variant="filled" class="btn btn--filled btn--state-disabled" [disabled]="true">Disabled</nsh-button>
-      <nsh-button variant="filled" class="btn btn--filled">Link</nsh-button>
+      <nsh-button variant="filled" class="btn btn--filled" [size]="size()">Basic</nsh-button>
+      <nsh-button variant="filled" class="btn btn--filled btn--state-disabled" [size]="size()" [disabled]="true">Disabled</nsh-button>
+      <nsh-button variant="filled" class="btn btn--filled" [size]="size()">Link</nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Tonal</div>
     <div class="button-overview__actions">
-      <nsh-button variant="tonal" class="btn btn--tonal">Basic</nsh-button>
-      <nsh-button variant="tonal" class="btn btn--tonal btn--state-disabled" [disabled]="true">Disabled</nsh-button>
-      <nsh-button variant="tonal" class="btn btn--tonal btn--link">Link</nsh-button>
+      <nsh-button variant="tonal" class="btn btn--tonal" [size]="size()">Basic</nsh-button>
+      <nsh-button variant="tonal" class="btn btn--tonal btn--state-disabled" [size]="size()" [disabled]="true">Disabled</nsh-button>
+      <nsh-button variant="tonal" class="btn btn--tonal btn--link" [size]="size()">Link</nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Icon</div>
     <div class="button-overview__actions">
-      <nsh-button variant="text" class="btn btn--icon btn--icon-only" ariaLabel="More options" leadingIcon="more-vert"></nsh-button>
-      <nsh-button variant="text" class="btn btn--icon btn--icon-only" ariaLabel="Open in new" leadingIcon="open-in-new"></nsh-button>
+      <nsh-button variant="text" class="btn btn--icon btn--icon-only" [size]="size()" ariaLabel="More options" leadingIcon="more-vert"></nsh-button>
+      <nsh-button variant="text" class="btn btn--icon btn--icon-only" [size]="size()" ariaLabel="Open in new" leadingIcon="open-in-new"></nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Floating Action Button (FAB)</div>
     <div class="button-overview__actions">
-      <nsh-button variant="tonal" class="btn fab fab--default btn--icon-only" ariaLabel="Delete" leadingIcon="delete"></nsh-button>
-      <nsh-button variant="tonal" class="btn fab fab--default btn--icon-only btn--state-disabled" ariaLabel="Favorite disabled" leadingIcon="favorite" [disabled]="true"></nsh-button>
+      <nsh-button variant="tonal" class="btn fab fab--default btn--icon-only" [size]="size()" ariaLabel="Delete" leadingIcon="delete"></nsh-button>
+      <nsh-button variant="tonal" class="btn fab fab--default btn--icon-only btn--state-disabled" [size]="size()" ariaLabel="Favorite disabled" leadingIcon="favorite" [disabled]="true"></nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Mini FAB</div>
     <div class="button-overview__actions">
-      <nsh-button variant="tonal" class="btn fab fab--mini btn--icon-only" ariaLabel="Menu" leadingIcon="menu"></nsh-button>
-      <nsh-button variant="tonal" class="btn fab fab--mini btn--icon-only btn--state-disabled" ariaLabel="Home disabled" leadingIcon="home" [disabled]="true"></nsh-button>
+      <nsh-button variant="tonal" class="btn fab fab--mini btn--icon-only" [size]="size()" ariaLabel="Menu" leadingIcon="menu"></nsh-button>
+      <nsh-button variant="tonal" class="btn fab fab--mini btn--icon-only btn--state-disabled" [size]="size()" ariaLabel="Home disabled" leadingIcon="home" [disabled]="true"></nsh-button>
     </div>
   </div>
 
   <div class="button-overview__row">
     <div class="button-overview__label">Extended FAB</div>
     <div class="button-overview__actions">
-      <nsh-button variant="tonal" class="btn fab fab--extended btn--link" leadingIcon="favorite">Basic</nsh-button>
-      <nsh-button variant="tonal" class="btn fab fab--extended btn--state-disabled" leadingIcon="favorite" [disabled]="true">Disabled</nsh-button>
-      <nsh-button variant="tonal" class="btn fab fab--extended btn--link" leadingIcon="favorite">Link</nsh-button>
+      <nsh-button variant="tonal" class="btn fab fab--extended btn--link" [size]="size()" leadingIcon="favorite">Basic</nsh-button>
+      <nsh-button variant="tonal" class="btn fab fab--extended btn--state-disabled" [size]="size()" leadingIcon="favorite" [disabled]="true">Disabled</nsh-button>
+      <nsh-button variant="tonal" class="btn fab fab--extended btn--link" [size]="size()" leadingIcon="favorite">Link</nsh-button>
     </div>
   </div>
   </div>
@@ -439,6 +482,7 @@ import { NshButtonComponent } from 'nsh-kit-ui';
 })
 export class ButtonOverviewExampleComponent {
   readonly accentColor = signal('#0b5db7');
+  readonly size = signal<'sm' | 'md' | 'lg'>('md');
   readonly elevatedBg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 8%, white)\`);
   readonly tonalBg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 24%, white)\`);
   readonly tonalFg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 64%, #1f2533)\`);
@@ -450,6 +494,13 @@ export class ButtonOverviewExampleComponent {
     const value = (event.target as HTMLInputElement | null)?.value;
     if (value) {
       this.accentColor.set(value);
+    }
+  }
+
+  setSize(event: Event): void {
+    const value = (event.target as HTMLSelectElement | null)?.value;
+    if (value === 'sm' || value === 'md' || value === 'lg') {
+      this.size.set(value);
     }
   }
 }`;

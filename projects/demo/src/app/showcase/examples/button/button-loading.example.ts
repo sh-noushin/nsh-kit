@@ -19,6 +19,15 @@ import { NshButtonComponent } from 'nsh-kit-ui';
             (input)="setAccent($event)"
           />
         </div>
+
+        <label class="field">
+          Size
+          <select class="control-select" [value]="size()" (change)="setSize($event)">
+            <option value="sm">Small</option>
+            <option value="md">Medium</option>
+            <option value="lg">Large</option>
+          </select>
+        </label>
       </div>
 
       <div
@@ -30,10 +39,20 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         <div class="variant-block">
           <div class="variant-label">Rectangle</div>
           <div class="example-row">
-            <nsh-button variant="filled" class="loading-btn loading-btn--rect loading-btn--filled" [loading]="true">
+            <nsh-button
+              variant="filled"
+              class="loading-btn loading-btn--rect loading-btn--filled"
+              [size]="size()"
+              [loading]="true"
+            >
               Saving
             </nsh-button>
-            <nsh-button variant="tonal" class="loading-btn loading-btn--rect loading-btn--tonal" [loading]="true">
+            <nsh-button
+              variant="tonal"
+              class="loading-btn loading-btn--rect loading-btn--tonal"
+              [size]="size()"
+              [loading]="true"
+            >
               Processing
             </nsh-button>
           </div>
@@ -45,6 +64,7 @@ import { NshButtonComponent } from 'nsh-kit-ui';
             <nsh-button
               variant="filled"
               class="loading-btn loading-btn--rounded loading-btn--filled"
+              [size]="size()"
               [loading]="true"
             >
               Saving
@@ -52,6 +72,7 @@ import { NshButtonComponent } from 'nsh-kit-ui';
             <nsh-button
               variant="tonal"
               class="loading-btn loading-btn--rounded loading-btn--tonal"
+              [size]="size()"
               [loading]="true"
             >
               Processing
@@ -82,6 +103,16 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         font-weight: 600;
       }
 
+      .control-select {
+        min-height: 32px;
+        border: 1px solid #c7d0df;
+        border-radius: 8px;
+        padding: 0 10px;
+        background: #fff;
+        color: #1f2533;
+        font: inherit;
+      }
+
       .example-row {
         display: flex;
         flex-wrap: wrap;
@@ -108,9 +139,6 @@ import { NshButtonComponent } from 'nsh-kit-ui';
       }
 
       .loading-btn {
-        --nsh-density-control-height: 56px;
-        --nsh-density-padding-inline: 22px;
-        --nsh-density-padding-block: 12px;
         margin-right: 12px;
       }
 
@@ -136,6 +164,7 @@ import { NshButtonComponent } from 'nsh-kit-ui';
 })
 export class ButtonLoadingExampleComponent {
   readonly accentColor = signal('#0b5db7');
+  readonly size = signal<'sm' | 'md' | 'lg'>('md');
   readonly tonalBg = computed(() => `color-mix(in srgb, ${this.accentColor()} 24%, white)`);
   readonly tonalFg = computed(() => `color-mix(in srgb, ${this.accentColor()} 64%, #1f2533)`);
 
@@ -143,6 +172,13 @@ export class ButtonLoadingExampleComponent {
     const value = (event.target as HTMLInputElement | null)?.value;
     if (value) {
       this.accentColor.set(value);
+    }
+  }
+
+  setSize(event: Event): void {
+    const value = (event.target as HTMLSelectElement | null)?.value;
+    if (value === 'sm' || value === 'md' || value === 'lg') {
+      this.size.set(value);
     }
   }
 }
@@ -153,22 +189,31 @@ export const buttonLoadingHtml = `<div class="example-stack">
       Accent color
       <input class="demo-showcase-color-picker" type="color" [value]="accentColor()" (input)="setAccent($event)" />
     </div>
+
+    <label class="field">
+      Size
+      <select class="control-select" [value]="size()" (change)="setSize($event)">
+        <option value="sm">Small</option>
+        <option value="md">Medium</option>
+        <option value="lg">Large</option>
+      </select>
+    </label>
   </div>
 
   <div class="variant-stack" [style.--btn-accent]="accentColor()" [style.--btn-tonal-bg]="tonalBg()" [style.--btn-tonal-fg]="tonalFg()">
     <div class="variant-block">
       <div class="variant-label">Rectangle</div>
       <div class="example-row">
-        <nsh-button variant="filled" class="loading-btn loading-btn--rect loading-btn--filled" [loading]="true">Saving</nsh-button>
-        <nsh-button variant="tonal" class="loading-btn loading-btn--rect loading-btn--tonal" [loading]="true">Processing</nsh-button>
+        <nsh-button variant="filled" class="loading-btn loading-btn--rect loading-btn--filled" [size]="size()" [loading]="true">Saving</nsh-button>
+        <nsh-button variant="tonal" class="loading-btn loading-btn--rect loading-btn--tonal" [size]="size()" [loading]="true">Processing</nsh-button>
       </div>
     </div>
 
     <div class="variant-block">
       <div class="variant-label">Rounded</div>
       <div class="example-row">
-        <nsh-button variant="filled" class="loading-btn loading-btn--rounded loading-btn--filled" [loading]="true">Saving</nsh-button>
-        <nsh-button variant="tonal" class="loading-btn loading-btn--rounded loading-btn--tonal" [loading]="true">Processing</nsh-button>
+        <nsh-button variant="filled" class="loading-btn loading-btn--rounded loading-btn--filled" [size]="size()" [loading]="true">Saving</nsh-button>
+        <nsh-button variant="tonal" class="loading-btn loading-btn--rounded loading-btn--tonal" [size]="size()" [loading]="true">Processing</nsh-button>
       </div>
     </div>
   </div>
@@ -186,6 +231,7 @@ import { NshButtonComponent } from 'nsh-kit-ui';
 })
 export class ButtonLoadingExampleComponent {
   readonly accentColor = signal('#0b5db7');
+  readonly size = signal<'sm' | 'md' | 'lg'>('md');
   readonly tonalBg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 24%, white)\`);
   readonly tonalFg = computed(() => \`color-mix(in srgb, \${this.accentColor()} 64%, #1f2533)\`);
 
@@ -193,6 +239,13 @@ export class ButtonLoadingExampleComponent {
     const value = (event.target as HTMLInputElement | null)?.value;
     if (value) {
       this.accentColor.set(value);
+    }
+  }
+
+  setSize(event: Event): void {
+    const value = (event.target as HTMLSelectElement | null)?.value;
+    if (value === 'sm' || value === 'md' || value === 'lg') {
+      this.size.set(value);
     }
   }
 }`;
