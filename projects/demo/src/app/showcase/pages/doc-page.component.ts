@@ -17,6 +17,7 @@ import {
 } from '../shared/doc-source-metadata';
 import { highlightSnippet } from '../shared/code-highlight.util';
 import { getDocEntry } from '../shared/doc-registry';
+import type { DocEntry, DocOverviewCodeBlock, DocOverviewSection } from '../shared/doc-models';
 import { getSignalDescription as getSignalDescriptionText } from '../shared/signal-descriptions';
 
 type DocTabId = 'overview' | 'api' | 'styling' | 'examples';
@@ -31,6 +32,20 @@ interface ApiGroup {
   kind: DocApiKind;
   title: string;
   targets: ReadonlyArray<DocApiTargetMetadata>;
+}
+
+interface OverviewScenario {
+  title: string;
+  htmlHighlighted: string;
+  tsHighlighted: string;
+}
+
+interface OverviewSectionCodeViewModel extends DocOverviewCodeBlock {
+  highlighted: string;
+}
+
+interface OverviewSectionViewModel extends DocOverviewSection {
+  codeBlocks: ReadonlyArray<OverviewSectionCodeViewModel>;
 }
 
 const DOC_TABS: ReadonlyArray<DocTabLink> = [
@@ -75,6 +90,13 @@ function toPascalCase(value: string): string {
     .join('');
 }
 
+function toSnippetLanguage(language: DocOverviewCodeBlock['language']): 'html' | 'typescript' | 'css' {
+  if (language === 'ts' || language === 'text') {
+    return 'typescript';
+  }
+  return language;
+}
+
 @Component({
   selector: 'demo-doc-page',
   standalone: true,
@@ -111,7 +133,75 @@ function toPascalCase(value: string): string {
             </section>
           }
 
-          @if (doc.usage?.length) {
+          @if (overviewSections().length) {
+            <section class="doc-page__overview-rich">
+              @for (section of overviewSections(); track section.title) {
+                <article class="doc-page__overview-rich-section">
+                  <h2 class="doc-page__section-title">{{ section.title }}</h2>
+
+                  @if (section.paragraphs?.length) {
+                    <div class="doc-page__overview-rich-paragraphs">
+                      @for (paragraph of section.paragraphs; track paragraph) {
+                        <p class="doc-page__overview-paragraph">{{ paragraph }}</p>
+                      }
+                    </div>
+                  }
+
+                  @if (section.bullets?.length) {
+                    <ul class="doc-page__usage-list">
+                      @for (item of section.bullets; track item) {
+                        <li>{{ item }}</li>
+                      }
+                    </ul>
+                  }
+
+                  @if (section.codeBlocks.length) {
+                    <div class="doc-page__overview-rich-codes">
+                      @for (codeBlock of section.codeBlocks; track codeBlock.code) {
+                        <pre class="doc-page__overview-code"><code class="hljs" [innerHTML]="codeBlock.highlighted"></code></pre>
+                      }
+                    </div>
+                  }
+                </article>
+              }
+            </section>
+          }
+
+          @if (completeOverviewSections().length) {
+            <section class="doc-page__overview-rich">
+              @for (section of completeOverviewSections(); track section.title) {
+                <article class="doc-page__overview-rich-section">
+                  <h2 class="doc-page__section-title">{{ section.title }}</h2>
+
+                  @if (section.paragraphs?.length) {
+                    <div class="doc-page__overview-rich-paragraphs">
+                      @for (paragraph of section.paragraphs; track paragraph) {
+                        <p class="doc-page__overview-paragraph">{{ paragraph }}</p>
+                      }
+                    </div>
+                  }
+
+                  @if (section.bullets?.length) {
+                    <ul class="doc-page__usage-list">
+                      @for (item of section.bullets; track item) {
+                        <li>{{ item }}</li>
+                      }
+                    </ul>
+                  }
+
+                  @if (section.codeBlocks.length) {
+                    <div class="doc-page__overview-rich-codes">
+                      @for (codeBlock of section.codeBlocks; track codeBlock.code) {
+                        <pre class="doc-page__overview-code"><code class="hljs" [innerHTML]="codeBlock.highlighted"></code></pre>
+                      }
+                    </div>
+                  }
+                </article>
+              }
+            </section>
+          }
+
+          @if (!completeOverviewSections().length && doc.usage?.length) {
             <section class="doc-page__usage">
               <h2 class="doc-page__section-title">Usage guidelines</h2>
               <ul class="doc-page__usage-list">
@@ -119,6 +209,48 @@ function toPascalCase(value: string): string {
                   <li>{{ item }}</li>
                 }
               </ul>
+            </section>
+          }
+
+          @if (!completeOverviewSections().length && whenToUseItems().length) {
+            <section class="doc-page__usage">
+              <h2 class="doc-page__section-title">When to use</h2>
+              <ul class="doc-page__usage-list">
+                @for (item of whenToUseItems(); track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (!completeOverviewSections().length && howToUseItems().length) {
+            <section class="doc-page__usage">
+              <h2 class="doc-page__section-title">How to use</h2>
+              <ul class="doc-page__usage-list">
+                @for (item of howToUseItems(); track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (!completeOverviewSections().length && overviewScenarios().length) {
+            <section class="doc-page__overview-scenarios">
+              <h2 class="doc-page__section-title">Real code scenarios</h2>
+
+              <div class="doc-page__overview-scenarios-grid">
+                @for (scenario of overviewScenarios(); track scenario.title) {
+                  <article class="doc-page__overview-scenario-card">
+                    <h3 class="doc-page__overview-scenario-title">{{ scenario.title }}</h3>
+
+                    <p class="doc-page__overview-scenario-label">HTML</p>
+                    <pre class="doc-page__overview-code"><code class="hljs" [innerHTML]="scenario.htmlHighlighted"></code></pre>
+
+                    <p class="doc-page__overview-scenario-label">TS</p>
+                    <pre class="doc-page__overview-code"><code class="hljs" [innerHTML]="scenario.tsHighlighted"></code></pre>
+                  </article>
+                }
+              </div>
             </section>
           }
         }
@@ -394,6 +526,27 @@ function toPascalCase(value: string): string {
         max-width: 78ch;
       }
 
+      .doc-page__overview-rich {
+        display: grid;
+        gap: 18px;
+      }
+
+      .doc-page__overview-rich-section {
+        display: grid;
+        gap: 12px;
+        max-width: 78ch;
+      }
+
+      .doc-page__overview-rich-paragraphs {
+        display: grid;
+        gap: 10px;
+      }
+
+      .doc-page__overview-rich-codes {
+        display: grid;
+        gap: 10px;
+      }
+
       .doc-page__overview-paragraph {
         margin: 0;
         color: #2b3345;
@@ -421,6 +574,49 @@ function toPascalCase(value: string): string {
         gap: 10px;
         line-height: 1.6;
         color: #2b3345;
+      }
+
+      .doc-page__overview-scenarios {
+        display: grid;
+        gap: 16px;
+      }
+
+      .doc-page__overview-scenarios-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .doc-page__overview-scenario-card {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border: 1px solid #d6dceb;
+        border-radius: 12px;
+        background: #fbfcff;
+      }
+
+      .doc-page__overview-scenario-title {
+        margin: 0;
+        font-size: 1rem;
+        color: #1f2a3f;
+      }
+
+      .doc-page__overview-scenario-label {
+        margin: 0;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #435171;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .doc-page__overview-code {
+        margin: 0;
+        border: 1px solid #dde3ef;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px 12px;
+        overflow-x: auto;
       }
 
       .doc-page__empty-state-block {
@@ -886,6 +1082,203 @@ export class DocPageComponent {
 
   readonly examples = computed(() => this.entry()?.exampleProvider() ?? []);
 
+  readonly overviewSections = computed<ReadonlyArray<OverviewSectionViewModel>>(() =>
+    (this.entry()?.overviewSections ?? []).map((section) => ({
+      ...section,
+      codeBlocks: (section.codeBlocks ?? []).map((codeBlock) => ({
+        ...codeBlock,
+        highlighted: highlightSnippet(codeBlock.code, toSnippetLanguage(codeBlock.language)),
+      })),
+    })),
+  );
+
+  readonly whenToUseItems = computed<ReadonlyArray<string>>(() => {
+    const doc = this.entry();
+    if (!doc) {
+      return [];
+    }
+
+    if (doc.usage?.length) {
+      return doc.usage.slice(0, 3);
+    }
+
+    return (doc.overview ?? []).slice(0, 3);
+  });
+
+  readonly howToUseItems = computed<ReadonlyArray<string>>(() => {
+    const doc = this.entry();
+    if (!doc) {
+      return [];
+    }
+
+    if (doc.usage?.length) {
+      return doc.usage;
+    }
+
+    const firstExample = this.examples()[0];
+    if (!firstExample) {
+      return [];
+    }
+
+    return [
+      `Start with the "${firstExample.title}" example and adapt inputs for your product flow.`,
+      'Prefer semantic variants and state bindings so behavior stays predictable.',
+      'Keep styling token-based and scoped to avoid global regressions.',
+    ];
+  });
+
+  readonly overviewScenarios = computed<ReadonlyArray<OverviewScenario>>(() =>
+    this.examples().map((example) => ({
+      title: example.title,
+      htmlHighlighted: highlightSnippet(example.html, 'html'),
+      tsHighlighted: highlightSnippet(example.ts, 'typescript'),
+    })),
+  );
+
+  readonly completeOverviewSections = computed<ReadonlyArray<OverviewSectionViewModel>>(() => {
+    const entry = this.entry();
+    if (!entry) {
+      return [];
+    }
+
+    const metadata = this.metadata();
+    const examples = this.examples();
+    const firstExample = examples[0];
+    const secondExample = examples[1] ?? null;
+    const signalTargets = metadata.api.filter((target) => target.signals.length > 0);
+    const allSignals = signalTargets.flatMap((target) => target.signals);
+    const signalCount = allSignals.length;
+    const tokenCount = this.stylingTokens().length;
+    const selector =
+      metadata.api.find((target) => target.kind === 'component' && !!target.selector)?.selector ?? null;
+    const serviceName =
+      metadata.api.find((target) => target.kind === 'service' && target.name.endsWith('Service'))?.name ?? null;
+    const configSignals =
+      metadata.api.find((target) => target.kind === 'service' && target.name.endsWith('Config'))?.signals ?? [];
+
+    const usageBullets = (entry.usage?.length ? entry.usage : this.whenToUseItems()).slice(0, 8);
+
+    const quickStartBlocks: DocOverviewCodeBlock[] = [];
+    if (selector) {
+      quickStartBlocks.push({
+        language: 'html',
+        code: this.buildSelectorUsageSnippet(selector, allSignals),
+      });
+    }
+
+    const integrationTs = this.buildIntegrationTsSnippet(entry, serviceName, configSignals);
+    if (integrationTs) {
+      quickStartBlocks.push({
+        language: 'ts',
+        code: integrationTs,
+      });
+    }
+
+    const behaviorBullets = allSignals.slice(0, 8).map((signalDoc) => {
+      const binding = this.signalBinding(signalDoc);
+      return `\`${signalDoc.name}\` (${signalDoc.kind}, ${signalDoc.type}) controls behavior via ${binding}.`;
+    });
+
+    const configBullets = configSignals.slice(0, 6).map((signalDoc) => {
+      return `Config option \`${signalDoc.name}\` (${signalDoc.type}) should be set explicitly for your flow defaults.`;
+    });
+
+    const configurationBullets = [...behaviorBullets, ...configBullets];
+
+    const sections: Array<DocOverviewSection> = [
+      {
+        title: 'What this component is for',
+        paragraphs: [
+          entry.description,
+          entry.overview?.[0] ??
+            `${entry.title} is part of the ${entry.category} section and is intended for consistent, production-grade UI behavior.`,
+          this.getCategoryOverviewParagraph(entry),
+        ],
+      },
+      {
+        title: 'When to use and when not to use',
+        bullets: usageBullets.length
+          ? usageBullets
+          : [
+              `Use ${entry.title} when you want a reusable interaction with consistent behavior across features.`,
+              `Avoid forcing ${entry.title} into flows where a simpler primitive would reduce cognitive load.`,
+              'Prefer design-system patterns over one-off UI to reduce long-term maintenance and regression risk.',
+            ],
+      },
+      {
+        title: 'Implementation approach',
+        paragraphs: [
+          `Start from the showcase example and adapt bindings to your feature state/store. This entry currently exposes ${metadata.api.length} API target(s), ${signalCount} signal member(s), and ${tokenCount} styling token(s).`,
+          serviceName
+            ? `For production flows, keep orchestration in a container component and delegate UI surface rendering to ${serviceName}.`
+            : 'Keep state ownership in the parent and pass only minimal, explicit bindings into the UI primitive.',
+        ],
+        bullets: [
+          `Implement the baseline flow with the "${firstExample?.title ?? 'Primary'}" scenario first.`,
+          'Map inputs/models/outputs to your domain state and side effects.',
+          'Define disabled/loading/empty/error states early to avoid behavior drift.',
+          'Use Styling tab tokens for scoped theming instead of hard-coded values in feature CSS.',
+          ...(serviceName
+            ? [
+                `Keep open/close and result handling in ${serviceName} callers, not inside deeply nested components.`,
+              ]
+            : []),
+        ],
+        codeBlocks: quickStartBlocks,
+      },
+      {
+        title: 'Behavior and configuration details',
+        paragraphs: [
+          'Use explicit configuration for behavior that affects accessibility, close interaction, validation flow, and visual consistency.',
+        ],
+        bullets: configurationBullets.length
+          ? configurationBullets
+          : [
+              'Define required bindings in template and keep optional bindings explicit in code review.',
+              'Use predictable defaults and document any non-default behavior in feature code.',
+              'Keep component contracts stable so examples and real app usage stay aligned.',
+            ],
+      },
+      {
+        title: 'Accessibility, keyboard, and focus guidance',
+        paragraphs: [
+          'Accessibility behavior should be verified as part of acceptance criteria and tested across keyboard, screen-reader, and responsive contexts.',
+        ],
+        bullets: this.getAccessibilityBullets(entry),
+      },
+      {
+        title: 'Reference code from examples',
+        paragraphs: [
+          'Use these snippets as baseline implementations, then align naming, state boundaries, and error handling to your application architecture.',
+        ],
+        codeBlocks: [
+          ...(firstExample
+            ? [
+                {
+                  language: 'html' as const,
+                  code: firstExample.html,
+                },
+                {
+                  language: 'ts' as const,
+                  code: firstExample.ts,
+                },
+              ]
+            : []),
+          ...(secondExample
+            ? [
+                {
+                  language: 'html' as const,
+                  code: secondExample.html,
+                },
+              ]
+            : []),
+        ],
+      },
+    ];
+
+    return sections.map((section) => this.toOverviewSectionViewModel(section));
+  });
+
   readonly apiGroups = computed<ReadonlyArray<ApiGroup>>(() => {
     const apiTargets = this.metadata().api;
 
@@ -1183,6 +1576,134 @@ export class DocPageComponent {
     }
 
     return 'null';
+  }
+
+  private toOverviewSectionViewModel(section: DocOverviewSection): OverviewSectionViewModel {
+    return {
+      ...section,
+      codeBlocks: (section.codeBlocks ?? []).map((codeBlock) => ({
+        ...codeBlock,
+        highlighted: highlightSnippet(codeBlock.code, toSnippetLanguage(codeBlock.language)),
+      })),
+    };
+  }
+
+  private buildSelectorUsageSnippet(
+    selector: string,
+    signals: ReadonlyArray<DocSignalMetadata>,
+  ): string {
+    const selectedSignals = [
+      ...signals.filter((signal) => signal.kind !== 'output').slice(0, 3),
+      ...signals.filter((signal) => signal.kind === 'output').slice(0, 1),
+    ];
+
+    if (!selectedSignals.length) {
+      return `<${selector}></${selector}>`;
+    }
+
+    const bindings = selectedSignals.map((signalDoc) => `  ${this.signalBinding(signalDoc)}`);
+    return [`<${selector}`, ...bindings, `></${selector}>`].join('\n');
+  }
+
+  private buildIntegrationTsSnippet(
+    entry: DocEntry,
+    serviceName: string | null,
+    configSignals: ReadonlyArray<DocSignalMetadata>,
+  ): string {
+    if (serviceName && entry.category === 'overlays') {
+      const configLines = configSignals
+        .slice(0, 4)
+        .map((signalDoc) => `      ${signalDoc.name}: ${this.getExampleValue(signalDoc)},`);
+
+      const configBlock = configLines.length
+        ? `,\n    {\n${configLines.join('\n')}\n    }`
+        : '';
+
+      return `import { Component, inject } from '@angular/core';
+import { ${serviceName} } from 'nsh-kit-ui';
+
+@Component({
+  selector: 'app-feature-page',
+  template: '<button type="button" (click)="open()">Open</button>',
+})
+export class FeaturePageComponent {
+  private readonly service = inject(${serviceName});
+
+  open(): void {
+    this.service.open(ExampleContentComponent${configBlock});
+  }
+}`;
+    }
+
+    const modelSignal = this.metadata()
+      .api.flatMap((target) => target.signals)
+      .find((signalDoc) => signalDoc.kind === 'model');
+
+    if (modelSignal) {
+      return `import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-feature-page',
+  templateUrl: './feature-page.component.html',
+})
+export class FeaturePageComponent {
+  readonly ${modelSignal.name}State = signal(${this.getExampleValue(modelSignal)});
+}`;
+    }
+
+    return `import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-feature-page',
+  templateUrl: './feature-page.component.html',
+})
+export class FeaturePageComponent {
+  // Keep feature state in the page/container and pass explicit bindings to ${entry.title}.
+}`;
+  }
+
+  private getCategoryOverviewParagraph(entry: DocEntry): string {
+    switch (entry.category) {
+      case 'components':
+        return `${entry.title} is a reusable UI primitive for page-level composition. It should be integrated with predictable state and interaction contracts, then themed through design tokens.`;
+      case 'forms':
+        return `${entry.title} is part of the input and validation surface. It should integrate with form state, validation messaging, and disabled/error behavior in a consistent way.`;
+      case 'overlays':
+        return `${entry.title} belongs to the overlay system and should be treated as transient UI. Keep open/close orchestration, focus handling, and result handling explicit in calling components.`;
+      case 'foundations':
+        return `${entry.title} defines baseline design-system behavior. Use it to keep visual language, spacing, and interaction consistency stable across all component surfaces.`;
+      default:
+        return `${entry.title} should be integrated with explicit state, predictable behavior, and token-based styling.`;
+    }
+  }
+
+  private getAccessibilityBullets(entry: DocEntry): ReadonlyArray<string> {
+    const shared = [
+      'Verify all interactive flows are fully keyboard-accessible (Tab, Shift+Tab, Enter/Space, Escape where applicable).',
+      'Use explicit labels, roles, and states so screen readers can announce purpose and current status.',
+      'Ensure focus indicators remain visible with custom theming and meet contrast requirements.',
+    ];
+
+    if (entry.category === 'overlays') {
+      return [
+        ...shared,
+        'Confirm focus moves into the overlay on open, remains trapped when required, and restores to a logical trigger on close.',
+        'Validate backdrop and Escape behavior against your product accessibility expectations.',
+      ];
+    }
+
+    if (entry.category === 'forms') {
+      return [
+        ...shared,
+        'Link labels, hints, and errors to controls so validation context is announced correctly.',
+        'Do not rely on color alone for invalid/success state communication.',
+      ];
+    }
+
+    return [
+      ...shared,
+      'Test responsive layouts to keep touch targets, spacing, and text wrapping usable on small screens.',
+    ];
   }
 
   resetStylingFilters(): void {

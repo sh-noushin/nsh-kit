@@ -1631,6 +1631,136 @@ export const DOC_ENTRIES: ReadonlyArray<DocEntry> = [
       'Good bottom sheets are concise, easy to dismiss, keyboard-accessible, and return focus to the trigger after close.',
       'Open with NshBottomSheetService.open(component, config). The call returns NshBottomSheetRef, which you can use to dismiss and observe afterDismissed().',
     ],
+    overviewSections: [
+      {
+        title: 'Bottom Sheet Overview',
+        paragraphs: [
+          'The NshBottomSheetService opens an action panel from the bottom edge of the viewport. It is most useful on mobile and touch-first layouts where it can replace heavier dialog flows for quick decisions.',
+          'Use bottom sheets for contextual choices such as share destinations, sort options, file actions, and compact task shortcuts.',
+        ],
+      },
+      {
+        title: 'Opening a bottom sheet',
+        paragraphs: [
+          'Open a sheet by calling open() with a component and optional config. The service returns NshBottomSheetRef for lifecycle handling and dismissal.',
+        ],
+        codeBlocks: [
+          {
+            language: 'ts',
+            code: `const bottomSheetRef = this.bottomSheet.open(ShareSheetComponent, {
+  ariaLabel: 'Share on social media',
+  maxWidth: '720px',
+});`,
+          },
+          {
+            language: 'ts',
+            code: `bottomSheetRef.afterDismissed().subscribe((result) => {
+  console.log('Bottom sheet dismissed with:', result);
+});
+
+bottomSheetRef.dismiss();`,
+          },
+        ],
+      },
+      {
+        title: 'Sharing data with sheet content',
+        paragraphs: [
+          'Pass data through config.data and inject NSH_BOTTOM_SHEET_DATA inside the sheet component.',
+        ],
+        codeBlocks: [
+          {
+            language: 'ts',
+            code: `const ref = this.bottomSheet.open(HobbitSheetComponent, {
+  data: { names: ['Frodo', 'Bilbo'] },
+});`,
+          },
+          {
+            language: 'ts',
+            code: `import { Component, inject } from '@angular/core';
+import { NSH_BOTTOM_SHEET_DATA } from 'nsh-kit-ui';
+
+@Component({
+  selector: 'demo-hobbit-sheet',
+  standalone: true,
+  template: 'passed in {{ (data as { names: string[] })?.names?.join(', ') }}',
+})
+export class HobbitSheetComponent {
+  readonly data = inject(NSH_BOTTOM_SHEET_DATA, { optional: true });
+}`,
+          },
+        ],
+      },
+      {
+        title: 'Global configuration defaults',
+        paragraphs: [
+          'Provide NSH_BOTTOM_SHEET_DEFAULT_OPTIONS at app root to define project-wide defaults for behavior and sizing.',
+        ],
+        codeBlocks: [
+          {
+            language: 'ts',
+            code: `import { ApplicationConfig } from '@angular/core';
+import { NSH_BOTTOM_SHEET_DEFAULT_OPTIONS } from 'nsh-kit-ui';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    {
+      provide: NSH_BOTTOM_SHEET_DEFAULT_OPTIONS,
+      useValue: {
+        closeOnBackdropClick: false,
+        autoFocus: 'first-tabbable',
+        maxWidth: '720px',
+      },
+    },
+  ],
+};`,
+          },
+        ],
+      },
+      {
+        title: 'Accessibility',
+        paragraphs: [
+          'Bottom sheet surfaces are rendered as modal dialogs with role="dialog" and should always be given a meaningful ariaLabel in config.',
+          'Escape-to-close is enabled by default. Disabling closeOnEscape should be done only when there is a strong workflow reason and an equally clear alternative dismiss action.',
+        ],
+      },
+      {
+        title: 'Focus management',
+        paragraphs: [
+          'Use autoFocus to control which element receives focus when the sheet opens. Always verify keyboard behavior in your final UI flow.',
+        ],
+        bullets: [
+          'first-tabbable: focuses first tabbable element (default)',
+          'first-header: focuses first heading element (h1-h6 or role="heading")',
+          'dialog: focuses the root dialog container',
+          'Any CSS selector: focuses first matching element',
+          'false: disable automatic focus movement',
+        ],
+        codeBlocks: [
+          {
+            language: 'ts',
+            code: `this.bottomSheet.open(ShareSheetComponent, {
+  ariaLabel: 'Share actions',
+  autoFocus: 'first-header',
+});`,
+          },
+        ],
+      },
+      {
+        title: 'Focus restoration',
+        paragraphs: [
+          'After dismiss, focus is restored to the opener when possible. If opener no longer exists (for example a menu item), restore focus manually using afterDismissed().',
+        ],
+        codeBlocks: [
+          {
+            language: 'ts',
+            code: `const ref = this.bottomSheet.open(FileTypeChooserSheet);
+ref.afterDismissed().subscribe(() => {
+  this.fallbackButton.nativeElement.focus();
+});`,
+          },
+        ],
+      },
+    ],
     usage: [
       'Use for short action menus, quick routing choices, and secondary tasks tied to the current page context.',
       'Avoid long forms or multi-step flows; use a dialog or full page when the task requires sustained attention.',
