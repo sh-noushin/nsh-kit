@@ -227,7 +227,7 @@ function toPascalCase(value: string): string {
                 <div class="doc-page__styling-guide">
                   <p class="doc-page__styling-guide-title">How to customize this component</p>
                   @for (paragraph of entry()!.stylingGuide; track paragraph) {
-                    <p class="doc-page__styling-guide-text">{{ paragraph }}</p>
+                    <pre class="doc-page__styling-guide-text"><code>{{ paragraph }}</code></pre>
                   }
                 </div>
               }
@@ -651,9 +651,21 @@ function toPascalCase(value: string): string {
 
       .doc-page__styling-guide-text {
         margin: 0;
-        font-size: 0.9rem;
-        color: #2b3345;
+        font-size: 0.85rem;
+        color: #1f2533;
         line-height: 1.6;
+        white-space: pre-wrap;
+        background: #ffffff;
+        border: 1px solid #d7dfed;
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-family: var(--nsh-font-family-mono, ui-monospace, monospace);
+        overflow-x: auto;
+      }
+
+      .doc-page__styling-guide-text code {
+        font: inherit;
+        color: inherit;
       }
 
       .doc-page__styling-intro {
