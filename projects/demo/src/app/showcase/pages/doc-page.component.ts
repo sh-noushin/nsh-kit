@@ -151,45 +151,41 @@ function toPascalCase(value: string): string {
                           }
                         </div>
 
-                        @if (target.signals.length) {
-                          <div class="doc-page__api-table-wrap">
-                            <table class="doc-page__api-table">
-                              <thead>
+                        <div class="doc-page__api-table-wrap">
+                          <table class="doc-page__api-table">
+                            <thead>
+                              <tr>
+                                <th scope="col">Signal</th>
+                                <th scope="col">Kind</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">How to use</th>
+                                <th scope="col">Required</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (signalDoc of target.signals; track signalDoc.name + '-' + signalDoc.kind) {
                                 <tr>
-                                  <th scope="col">Signal</th>
-                                  <th scope="col">Kind</th>
-                                  <th scope="col">Type</th>
-                                  <th scope="col">Description</th>
-                                  <th scope="col">How to use</th>
-                                  <th scope="col">Required</th>
+                                  <td>
+                                    <code>{{ signalDoc.name }}</code>
+                                    @if (signalDoc.alias) {
+                                      <span class="doc-page__signal-alias">alias: {{ signalDoc.alias }}</span>
+                                    }
+                                  </td>
+                                  <td>
+                                    <span class="doc-page__signal-kind">{{ signalDoc.kind }}</span>
+                                  </td>
+                                  <td><code>{{ signalDoc.type }}</code></td>
+                                  <td class="doc-page__signal-description">
+                                    {{ getSignalDescription(signalDoc) }}
+                                  </td>
+                                  <td><code>{{ signalBinding(signalDoc) }}</code></td>
+                                  <td>{{ signalDoc.required ? 'Yes' : 'No' }}</td>
                                 </tr>
-                              </thead>
-                              <tbody>
-                                @for (signalDoc of target.signals; track signalDoc.name + '-' + signalDoc.kind) {
-                                  <tr>
-                                    <td>
-                                      <code>{{ signalDoc.name }}</code>
-                                      @if (signalDoc.alias) {
-                                        <span class="doc-page__signal-alias">alias: {{ signalDoc.alias }}</span>
-                                      }
-                                    </td>
-                                    <td>
-                                      <span class="doc-page__signal-kind">{{ signalDoc.kind }}</span>
-                                    </td>
-                                    <td><code>{{ signalDoc.type }}</code></td>
-                                    <td class="doc-page__signal-description">
-                                      {{ getSignalDescription(signalDoc) }}
-                                    </td>
-                                    <td><code>{{ signalBinding(signalDoc) }}</code></td>
-                                    <td>{{ signalDoc.required ? 'Yes' : 'No' }}</td>
-                                  </tr>
-                                }
-                              </tbody>
-                            </table>
-                          </div>
-                        } @else {
-                          <p class="doc-page__api-empty-signals">No input/output signals declared in this class.</p>
-                        }
+                              }
+                            </tbody>
+                          </table>
+                        </div>
                       </article>
                     }
                   </section>
@@ -559,11 +555,6 @@ function toPascalCase(value: string): string {
         letter-spacing: 0.04em;
       }
 
-      .doc-page__api-empty-signals {
-        margin: 0;
-        color: #5f697d;
-      }
-
       .doc-page__signal-description {
         color: #556176;
         font-size: 0.9rem;
@@ -899,7 +890,9 @@ export class DocPageComponent {
     const apiTargets = this.metadata().api;
 
     return API_GROUP_DEFS.map((groupDef) => {
-      const targets = apiTargets.filter((target) => target.kind === groupDef.kind);
+      const targets = apiTargets.filter(
+        (target) => target.kind === groupDef.kind && target.signals.length > 0
+      );
       return {
         id: `api-${groupDef.kind}s`,
         kind: groupDef.kind,

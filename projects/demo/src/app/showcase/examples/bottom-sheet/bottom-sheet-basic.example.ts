@@ -19,16 +19,17 @@ interface ShareSheetData {
 }
 
 const SHARE_TARGETS: ReadonlyArray<ShareTarget> = [
-  { id: 'keep', title: 'Google Keep', subtitle: 'Add to note' },
-  { id: 'docs', title: 'Google Docs', subtitle: 'Embed in a document' },
-  { id: 'chat', title: 'Google Chat', subtitle: 'Send to a teammate' },
-  { id: 'mail', title: 'Gmail', subtitle: 'Send as attachment' },
+  { id: 'workspace', title: 'Save to Workspace', subtitle: 'Store in project files' },
+  { id: 'team', title: 'Share with Team', subtitle: 'Send to collaborators' },
+  { id: 'task', title: 'Create Follow-up', subtitle: 'Add to action items' },
+  { id: 'download', title: 'Download Copy', subtitle: 'Export as attachment' },
 ];
 
 @Component({
   selector: 'demo-bottom-sheet-basic-content',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NshButtonComponent],
   template: `
     <section class="sheet">
       <header class="sheet__header">
@@ -38,10 +39,18 @@ const SHARE_TARGETS: ReadonlyArray<ShareTarget> = [
 
       <div class="sheet__actions" role="list">
         @for (target of shareTargets; track target.id) {
-          <button type="button" class="sheet__action" role="listitem" (click)="select(target.title)">
-            <span class="sheet__action-title">{{ target.title }}</span>
-            <span class="sheet__action-subtitle">{{ target.subtitle }}</span>
-          </button>
+          <nsh-button
+            variant="text"
+            class="sheet__action"
+            role="listitem"
+            [ariaLabel]="target.title"
+            (click)="select(target.title)"
+          >
+            <span class="sheet__action-text">
+              <span class="sheet__action-title">{{ target.title }}</span>
+              <span class="sheet__action-subtitle">{{ target.subtitle }}</span>
+            </span>
+          </nsh-button>
         }
       </div>
     </section>
@@ -81,23 +90,32 @@ const SHARE_TARGETS: ReadonlyArray<ShareTarget> = [
         display: grid;
         gap: 2px;
         width: 100%;
-        border: none;
-        border-radius: 10px;
         padding: 10px 12px;
-        background: transparent;
+        justify-items: start;
         text-align: left;
-        color: inherit;
-        cursor: pointer;
+        --nsh-button-bg: transparent;
+        --nsh-button-fg: inherit;
+        --nsh-button-border-color: transparent;
+        --nsh-button-radius: 999px;
+        --nsh-density-control-height: auto;
+        --nsh-density-padding-inline: 12px;
+        --nsh-density-padding-block: 10px;
       }
 
       .sheet__action:hover {
-        background: #f3f6fc;
+        --nsh-button-bg: #f3f6fc;
       }
 
       .sheet__action-title {
         font-size: 1rem;
         color: #1f2533;
         font-weight: 600;
+      }
+
+      .sheet__action-text {
+        display: grid;
+        gap: 2px;
+        justify-items: start;
       }
 
       .sheet__action-subtitle {
@@ -130,7 +148,7 @@ class BottomSheetBasicContentComponent {
       <div class="preview-card__header">Bottom Sheet Overview</div>
       <p class="preview-card__body">You have received a file called "cat-picture.jpg".</p>
       <div class="preview-card__actions">
-        <nsh-button variant="outlined" (click)="open()">Open file</nsh-button>
+        <nsh-button class="preview-card__open-btn" variant="outlined" (click)="open()">Open file</nsh-button>
       </div>
       @if (lastAction(); as action) {
         <p class="preview-card__result">Last action: {{ action }}</p>
@@ -164,6 +182,10 @@ class BottomSheetBasicContentComponent {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
+      }
+
+      .preview-card__open-btn {
+        --nsh-button-radius: 999px;
       }
 
       .preview-card__result {
@@ -213,7 +235,7 @@ export const bottomSheetBasicHtml = `<div class="preview-card">
   <div class="preview-card__header">Bottom Sheet Overview</div>
   <p class="preview-card__body">You have received a file called "cat-picture.jpg".</p>
   <div class="preview-card__actions">
-    <nsh-button variant="outlined" (click)="open()">Open file</nsh-button>
+    <nsh-button class="preview-card__open-btn" variant="outlined" (click)="open()">Open file</nsh-button>
   </div>
 </div>`;
 
