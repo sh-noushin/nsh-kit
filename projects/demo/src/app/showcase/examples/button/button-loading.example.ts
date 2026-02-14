@@ -22,17 +22,42 @@ import { NshButtonComponent } from 'nsh-kit-ui';
       </div>
 
       <div
-        class="example-row"
+        class="variant-stack"
         [style.--btn-accent]="accentColor()"
         [style.--btn-tonal-bg]="tonalBg()"
         [style.--btn-tonal-fg]="tonalFg()"
       >
-        <nsh-button variant="filled" class="loading-btn loading-btn--filled" [loading]="true">
-          Saving
-        </nsh-button>
-        <nsh-button variant="tonal" class="loading-btn loading-btn--tonal" [loading]="true">
-          Processing
-        </nsh-button>
+        <div class="variant-block">
+          <div class="variant-label">Rectangle</div>
+          <div class="example-row">
+            <nsh-button variant="filled" class="loading-btn loading-btn--rect loading-btn--filled" [loading]="true">
+              Saving
+            </nsh-button>
+            <nsh-button variant="tonal" class="loading-btn loading-btn--rect loading-btn--tonal" [loading]="true">
+              Processing
+            </nsh-button>
+          </div>
+        </div>
+
+        <div class="variant-block">
+          <div class="variant-label">Rounded</div>
+          <div class="example-row">
+            <nsh-button
+              variant="filled"
+              class="loading-btn loading-btn--rounded loading-btn--filled"
+              [loading]="true"
+            >
+              Saving
+            </nsh-button>
+            <nsh-button
+              variant="tonal"
+              class="loading-btn loading-btn--rounded loading-btn--tonal"
+              [loading]="true"
+            >
+              Processing
+            </nsh-button>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -64,12 +89,37 @@ import { NshButtonComponent } from 'nsh-kit-ui';
         gap: 0;
       }
 
+      .variant-stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .variant-block {
+        display: grid;
+        gap: 6px;
+      }
+
+      .variant-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #4a556c;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
       .loading-btn {
-        --nsh-button-radius: 0px;
         --nsh-density-control-height: 56px;
         --nsh-density-padding-inline: 22px;
         --nsh-density-padding-block: 12px;
         margin-right: 12px;
+      }
+
+      .loading-btn--rect {
+        --nsh-button-radius: 0px;
+      }
+
+      .loading-btn--rounded {
+        --nsh-button-radius: 999px;
       }
 
       .loading-btn--filled {
@@ -105,9 +155,22 @@ export const buttonLoadingHtml = `<div class="example-stack">
     </div>
   </div>
 
-  <div class="example-row" [style.--btn-accent]="accentColor()" [style.--btn-tonal-bg]="tonalBg()" [style.--btn-tonal-fg]="tonalFg()">
-    <nsh-button variant="filled" class="loading-btn loading-btn--filled" [loading]="true">Saving</nsh-button>
-    <nsh-button variant="tonal" class="loading-btn loading-btn--tonal" [loading]="true">Processing</nsh-button>
+  <div class="variant-stack" [style.--btn-accent]="accentColor()" [style.--btn-tonal-bg]="tonalBg()" [style.--btn-tonal-fg]="tonalFg()">
+    <div class="variant-block">
+      <div class="variant-label">Rectangle</div>
+      <div class="example-row">
+        <nsh-button variant="filled" class="loading-btn loading-btn--rect loading-btn--filled" [loading]="true">Saving</nsh-button>
+        <nsh-button variant="tonal" class="loading-btn loading-btn--rect loading-btn--tonal" [loading]="true">Processing</nsh-button>
+      </div>
+    </div>
+
+    <div class="variant-block">
+      <div class="variant-label">Rounded</div>
+      <div class="example-row">
+        <nsh-button variant="filled" class="loading-btn loading-btn--rounded loading-btn--filled" [loading]="true">Saving</nsh-button>
+        <nsh-button variant="tonal" class="loading-btn loading-btn--rounded loading-btn--tonal" [loading]="true">Processing</nsh-button>
+      </div>
+    </div>
   </div>
 </div>`;
 
