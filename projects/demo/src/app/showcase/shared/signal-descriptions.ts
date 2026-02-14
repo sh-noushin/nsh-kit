@@ -24,12 +24,17 @@ export const SIGNAL_DESCRIPTIONS: Record<string, Record<string, string>> = {
 
   // Button Component
   button: {
+    ariaLabel: 'Accessible label announced by screen readers (required for icon-only buttons).',
+    color:
+      'Color key: "primary", "secondary", "tertiary", "success", "warn", "danger", or "neutral".',
     disabled: 'Whether the button is disabled and cannot be interacted with',
     loading: 'Whether to show a loading state with spinner',
-    variant:
-      'Visual style: "primary", "secondary", "tertiary", "destructive", "positive", or "neutral"',
+    variant: 'Visual style: "filled", "tonal", "outlined", or "text".',
     size: 'Button size: "sm" (small), "md" (medium), or "lg" (large)',
-    icon: 'Icon name from the icon library to display in the button',
+    leadingIcon:
+      'Icon name from the registered icon set shown before the label (for example: "home", "settings", "favorite").',
+    trailingIcon:
+      'Icon name from the registered icon set shown after the label (for example: "chevron-right", "check").',
   },
 
   // Card Component
