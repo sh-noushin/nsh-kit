@@ -15,11 +15,6 @@ import {
   breadcrumbIconCustomizeHtml,
   breadcrumbIconCustomizeTs,
 } from './breadcrumb-icon-customize.example';
-import {
-  BreadcrumbCheckoutExampleComponent,
-  breadcrumbCheckoutHtml,
-  breadcrumbCheckoutTs,
-} from './breadcrumb-checkout.example';
 
 export const breadcrumbExamples: ReadonlyArray<DocExample> = [
   {
@@ -27,12 +22,6 @@ export const breadcrumbExamples: ReadonlyArray<DocExample> = [
     component: BreadcrumbBasicExampleComponent,
     html: breadcrumbBasicHtml,
     ts: breadcrumbBasicTs,
-  },
-  {
-    title: 'Checkout flow (Segmented)',
-    component: BreadcrumbCheckoutExampleComponent,
-    html: breadcrumbCheckoutHtml,
-    ts: breadcrumbCheckoutTs,
   },
   {
     title: 'Breadcrumb style variants',

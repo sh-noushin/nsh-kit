@@ -8,13 +8,6 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NshBreadcrumbComponent],
   template: `
-    <div class="control-row">
-      <label class="toggle">
-        <input type="checkbox" [checked]="showShadow()" (change)="showShadow.set(!showShadow())" />
-        Shadow
-      </label>
-    </div>
-
     <nsh-breadcrumb
       [items]="items()"
       [itemIcons]="iconMap()"
@@ -27,30 +20,11 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
       [style.--nsh-breadcrumb-item-padding-block]="'var(--nsh-space-xs)'"
       [style.--nsh-breadcrumb-item-min-width]="'132px'"
       [style.--nsh-breadcrumb-font-size]="'var(--nsh-font-size-sm)'"
-      [shadow]="showShadow()"
+      [shadow]="true"
     ></nsh-breadcrumb>
   `,
-  styles: [
-    `
-      .toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        color: #111;
-        margin-bottom: 12px;
-      }
-
-      .toggle input {
-        width: 16px;
-        height: 16px;
-      }
-    `,
-  ],
 })
 export class BreadcrumbCheckoutExampleComponent {
-  readonly showShadow = signal(true);
   readonly items = signal<NshBreadcrumbItem[]>([
     { id: 'cart', label: 'Cart', href: '#' },
     { id: 'billing', label: 'Billing', href: '#' },
@@ -74,7 +48,7 @@ export const breadcrumbCheckoutHtml = `<nsh-breadcrumb
   variant="segmented"
   separator="chevron"
   style="--nsh-breadcrumb-item-padding-inline: var(--nsh-space-md); --nsh-breadcrumb-item-padding-block: var(--nsh-space-xs); --nsh-breadcrumb-item-min-width: 132px; --nsh-breadcrumb-font-size: var(--nsh-font-size-sm);"
-  [shadow]="showShadow()"
+  [shadow]="true"
 </nsh-breadcrumb>`;
 
 export const breadcrumbCheckoutTs = `import { Component, signal } from '@angular/core';
@@ -87,7 +61,6 @@ import { NshBreadcrumbComponent, type NshBreadcrumbItem } from 'nsh-kit-ui';
   templateUrl: './breadcrumb-checkout.example.html'
 })
 export class BreadcrumbCheckoutExampleComponent {
-  readonly showShadow = signal(true);
   readonly items: NshBreadcrumbItem[] = [
     { id: 'cart', label: 'Cart', href: '#' },
     { id: 'billing', label: 'Billing', href: '#' },
