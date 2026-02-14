@@ -986,7 +986,7 @@ export class DocPageComponent {
 
   signalBinding(signalDoc: DocSignalMetadata): string {
     const bindingName = signalDoc.alias ?? signalDoc.name;
-    const exampleValue = this.getExampleValue(signalDoc.name);
+    const exampleValue = this.getExampleValue(signalDoc);
 
     if (signalDoc.kind === 'output') {
       return `(${bindingName})="on${toPascalCase(signalDoc.name)}($event)"`;
@@ -999,7 +999,9 @@ export class DocPageComponent {
     return `[${bindingName}]="${exampleValue}"`;
   }
 
-  private getExampleValue(signalName: string): string {
+  private getExampleValue(signalDoc: DocSignalMetadata): string {
+    const signalName = signalDoc.name;
+    const signalType = signalDoc.type;
     const componentId = this.entry()?.id;
 
     if (componentId === 'breadcrumb') {
@@ -1009,6 +1011,22 @@ export class DocPageComponent {
 
       if (signalName === 'itemIcons') {
         return 'itemIcons()';
+      }
+
+      const breadcrumbExamples: Record<string, string> = {
+        accentColor: '"#2563eb"',
+        activeIndex: '2',
+        ariaLabel: '"Checkout steps"',
+        compact: 'false',
+        elevation: '"flat"',
+        maxItems: '4',
+        separator: '"chevron"',
+        shadow: 'true',
+        variant: '"segmented"',
+      };
+
+      if (breadcrumbExamples[signalName]) {
+        return breadcrumbExamples[signalName];
       }
     }
 
@@ -1133,7 +1151,33 @@ export class DocPageComponent {
       readonly: 'false',
     };
 
-    return examplesByName[signalName] ?? `"example"`;
+    if (examplesByName[signalName]) {
+      return examplesByName[signalName];
+    }
+
+    const normalizedType = signalType.replace(/\s+/g, ' ').toLowerCase();
+
+    if (normalizedType.includes('boolean')) {
+      return 'false';
+    }
+
+    if (normalizedType.includes('number')) {
+      return normalizedType.includes('null') ? 'null' : '1';
+    }
+
+    if (normalizedType.includes('record<')) {
+      return '{}';
+    }
+
+    if (normalizedType.includes('[]')) {
+      return '[]';
+    }
+
+    if (normalizedType.includes('string')) {
+      return '"sample"';
+    }
+
+    return 'null';
   }
 
   resetStylingFilters(): void {
